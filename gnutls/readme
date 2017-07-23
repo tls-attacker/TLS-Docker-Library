@@ -1,0 +1,2 @@
+build:      docker build -t gnutls-server .
+tls server: docker run -it --rm gnutls-server

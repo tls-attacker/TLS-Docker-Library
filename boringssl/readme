@@ -1,0 +1,3 @@
+build:      docker build -t boringssl-server .
+tls server: docker run -it --rm boringssl-server
+tls shim:   docker run -it --rm --entrypoint /bin/bssl_shim boringssl-server  

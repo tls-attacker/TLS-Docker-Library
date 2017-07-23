@@ -1,0 +1,17 @@
+FROM alpine-build as nss
+ENV BUILD_OPT="1"
+ENV USE_64="1"
+RUN hg clone -r NSS_3_31_RTM https://hg.mozilla.org/projects/nss
+RUN hg clone -r NSPR_4_15_RTM https://hg.mozilla.org/projects/nspr
+WORKDIR /src/nss
+RUN make nss_build_all install
+
+FROM scratch
+COPY --from=nss /lib/ld-musl-x86_64.so.* \
+  /lib/libz.so.* \
+  /usr/lib/libstdc++.so.* \
+  /usr/lib/libgcc_s.so.* \
+  /src/dist/Linux*/lib/lib*.so /lib/
+COPY --from=nss /src/dist/Linux*/bin/httpserv \
+  /src/dist/Linux*/bin/nss_bogo_shim /bin/
+ENTRYPOINT ["/bin/httpserv"]

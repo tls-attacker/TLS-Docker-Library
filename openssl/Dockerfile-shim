@@ -1,0 +1,11 @@
+FROM alpine-build as openssl
+RUN git clone https://github.com/openssl/openssl
+WORKDIR /src/openssl
+RUN git checkout 0299f3f790437d124d15f60489c774407325f82b
+RUN ./config --prefix=/build/ --openssldir=/build/ no-async enable-external-tests
+RUN make && make install
+
+FROM scratch
+COPY --from=openssl /lib/ld-musl-x86_64.so.* /usr/lib/libstdc++.so.* /usr/lib/libgcc_s.so.* /build/lib/*.so.* /lib/
+COPY --from=openssl /build/bin/openssl /src/openssl/test/ossl_shim/ossl_shim /bin/
+ENTRYPOINT ["openssl", "s_server"]
