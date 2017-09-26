@@ -6,7 +6,7 @@ RUN make && make install
 
 FROM alpine-build as gnutls-gnutls
 ENV PKG_CONFIG_PATH=/build/lib/pkgconfig/
-RUN git clone --depth=1 --branch gnutls_3_5_13 https://github.com/gnutls/gnutls
+RUN git clone --depth=1 --branch gnutls_3_5_15 https://github.com/gnutls/gnutls
 WORKDIR /src/gnutls/
 RUN git submodule update --init --no-fetch
 COPY --from=gnutls-libnettle /build/ /build/
