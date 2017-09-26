@@ -1,8 +1,8 @@
 FROM alpine-build as nss
 ENV BUILD_OPT="1"
 ENV USE_64="1"
-RUN hg clone -r NSS_3_31_RTM https://hg.mozilla.org/projects/nss
-RUN hg clone -r NSPR_4_15_RTM https://hg.mozilla.org/projects/nspr
+RUN hg clone -r NSS_3_32_RTM https://hg.mozilla.org/projects/nss
+RUN hg clone -r NSPR_4_16_RTM https://hg.mozilla.org/projects/nspr
 WORKDIR /src/nss
 RUN make nss_build_all install
 
