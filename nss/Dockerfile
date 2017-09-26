@@ -7,6 +7,8 @@ WORKDIR /src/nss
 RUN make nss_build_all install
 
 FROM scratch
+LABEL "de.rub.nds.tlscompliance.docker.server.name=nss"
+LABEL "de.rub.nds.tlscompliance.docker.server.version=3.32"
 COPY --from=nss /lib/ld-musl-x86_64.so.* \
   /lib/libz.so.* \
   /usr/lib/libstdc++.so.* \
