@@ -12,6 +12,6 @@ COPY --from=nss /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* \
   /src/dist/Linux*/lib/lib*.so /lib/
-COPY --from=nss /src/dist/Linux*/bin/httpserv \
+COPY --from=nss /src/dist/Linux*/bin/selfserv \
   /src/dist/Linux*/bin/nss_bogo_shim /bin/
-ENTRYPOINT ["/bin/httpserv"]
+ENTRYPOINT ["/bin/selfserv"]
