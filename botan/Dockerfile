@@ -6,8 +6,8 @@ RUN ./configure.py --prefix=/build/ &&\
   make install
 
 FROM scratch
-LABEL "de.rub.nds.tlscompliance.docker.server.name=botan"
-LABEL "de.rub.nds.tlscompliance.docker.server.version=2.2.0"
+LABEL "de.rub.nds.tlscompliance.docker.server.name"="botan"
+LABEL "de.rub.nds.tlscompliance.docker.server.version"="2.2.0"
 COPY --from=botan /lib/ld-musl-x86_64.so.1 \
   /usr/lib/libstdc++.so.6 \
   /usr/lib/libgcc_s.so.1 \
