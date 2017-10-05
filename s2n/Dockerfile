@@ -5,8 +5,8 @@ WORKDIR s2n
 RUN make bin
 
 FROM scratch
-LABEL "de.rub.nds.tlscompliance.docker.server.name=s2n"
-LABEL "de.rub.nds.tlscompliance.docker.server.version=latest"
+LABEL "de.rub.nds.tlscompliance.docker.server.name"="s2n"
+LABEL "de.rub.nds.tlscompliance.docker.server.version"="latest"
 ENV S2N_DONT_MLOCK=1
 COPY --from=s2n /lib/ld-musl-x86_64.so.1 \
   /lib/libcrypto.so.1.0.0 \
