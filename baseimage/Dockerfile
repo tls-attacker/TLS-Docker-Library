@@ -14,5 +14,7 @@ RUN apk update &&\
     zlib-dev \
     linux-headers \
     cmake \
-    go
+    go \
+    strace \
+    unzip
 WORKDIR /src/
