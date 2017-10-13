@@ -1,5 +1,5 @@
 development build with shim
 ---------------------------
-build:      docker build -t openssl-server -f Dockerfile.shim .
+build:      docker build -t openssl-server -f Dockerfile-shim .
 tls server: docker run -it --rm openssl-server
 tls shim:   docker run -it --rm --entrypoint /bin/ossl_shim openssl-server

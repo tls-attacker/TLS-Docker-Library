@@ -1,0 +1,3 @@
+---------------------------
+build:      docker build -t s2n-server .
+tls server: docker run -it --rm s2n-server
