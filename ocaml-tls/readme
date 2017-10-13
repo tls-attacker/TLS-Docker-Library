@@ -1,0 +1,3 @@
+---------------------------
+build:      docker build -t ocamltls-server .
+tls server: docker run -it --rm ocamltls-server

@@ -1,0 +1,3 @@
+---------------------------
+build:      docker build -t matrixssl-server .
+tls server: docker run -it --rm matrixssl-server

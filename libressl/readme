@@ -1,0 +1,3 @@
+---------------------------
+build:      docker build -t libressl-server .
+tls server: docker run -it --rm libressl-server
