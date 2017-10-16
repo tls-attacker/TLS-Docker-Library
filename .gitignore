@@ -2,3 +2,4 @@
 *.srl
 *.csr
 db/
+test-ca/
