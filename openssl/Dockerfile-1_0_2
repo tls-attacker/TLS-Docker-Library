@@ -1,0 +1,31 @@
+FROM alpine as openssl
+RUN set -x \
+    && apk add --no-cache \
+        bash \
+		wget \
+        gcc \
+        tar \
+        alpine-sdk \
+        perl \
+        linux-headers \
+    && rm -rf /var/cache/apk/*
+WORKDIR /src
+RUN set -x \
+ ### BUILD OpenSSL
+ && wget https://www.openssl.org/source/old/1.0.2/openssl-1.0.2.tar.gz \
+ && tar -xzf openssl-1.0.2.tar.gz \
+ && cd /src/openssl-1.0.2 \
+ && ./Configure linux-x86_64 shared\
+ && make \
+ && make test \
+&& make install
+
+FROM scratch
+LABEL "de.rub.nds.tlscompliance.docker.server.name"="openssl"
+LABEL "de.rub.nds.tlscompliance.docker.server.version"="1.0.2"
+COPY --from=openssl /lib/ld-musl-x86_64.so.* \
+  /usr/lib/libstdc++.so.* \
+  /usr/lib/libgcc_s.so.* \
+  /build/lib/*.so.* /lib/
+COPY --from=openssl /build/bin/openssl /bin/
+ENTRYPOINT ["openssl", "s_server"]
