@@ -11,6 +11,7 @@ RUN make -s && make install_sw -s
 # install_sw for not creating manpages, a lot openssl versions (<8zc) do not compile with make install + it is faster
 
 FROM scratch
+ARG VERSION
 LABEL "de.rub.nds.tlscompliance.docker.server.name"="openssl"
 LABEL "de.rub.nds.tlscompliance.docker.server.version"="0.9.$version"
 COPY --from=openssl /lib/ld-musl-x86_64.so.* \

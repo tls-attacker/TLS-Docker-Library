@@ -15,6 +15,7 @@ RUN make && make install
 #todo: fix error: "4-byte relocation cannot be applied to 2-byte field"
 
 FROM scratch
+ARG VERSION
 LABEL "de.rub.nds.tlscompliance.docker.server.name"="openssl"
 LABEL "de.rub.nds.tlscompliance.docker.server.version"="0.9.$version"
 COPY --from=openssl /lib/ld-musl-x86_64.so.* \
