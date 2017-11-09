@@ -35,8 +35,12 @@ if [ ! -f server.jks ]; then
   keytool -importkeystore -srckeystore rsa2048.p12 -srcstoretype pkcs12 -destkeystore rsa2048.jks -deststoretype jks
   keytool -importkeystore -srckeystore ec256.p12 -srcstoretype pkcs12 -destkeystore ec256.jks -deststoretype jks
 fi
+#use test-ca from rustls
+if [ ! -d test-ca ]; then
+  curl -L https://github.com/ctz/rustls/tarball/master | tar zx --wildcards  --strip-components=1 '*/test-ca/'
+fi
 
+docker volume remove cert-data
 docker volume create cert-data
-docker build -t cert-tmp .
-docker run --rm -v cert-data:/cert/ cert-tmp cp -r /src/cert.pem /src/key.pem /src/ca.pem /src/ca_key.pem /src/dh.pem /src/db/ /cert/
-docker rmi cert-tmp
+docker run --rm -v cert-data:/cert/ -v $(pwd):/src/ busybox \
+  cp -r /src/cert.pem /src/key.pem /src/ca.pem /src/ca_key.pem /src/dh.pem /src/db/ /src/test-ca/ /cert/

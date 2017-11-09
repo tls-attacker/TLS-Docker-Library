@@ -3,3 +3,17 @@ development build with shim
 build:      docker build -t openssl-server -f Dockerfile-shim .
 tls server: docker run -it --rm openssl-server
 tls shim:   docker run -it --rm --entrypoint /bin/ossl_shim openssl-server
+
+build all supported openssl versions
+---------------------------
+build:      ./openssl-build_all.sh
+
+build a single openssl server
+---------------------------
+build:      docker build --build-arg VERSION=$version -t $yourImageName -f $Dockerfile_of_your_version .
+
+example for version 1.0.2b:
+	    docker build --build-arg VERSION=b -t openssl-1_0_2b-server -f Dockerfile-1_0_2a-l .
+
+example for version 0.9.8
+	    docker build --build-arg VERSION=8 -t openssl-0_9_8-server -f Dockerfile-0_9_8a-n .

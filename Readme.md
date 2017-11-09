@@ -1,6 +1,17 @@
 # TLS-Docker-Library
 
 ## Building
+### First steps
+#### Build baseimage
+```bash
+cd baseimage
+./build-base-image.sh
+```
+#### Create key.pem and cert.pem
+```bash
+cd cert
+./setup.sh
+```
 ### Inspect container content
 ```bash
 docker build --squash -t <image name> . 
@@ -29,4 +40,36 @@ docker run --rm -it -v /path/to/dir/:/cert/:ro,nocopy -p 127.0.0.42:<port on hos
 ### On host network stack
 ```bash
 docker run --rm -it -v cert-data:/cert/:ro,nocopy --network=host <image name> options...
+```
+
+## Usage
+### Get the CONTAINER ID
+```bash
+docker ps
+```
+### Get the IP-Address
+```bash
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <CONTAINER ID>
+```
+### Connect directly
+```bash
+openssl s_client -connect <ip>:<port>
+```
+### Stop container
+```bash
+docke container kill <CONTAINER ID>
+```
+
+## Cleaning / Removing unused images
+### Dangling images (layers that have no relationship to any tagged images)
+```bash
+docker images -f dangling=true
+```
+### Images with none name
+```bash
+docker rmi -f $(docker images  | grep none)
+```
+### Images of sizes 100-999 MB
+```bash
+docker rmi -f $(docker images | grep -P "\d{3}MB")
 ```
