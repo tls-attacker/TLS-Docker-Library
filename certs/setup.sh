@@ -23,17 +23,17 @@ fi
 if [ ! -d db ]; then
   echo "Creating db"
   mkdir db
-  openssl pkcs12 -export -in rsa2048cert.pem -inkey rsa2048key.pem -out rsa2048.p12 -name cert
+  openssl pkcs12 -export -in rsa2048cert.pem -inkey rsa2048key.pem -out rsa2048.p12 -name cert -passin pass:password -passout pass:password
   echo "Importing RSA key"
-  pk12util -i rsa2048.p12 -d db
-  openssl pkcs12 -export -in ec256cert.pem -inkey ec256key.pem -out ec256.p12 -name cert
+  pk12util -i rsa2048.p12 -d db -K password -W password
+  openssl pkcs12 -export -in ec256cert.pem -inkey ec256key.pem -out ec256.p12 -name cert -passin pass:password -passout pass:password
   echo "Importing EC key"
-  pk12util -i ec256.p12 -d db
+  pk12util -i ec256.p12 -d db -K password -W password
 fi
-if [ ! -f server.jks ]; then
+if [ ! -f keys.jks ]; then
   echo "Creating Java keystore"
-  keytool -importkeystore -srckeystore rsa2048.p12 -srcstoretype pkcs12 -destkeystore rsa2048.jks -deststoretype jks
-  keytool -importkeystore -srckeystore ec256.p12 -srcstoretype pkcs12 -destkeystore ec256.jks -deststoretype jks
+  keytool -importkeystore -srckeystore rsa2048.p12 -srcstoretype pkcs12 -destkeystore keys.jks -deststoretype jks -alias cert -destalias rsa2048 -srcstorepass password -deststorepass password
+  keytool -importkeystore -srckeystore ec256.p12 -srcstoretype pkcs12 -destkeystore keys.jks -deststoretype jks -alias cert -destalias ec256 -srcstorepass password -deststorepass password
 fi
 #use test-ca from rustls
 if [ ! -d test-ca ]; then
@@ -43,4 +43,4 @@ fi
 docker volume remove cert-data
 docker volume create cert-data
 docker run --rm -v cert-data:/cert/ -v $(pwd):/src/ busybox \
-  cp -r /src/cert.pem /src/key.pem /src/ca.pem /src/ca_key.pem /src/dh.pem /src/db/ /src/test-ca/ /cert/
+  cp -r /src/rsa2048cert.pem /src/rsa2048key.pem /src/ec256cert.pem /src/ec256key.pem /src/ca.pem /src/ca_key.pem /src/dh.pem /src/db/ /src/test-ca/ /cert/
