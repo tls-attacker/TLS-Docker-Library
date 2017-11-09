@@ -1,5 +1,5 @@
 #!/bin/bash
-array=(34 33 32 31 30 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7)
+array=(34 33 32 31 30 24 23 22 21 20 19 17 16 15 14 13 12 11 10 9 8)
 # 0, 1, 2, 7 and 18 not supported
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
