@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #array6=(i j k l m)
 #typeset -i i=0 max=${#array6[*]}

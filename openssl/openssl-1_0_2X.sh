@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 array=(a b c d e f g h i j k l)
 typeset -i i=0 max=${#array[*]}

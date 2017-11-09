@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ./openssl-0_9_X.sh
 ./openssl-1_0_0X.sh
 ./openssl-1_0_1X.sh
