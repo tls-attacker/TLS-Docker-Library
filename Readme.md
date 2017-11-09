@@ -42,5 +42,5 @@ docker rmi -f $(docker images  | grep none)
 ```
 ### Images of sizes 100-999 MB
 ```bash
-docker images | grep -P "\d{3}MB"
+docker rmi -f $(docker images | grep -P "\d{3}MB")
 ```
