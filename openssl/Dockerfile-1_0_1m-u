@@ -1,0 +1,22 @@
+FROM alpine-build as openssl
+ARG VERSION
+RUN wget -O openssl.tar.gz https://www.openssl.org/source/old/1.0.1/openssl-1.0.1${VERSION}.tar.gz
+RUN mkdir openssl
+RUN tar -xzf openssl.tar.gz -C openssl --strip-components 1
+WORKDIR /src/openssl
+#COPY openssl-004-musl-termios.patch ./
+#RUN patch crypto/ui/ui_openssl.c < openssl-004-musl-termios.patch
+
+RUN ./config --prefix=/build/ --openssldir=/build/ no-async 
+RUN make -s && make install_sw -s
+
+FROM scratch
+ARG VERSION
+LABEL "de.rub.nds.tlscompliance.docker.server.name"="openssl"
+LABEL "de.rub.nds.tlscompliance.docker.server.version"="1.0.1$version"
+COPY --from=openssl /lib/ld-musl-x86_64.so.* \
+  /usr/lib/libstdc++.so.* \
+  /usr/lib/libgcc_s.so.* \
+  /build/lib/*.so.* /lib/
+COPY --from=openssl /build/bin/openssl /bin/
+ENTRYPOINT ["openssl", "s_server"]

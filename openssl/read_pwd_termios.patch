@@ -1,0 +1,8 @@
+118,120c118,120
+< #if defined(linux) && !defined(TERMIO)
+< #undef  TERMIOS
+< #define TERMIO
+---
+> #if defined(linux)
+> #define  TERMIOS
+> #undef TERMIO
