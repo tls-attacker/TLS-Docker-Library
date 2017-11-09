@@ -30,6 +30,16 @@ docker run --rm -it -v /path/to/dir/:/cert/:ro,nocopy -p 127.0.0.42:<port on hos
 ```bash
 docker run --rm -it -v cert-data:/cert/:ro,nocopy --network=host <image name> options...
 ```
+### Stop container
+```bash
+# list container and then kill
+docker ps
+docke container kill <instance-id>
+```
+### Get IP address of a container
+```bash
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <instance-id>
+```
 
 ## Cleaning / Removing unused images
 ### Dangling images (layers that have no relationship to any tagged images)
