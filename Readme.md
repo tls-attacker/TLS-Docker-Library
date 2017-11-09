@@ -30,3 +30,17 @@ docker run --rm -it -v /path/to/dir/:/cert/:ro,nocopy -p 127.0.0.42:<port on hos
 ```bash
 docker run --rm -it -v cert-data:/cert/:ro,nocopy --network=host <image name> options...
 ```
+
+## Cleaning / Removing unused images
+### Dangling images (layers that have no relationship to any tagged images)
+```bash
+docker images -f dangling=true
+```
+### Images with none name
+```bash
+docker rmi -f $(docker images  | grep none)
+```
+### Images of sizes 100-999 MB
+```bash
+docker images | grep -P "\d{3}MB"
+```
