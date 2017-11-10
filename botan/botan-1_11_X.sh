@@ -9,11 +9,20 @@ do
 	i=i+1
 done
 
+
+
 docker build --build-arg VERSION=29 -t botan-1_11_29-server -f Dockerfile-1_11_25-29 .
 docker build --build-arg VERSION=28 -t botan-1_11_28-server -f Dockerfile-1_11_25-29 .
 docker build --build-arg VERSION=27 -t botan-1_11_27-server -f Dockerfile-1_11_25-29 .
 docker build --build-arg VERSION=26 -t botan-1_11_26-server -f Dockerfile-1_11_25-29 .
 docker build --build-arg VERSION=25 -t botan-1_11_25-server -f Dockerfile-1_11_25-29 .
+
+docker build --build-arg VERSION=13 -t botan-1_11_13-server -f Dockerfile-1_11_8-13 .
+docker build --build-arg VERSION=12 -t botan-1_11_12-server -f Dockerfile-1_11_8-13 .
+docker build --build-arg VERSION=11 -t botan-1_11_11-server -f Dockerfile-1_11_8-13 .
+docker build --build-arg VERSION=10 -t botan-1_11_10-server -f Dockerfile-1_11_8-13 .
+docker build --build-arg VERSION=9 -t botan-1_11_9-server -f Dockerfile-1_11_8-13 .
+docker build --build-arg VERSION=8 -t botan-1_11_8-server -f Dockerfile-1_11_8-13 .
 
 docker build --build-arg VERSION=3 -t botan-1_11_3-server -f Dockerfile-1_11_3-6 .
 docker build --build-arg VERSION=4 -t botan-1_11_4-server -f Dockerfile-1_11_3-6 .
