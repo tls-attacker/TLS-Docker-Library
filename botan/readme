@@ -1,3 +1,11 @@
 ---------------------------
 build:      docker build -t botan-server .
 tls server: docker run -it --rm botan-server
+
+build all botan versions of 2.X:	./botan-2.X.sh
+build all botan versions of 1.11.X:	./botan-1_11_X.sh
+
+Not supported Botan Versions:
+all <= 1.11.2
+1.11.7
+1.11.18
