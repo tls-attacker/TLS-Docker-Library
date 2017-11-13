@@ -7,7 +7,7 @@ RUN sed -i -e 's/-Wall -Werror //g' /src/boringssl/CMakeLists.txt
 WORKDIR /build/
 RUN cmake -DCMAKE_BUILD_TYPE=Release /src/boringssl/
 RUN make -i
-#ignore the errors while testing
+#ignore the errors while compiling, linker errors in the shim module -> shim is not working
 
 FROM scratch
 ARG VERSION
