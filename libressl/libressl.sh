@@ -1,4 +1,5 @@
 #!/bin/bash
+#version 2.6.x
 array=(0 1 2 3)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -8,6 +9,7 @@ do
 	i=i+1
 done
 
+#version 2.5.x
 array=(0 1 2 3 4 5)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -17,6 +19,7 @@ do
 	i=i+1
 done
 
+#version 2.4.x
 array=(0 1 2 3 4 5)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -26,6 +29,7 @@ do
 	i=i+1
 done
 
+#version 2.3.x
 array=(0 1 2 3 4 5 6 7 8 9 10)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -35,6 +39,7 @@ do
 	i=i+1
 done
 
+#version 2.2.x
 array=(0 1 2 3 4 5 6 7 8 9)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -44,6 +49,7 @@ do
 	i=i+1
 done
 
+#version 2.1.x
 array=(0 1 2 3 4 5 6 7 8 9 10)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -53,6 +59,7 @@ do
 	i=i+1
 done
 
+#version 2.0.x
 array=(0 1 2 3 4 5 6)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
