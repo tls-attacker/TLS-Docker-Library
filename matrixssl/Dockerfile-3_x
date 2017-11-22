@@ -1,10 +1,10 @@
 FROM alpine-build as matrixssl
 ARG VERSION
 RUN git clone --depth=1 --branch=3-${VERSION}-open https://github.com/matrixssl/matrixssl
-RUN (cd matrixssl &&\
-      make libs)
-RUN (cd matrixssl/apps/ssl &&\
-      make)
+WORKDIR matrixssl
+RUN if [ "$VERSION" = "8-3" ]; then make; else make libs; fi
+WORKDIR apps/ssl
+RUN make
 
 FROM scratch
 ARG VERSION
