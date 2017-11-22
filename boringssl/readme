@@ -1,3 +1,9 @@
 build:      docker build -t boringssl-server .
 tls server: docker run -it --rm boringssl-server
 tls shim:   docker run -it --rm --entrypoint /bin/bssl_shim boringssl-server  
+
+build all supported boringSSL versions: ./boringssl-X.sh
+
+build a single boringSSL version:  docker build --build-arg VERSION=${VERSION} -t boringssl-${VERSION}-server -f ${Dockerfile_for_your_version} .
+
+	for example:  docker build --build-arg VERSION=2311 -t boringssl-2311-server -f Dockerfile-2272-2357 .
