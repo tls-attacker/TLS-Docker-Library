@@ -12,4 +12,4 @@ LABEL "de.rub.nds.tlscompliance.docker.server.name"="mbed"
 LABEL "de.rub.nds.tlscompliance.docker.server.version"="${VERSION}"
 COPY --from=mbed /lib/ld-musl-x86_64.so.* /lib/
 COPY --from=mbed /build/programs/ssl/ssl_server /bin/
-ENTRYPOINT ["ssl_server", "server_port=4430"]
+ENTRYPOINT ["ssl_server"]
