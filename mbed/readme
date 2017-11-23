@@ -1,0 +1,4 @@
+Example for starting a server:
+docker run -v cert-data:/cert/:ro,nocopy -it --rm mbedtls-1.3.11-server crt_file=/cert/rsa2048cert.pem key_file=/cert/rsa2048key.pem server_port=4433
+
+PolarSSL under 1.2 does not include ssl_server2 application. It only includes ssl_server, which does not support parameters and only uses default keys.
