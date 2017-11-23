@@ -43,4 +43,4 @@ fi
 docker volume remove cert-data
 docker volume create cert-data
 docker run --rm -v cert-data:/cert/ -v $(pwd):/src/ busybox \
-  cp -r /src/rsa2048cert.pem /src/rsa2048key.pem /src/ec256cert.pem /src/ec256key.pem /src/ca.pem /src/ca_key.pem /src/dh.pem /src/db/ /src/test-ca/ /cert/
+  cp -r /src/rsa2048cert.pem /src/rsa2048key.pem /src/ec256cert.pem /src/ec256key.pem /src/keys.jks /src/ca.pem /src/ca_key.pem /src/dh.pem /src/db/ /src/test-ca/ /cert/
