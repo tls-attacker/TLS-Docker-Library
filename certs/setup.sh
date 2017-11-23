@@ -9,12 +9,14 @@ if [ ! -f rsa2048cert.pem ] && [ ! -f rsa2048key.pem ]; then
   openssl genpkey -algorithm RSA -out rsa2048key.pem -pkeyopt rsa_keygen_bits:2048
   openssl req -new -nodes -subj "/C=DE/ST=NRW/L=Bochum/O=RUB/OU=NDS/CN=example.com" -key rsa2048key.pem -out rsa2048cert.csr
   openssl x509 -req -in rsa2048cert.csr -CA ca.pem -CAkey ca_key.pem -CAcreateserial -out rsa2048cert.pem -days 1024
+  cat rsa2048key.pem rsa2048cert.pem > rsa2048combined.pem
 fi
 if [ ! -f ec256cert.pem ] && [ ! -f ec256key.pem ]; then
   echo "Generating EC keys"
   openssl genpkey -algorithm EC -out ec256key.pem -pkeyopt ec_paramgen_curve:P-256 -pkeyopt ec_param_enc:named_curve
   openssl req -new -nodes -subj "/C=DE/ST=NRW/L=Bochum/O=RUB/OU=NDS/CN=example.com" -key ec256key.pem -out ec256cert.csr
   openssl x509 -req -in ec256cert.csr -CA ca.pem -CAkey ca_key.pem -CAcreateserial -out ec256cert.pem -days 1024
+  cat ec256key.pem ec256cert.pem > ec256combined.pem
 fi
 if [ ! -f dh.pem ]; then
   echo "Creating DH parameters"
@@ -43,4 +45,4 @@ fi
 docker volume remove cert-data
 docker volume create cert-data
 docker run --rm -v cert-data:/cert/ -v $(pwd):/src/ busybox \
-  cp -r /src/rsa2048cert.pem /src/rsa2048key.pem /src/ec256cert.pem /src/ec256key.pem /src/ca.pem /src/ca_key.pem /src/dh.pem /src/db/ /src/test-ca/ /cert/
+  cp -r /src/rsa2048cert.pem /src/rsa2048key.pem /src/rsa2048combined.pem /src/ec256cert.pem /src/ec256key.pem /src/ec256combined.pem /src/ca.pem /src/ca_key.pem /src/dh.pem /src/db/ /src/test-ca/ /cert/
