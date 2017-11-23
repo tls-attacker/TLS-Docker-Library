@@ -1,3 +1,7 @@
 ---------------------------
 build:      docker build -t bouncycastle-server .
 tls server: docker run -it --rm bouncycastle-server
+
+docker run -v cert-data:/cert/:ro,nocopy -it --rm bouncycastletls-1-50-server /cert/keys.jks password rsa2048 4433
+
+Currently does not work with EC keys (alias is ec256)
