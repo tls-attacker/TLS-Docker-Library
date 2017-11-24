@@ -1,4 +1,20 @@
 Example for starting a server:
 docker run -v cert-data:/cert/:ro,nocopy -it --rm mbedtls-1.3.11-server crt_file=/cert/rsa2048cert.pem key_file=/cert/rsa2048key.pem server_port=4433
 
+The following versions are working:
+- PolarSSL 1.2: >= 1.2.11
+- PolarSSL 1.3: >= 1.3.4
+- mbedTLS: >= 1.3.10 
+
 PolarSSL under 1.2 does not include ssl_server2 application. It only includes ssl_server, which does not support parameters and only uses default keys.
+
+The ssl_server2 has some problems to start in earlier versions:
+- 1.3.0 - 1.3.3 
+- 1.2.0 - 1.2.10
+
+The example ssl_server2 application would need to be fixed. The server ends with:
+```bash
+  . Seeding the random number generator... ok
+  . Loading the CA root certificate ... ok (0 skipped)
+  . Loading the server cert. and key...
+```
