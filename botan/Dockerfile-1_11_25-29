@@ -1,7 +1,7 @@
 FROM alpine-build as botan
 ARG VERSION
 RUN apk add boost-dev
-RUN wget -O botan.tar.gz https://botan.randombit.net/releases/Botan-1.11.${VERSION}.tgz
+RUN wget -O botan.tar.gz https://botan.randombit.net/releases/old/Botan-1.11.${VERSION}.tgz
 RUN mkdir botan
 RUN tar -xzf botan.tar.gz -C botan --strip-components 1
 WORKDIR botan

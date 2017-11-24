@@ -1,5 +1,5 @@
 FROM alpine-build as botan
-RUN wget https://botan.randombit.net/releases/Botan-1.11.34.tgz
+RUN wget https://botan.randombit.net/releases/old/Botan-1.11.34.tgz
 RUN tar -xzf Botan-1.11.34.tgz
 WORKDIR Botan-1.11.34
 RUN ./configure.py --prefix=/build/ &&\
