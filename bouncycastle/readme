@@ -4,6 +4,4 @@ tls server: docker run -it --rm bouncycastle-server
 
 All versions (1.50 - 1.58) working.
 
-docker run -v cert-data:/cert/:ro,nocopy -it --rm bouncycastletls-1-50-server /cert/keys.jks password rsa2048 4433
-
-Currently does not work with EC keys (alias is ec256)
+docker run -v cert-data:/cert/:ro,nocopy -it --rm bouncycastletls-1-50-server 4433 /cert/keys.jks password rsa2048 /cert/keys.jks password ec256
