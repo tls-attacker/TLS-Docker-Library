@@ -14,4 +14,4 @@ Start versions < 1_11_32:
 docker run -v cert-data:/cert/:ro,nocopy -it --rm botan-1_11_31-server /cert/rsa2048cert.pem /cert/rsa2048key.pem --port=4433
 
 Start versions >= 1_11_32:
-docker run -v cert-data:/cert/:ro,nocopy -it --rm botan-1_11_32-server /cert/rsa2048cert.pem /cert/rsa2048key.pem --port=4433 --policy=compat.txt
+docker run -v cert-data:/cert/:ro,nocopy -it --rm botan-1_11_32-server /cert/rsa2048cert.pem /cert/rsa2048key.pem --port=4433 --policy=/compat.txt
