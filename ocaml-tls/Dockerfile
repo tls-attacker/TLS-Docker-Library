@@ -21,5 +21,6 @@ COPY --from=ocamltls /lib64/ld-linux-x86-64.so.2 /lib64/
 COPY --from=ocamltls /home/opam/ocaml-tls/_build/lwt/examples/test_server.native /bin/
 WORKDIR /cert/certificates
 WORKDIR /cert/
-COPY --from=ocamltls /home/opam/ocaml-tls/certificates /cert/certificates
+COPY server.pem \ 
+  server.key /cert/certificates/
 ENTRYPOINT ["test_server.native"]
