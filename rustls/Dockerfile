@@ -14,7 +14,4 @@ COPY --from=rustls /lib/x86_64-linux-gnu/libdl.so.2 \
   /lib/x86_64-linux-gnu/libc.so.6 /lib/
 COPY --from=rustls /lib64/ld-linux-x86-64.so.2 /lib64/
 COPY --from=rustls /src/rustls/target/release/examples/tlsserver /bin/
-WORKDIR /test-ca
-COPY --from=rustls /src/rustls/test-ca/rsa/end.fullchain /test-ca
-COPY --from=rustls /src/rustls/test-ca/rsa/end.rsa /test-ca
 ENTRYPOINT ["tlsserver"]
