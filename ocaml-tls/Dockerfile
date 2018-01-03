@@ -9,7 +9,7 @@ RUN eval `opam config env` &&\
 
 FROM scratch
 LABEL "de.rub.nds.tlscompliance.docker.server.name"="ocamltls"
-LABEL de.rub.nds.tlscompliance.docker.server.version=0.8.0
+LABEL "de.rub.nds.tlscompliance.docker.server.version"="0.8.0"
 COPY --from=ocamltls /lib/x86_64-linux-gnu/libdl.so.2 \
   /lib/x86_64-linux-gnu/librt.so.1 \
   /lib/x86_64-linux-gnu/libpthread.so.0 \
@@ -19,4 +19,8 @@ COPY --from=ocamltls /lib/x86_64-linux-gnu/libdl.so.2 \
   /lib/x86_64-linux-gnu/libc.so.6 /lib/
 COPY --from=ocamltls /lib64/ld-linux-x86-64.so.2 /lib64/
 COPY --from=ocamltls /home/opam/ocaml-tls/_build/lwt/examples/test_server.native /bin/
+WORKDIR /cert/certificates
+WORKDIR /cert/
+COPY server.pem \ 
+  server.key /cert/certificates/
 ENTRYPOINT ["test_server.native"]
