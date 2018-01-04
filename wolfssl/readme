@@ -4,7 +4,7 @@ Support for wolfssl 3.x (except 3.8.0, 3.7.3, 3.7.1)and cyassl >=2.3.0
 build:      	docker build -t wolfssl-server .
 build wolfssl 	./wolfssl.sh
 build cyassl	./cyassl.sh
-tls server: 	docker run -it -v cert-data:/cert/:ro,nocopy --rm -p 0.0.0.0:4433:4433 wolfssl-server -p 4433 -c /cert/rsa2048cert.pem -k /cert/rsa2048key.pem -b -d
+tls server: 	docker run -it -v cert-data:/cert/:ro,nocopy --rm -p 0.0.0.0:4433:4433 wolfssl-server -p 4433 -c /cert/rsa2048cert.pem -k /cert/rsa2048key.pem -b -d 
 
 Needed parameters of wolfssl server:
 -p <num>    Port to listen on, not 0, default 11111
@@ -12,3 +12,8 @@ Needed parameters of wolfssl server:
 -k <file>   Key file,                   default ./certs/server-key.pem
 -b          Bind to any interface instead of localhost only 
 -d          Disable client cert check
+
+
+
+The problem with the wolfssl test server is that it only accepts one connection. Afterwards it shuts down. Since version 3.7.0, there is a flag which enables several successive connections:
+-i          Enable more connections
