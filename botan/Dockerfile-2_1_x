@@ -9,7 +9,7 @@ RUN ./configure.py --prefix=/build/ &&\
   make install
 RUN mv /build/lib/libbotan-2.so.${VERSION}.1.${VERSION} /build/lib/libbotan-2.so.${VERSION}
 
-FROM alpine-build
+FROM scratch
 ARG VERSION
 LABEL "de.rub.nds.tlscompliance.docker.server.name"="botan"
 LABEL "de.rub.nds.tlscompliance.docker.server.version"="2.1.${VERSION}"
