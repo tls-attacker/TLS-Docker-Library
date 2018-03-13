@@ -90,14 +90,13 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
                             .stdinOnce(true)
                             .openStdin(true)
                             //.entrypoint("strace")
-                            //.cmd(ArrayUtils.addAll(new String[] {"openssl", "s_server"}, startParmeters))
                             .cmd(startParmeters)
                             .build(),
                     name + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
             LOGGER.debug("Starting TLS Server " + id);
             docker.startContainer(id);
-
+            
             port_container_external = new Integer(docker.inspectContainer(id).networkSettings().ports().get(internalPort + "/tcp").get(0).hostPort());
             TlsServer tlsServer = new TlsServer(id, port_container_external, name, this);
             //LOGGER.trace(getLogsFromTlsServer(tlsServer)); //skip server startup output

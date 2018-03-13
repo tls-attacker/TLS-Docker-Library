@@ -61,8 +61,8 @@ public class DockerTlsServerManagerFactory {
         }
 
         private static class Const {
-            static final String CERT_KEY_PEM = "/cert/key.pem";
-            static final String CERT_CERT_PEM = "/cert/cert.pem";
+            static final String CERT_KEY_PEM = "/cert/rsa2048key.pem";
+            static final String CERT_CERT_PEM = "/cert/rsa2048cert.pem";
             static final String RUST_TEST_CA_KEY = "/cert/test-ca/rsa/end.rsa";
             static final String RUST_TEST_CA_FULLCHAIN = "/cert/test-ca/rsa/end.fullchain";
         }
