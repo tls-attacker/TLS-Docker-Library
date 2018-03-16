@@ -8,8 +8,8 @@ RUN eval `opam config env` &&\
   ocaml pkg/pkg.ml build --with-lwt true
 
 FROM scratch
-LABEL "de.rub.nds.tlscompliance.docker.server.name"="ocamltls"
-LABEL de.rub.nds.tlscompliance.docker.server.version=0.8.0
+LABEL "server_type"="ocamltls"
+LABEL server_version=0.8.0
 COPY --from=ocamltls /lib/x86_64-linux-gnu/libdl.so.2 \
   /lib/x86_64-linux-gnu/librt.so.1 \
   /lib/x86_64-linux-gnu/libpthread.so.0 \

@@ -7,8 +7,8 @@ RUN ./autogen.sh &&\
   DESTDIR=/build/ make install
 
 FROM scratch
-LABEL "de.rub.nds.tlscompliance.docker.server.name"="libressl"
-LABEL "de.rub.nds.tlscompliance.docker.server.version"="2.6.1"
+LABEL "server_type"="libressl"
+LABEL "server_version"="2.6.1"
 COPY --from=libressl /lib/ld-musl-x86_64.so.* \
   /build/usr/local/lib/*.so* /lib/
 COPY --from=libressl /build/usr/local/bin/openssl /bin/

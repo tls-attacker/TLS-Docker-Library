@@ -13,8 +13,8 @@ RUN mv /build/bin/botan* /build/bin/botan
 
 FROM alpine
 ARG VERSION
-LABEL "de.rub.nds.tlscompliance.docker.server.name"="botan"
-LABEL "de.rub.nds.tlscompliance.docker.server.version"="1.11.${VERSION}"
+LABEL "server_type"="botan"
+LABEL "server_version"="1.11.${VERSION}"
 COPY --from=botan /lib/ld-musl-x86_64.so.1 \
   /usr/lib/libstdc++.so.6 \
   /usr/lib/libgcc_s.so.1 \

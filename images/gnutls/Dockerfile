@@ -15,8 +15,8 @@ RUN ./configure --with-included-libtasn1 --with-included-unistring --disable-mai
 RUN make && make install
 
 FROM scratch
-LABEL "de.rub.nds.tlscompliance.docker.server.name"="gnutls"
-LABEL "de.rub.nds.tlscompliance.docker.server.version"="3.5.15"
+LABEL "server_type"="gnutls"
+LABEL "server_version"="3.5.15"
 COPY --from=gnutls-gnutls /lib/ld-musl-x86_64.so.* \
   /usr/lib/libgmp.so.* \
   /usr/lib/libintl.so.* \

@@ -5,8 +5,8 @@ WORKDIR rustls
 RUN cargo build --release --example tlsserver
 
 FROM scratch
-LABEL "de.rub.nds.tlscompliance.docker.server.name"="rustls"
-LABEL "de.rub.nds.tlscompliance.docker.server.version"="latest"
+LABEL "server_type"="rustls"
+LABEL "server_version"="latest"
 COPY --from=rustls /lib/x86_64-linux-gnu/libdl.so.2 \
   /lib/x86_64-linux-gnu/librt.so.1 \
   /lib/x86_64-linux-gnu/libpthread.so.0 \

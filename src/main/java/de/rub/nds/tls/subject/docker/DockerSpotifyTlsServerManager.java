@@ -31,10 +31,11 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
 
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsServerManager.class);
     private static final DockerClient docker = new DefaultDockerClient("unix:///var/run/docker.sock");
-    private static final String SERVER_LABEL = "de.rub.nds.tlscompliance.docker.server.name";
-    private static final String VERSION_LABEL = "de.rub.nds.tlscompliance.docker.server.version";
+    private static final String SERVER_LABEL = "server_type";
+    private static final String VERSION_LABEL = "server_version";
     private Map<String, Integer> logReadOffset;
     private String name;
+    private String version;
     private String[] startParmeters;
     private int internalPort;
     
@@ -44,6 +45,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
 
     DockerSpotifyTlsServerManager setTlsServerNameVersion(String name, String version) {
         this.name = name;
+        this.version = version;
         return this;
     }
 
@@ -61,7 +63,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
     public TlsServer getTlsServer() {
         int port_container_external;
         try {
-            Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, name)).stream()
+            Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, name),DockerClient.ListImagesParam.withLabel(VERSION_LABEL, version)).stream()
                     .findFirst()
                     .orElseThrow(() -> new ImageNotFoundException(""));
             Volume volume = docker.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
@@ -100,24 +102,13 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
             port_container_external = new Integer(docker.inspectContainer(id).networkSettings().ports().get(internalPort + "/tcp").get(0).hostPort());
             TlsServer tlsServer = new TlsServer(id, port_container_external, name, this);
             //LOGGER.trace(getLogsFromTlsServer(tlsServer)); //skip server startup output
-            LOGGER.debug(String.format("Started TLS Server %s : %s(%s)", id, name, version(tlsServer)));
+            LOGGER.debug(String.format("Started TLS Server %s : %s(%s)", id, name, version));
 
             return tlsServer;
         } catch (DockerException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public String version(TlsServer tlsServer) {
-        String version = "-";
-        try {
-            ImmutableMap<String, String> labels = docker.inspectContainer(tlsServer.id).config().labels();
-            if(labels != null) version = labels.getOrDefault(VERSION_LABEL, version);
-        } catch (DockerException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return version;
     }
 
     public String getServerName(TlsServer tlsServer) {

@@ -8,8 +8,8 @@ RUN cmake -DCMAKE_BUILD_TYPE=Release /src/mbed &&\
   make
 
 FROM scratch
-LABEL "de.rub.nds.tlscompliance.docker.server.name"="mbed"
-LABEL "de.rub.nds.tlscompliance.docker.server.version"="${VERSION}"
+LABEL "server_type"="mbed"
+LABEL "server_version"="${VERSION}"
 COPY --from=mbed /lib/ld-musl-x86_64.so.* /lib/
 COPY --from=mbed /build/programs/ssl/ssl_server /bin/
 ENTRYPOINT ["ssl_server"]

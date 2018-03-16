@@ -10,9 +10,9 @@ public class DockerTlsServerManagerFactory {
 
     private DockerTlsServerManagerFactory() {}
 
-    public static DockerSpotifyTlsServerManager get(DockerTlsServerType serverType) {
+    public static DockerSpotifyTlsServerManager get(DockerTlsServerType serverType, String version) {
         return new DockerSpotifyTlsServerManager()
-                .setTlsServerNameVersion(serverType.getName(), serverType.getVersion())
+                .setTlsServerNameVersion(serverType.getName(), version)
                 .setInternalPort(serverType.getInternalPort())
                 .setStartParameter(serverType.getParams());
     }

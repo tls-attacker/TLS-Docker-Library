@@ -5,8 +5,8 @@ RUN cmake -DCMAKE_BUILD_TYPE=Release /src/boringssl/ &&\
   make
 
 FROM scratch
-LABEL "de.rub.nds.tlscompliance.docker.server.name"="boringssl"
-LABEL "de.rub.nds.tlscompliance.docker.server.version"="latest"
+LABEL "server_type"="boringssl"
+LABEL "server_version"="latest"
 COPY --from=boringssl /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* /lib/

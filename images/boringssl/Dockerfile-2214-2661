@@ -11,8 +11,8 @@ RUN make
 
 FROM scratch
 ARG VERSION
-LABEL "de.rub.nds.tlscompliance.docker.server.name"="boringssl"
-LABEL "de.rub.nds.tlscompliance.docker.server.version"="${VERSION}"
+LABEL "server_type"="boringssl"
+LABEL "server_version"="${VERSION}"
 COPY --from=boringssl /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* /lib/

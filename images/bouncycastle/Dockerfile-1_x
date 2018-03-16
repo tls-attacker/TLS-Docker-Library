@@ -8,8 +8,8 @@ RUN mvn clean install -Dbc.version=1.${VERSION}
 
 FROM openjdk:jre-slim
 ARG VERSION
-LABEL "de.rub.nds.tlscompliance.docker.server.name"="bouncycastle"
-LABEL "de.rub.nds.tlscompliance.docker.server.version"="1.${VERSION}"
+LABEL "server_type"="bouncycastle"
+LABEL "server_version"="1.${VERSION}"
 COPY --from=maven /src/BouncyCastleTLS/target/BouncyCastleTLS-1.${VERSION}-1.0.jar /apps/BouncyCastleTLS.jar
 COPY --from=maven /src/BouncyCastleTLS/target/lib /apps/lib
 WORKDIR /apps

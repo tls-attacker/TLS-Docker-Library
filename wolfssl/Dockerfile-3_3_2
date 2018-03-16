@@ -1,0 +1,25 @@
+FROM alpine-build as wolfssl
+ARG VERSION
+RUN git clone --depth=1 --branch=v3.${VERSION} https://github.com/wolfSSL/wolfssl
+WORKDIR wolfssl
+RUN ./autogen.sh
+RUN ./configure --prefix=/build/
+#remove error flags: some wolfssl version do not compile because tab warnings are treated like errors
+RUN mv Makefile tmp && sed "s/-Werror//g" tmp > Makefile
+RUN mv Makefile tmp && sed "s/-Wall//g" tmp > Makefile
+RUN ( make &&\
+      make install)
+WORKDIR /src/wolfssl/examples/server
+#this script is a shell script, which creates (links) the lt-server executable on the fly
+#we need this to copy is later to the execution container
+RUN /src/wolfssl/examples/server/server -h
+
+FROM scratch
+ARG VERSION
+LABEL "de.rub.nds.tlscompliance.docker.server.name"="wolfssl"
+LABEL "de.rub.nds.tlscompliance.docker.server.version"="3.${VERSION}"
+COPY --from=wolfssl /lib/ld-musl-x86_64.so.1 /lib/
+COPY --from=wolfssl /src/wolfssl/src/.libs/libcyassl.so.* /src/wolfssl/src/.libs/
+COPY --from=wolfssl /src/wolfssl/certs /certs/
+COPY --from=wolfssl /src/wolfssl/examples/server/.libs/lt-server /bin/
+ENTRYPOINT ["lt-server"]
