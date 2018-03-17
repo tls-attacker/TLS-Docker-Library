@@ -1,6 +1,5 @@
 package de.rub.nds.tls.subject.docker;
 
-import com.google.common.collect.ImmutableMap;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.LogsParam;
@@ -33,7 +32,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
     private static final DockerClient docker = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final String SERVER_LABEL = "server_type";
     private static final String VERSION_LABEL = "server_version";
-    private Map<String, Integer> logReadOffset;
+    private final Map<String, Integer> logReadOffset;
     private String name;
     private String version;
     private String[] startParmeters;
