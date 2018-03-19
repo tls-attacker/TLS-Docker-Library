@@ -18,7 +18,7 @@ public enum DockerTlsServerType {
     BOTAN("botan", 443, Const.CERT_CERT_PEM, Const.CERT_KEY_PEM, "--policy=compat.txt"),
     WOLFSSL("wolfssl", 11111, "-c", Const.CERT_CERT_PEM, "-k", Const.CERT_KEY_PEM, "-d", "-b"),
     RUSTLS("rustls", 443, "--verbose", "--certs", Const.RUST_TEST_CA_FULLCHAIN, "--key", Const.RUST_TEST_CA_KEY, "echo"),
-    BOUNCYCASTLE("bouncycastle", 4433);
+    BOUNCYCASTLE("bouncycastle", 4433, "4433", "/cert/keys.jks", "password", "rsa2048", "/cert/keys.jks", "password", "ec256");
 
     private final String name;
     private final int internalPort;
