@@ -11,6 +11,8 @@ import com.spotify.docker.client.exceptions.VolumeNotFoundException;
 import com.spotify.docker.client.messages.*;
 import de.rub.nds.tls.subject.TlsServer;
 import de.rub.nds.tls.subject.TlsServerManager;
+import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
+import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,10 +66,10 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
         try {
             Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, name),DockerClient.ListImagesParam.withLabel(VERSION_LABEL, version)).stream()
                     .findFirst()
-                    .orElseThrow(() -> new ImageNotFoundException(""));
+                    .orElseThrow(() -> new TlsVersionNotFoundException());
             Volume volume = docker.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
                     .findFirst()
-                    .orElseThrow(() -> new VolumeNotFoundException(""));
+                    .orElseThrow(() -> new CertVolumeNotFoundException());
             String id = docker.createContainer(
                     ContainerConfig.builder()
                             .image(image.id())
