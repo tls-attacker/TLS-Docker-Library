@@ -1,0 +1,18 @@
+FROM alpine-build as openssl
+RUN wget -O openssl.tar.gz https://www.openssl.org/source/openssl-1.1.1-pre2.tar.gz
+RUN mkdir openssl
+RUN tar -xzf openssl.tar.gz -C openssl --strip-components 1
+WORKDIR /src/openssl
+RUN ./config --prefix=/build/ --openssldir=/build/ no-async
+RUN make -s && make install_sw -s
+
+FROM scratch
+ARG VERSION
+LABEL "server_type"="openssl"
+LABEL "server_version"="1.1.1-pre2"
+COPY --from=openssl /lib/ld-musl-x86_64.so.* \
+  /usr/lib/libstdc++.so.* \
+  /usr/lib/libgcc_s.so.* \
+  /build/lib/*.so.* /lib/
+COPY --from=openssl /build/bin/openssl /bin/
+ENTRYPOINT ["openssl", "s_server"]
