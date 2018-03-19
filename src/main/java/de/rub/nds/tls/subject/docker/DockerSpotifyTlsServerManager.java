@@ -57,7 +57,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
         this.internalPort = internalPort;
         return this;
     }
-
+    
     @Override
     public TlsServer getTlsServer() {
         int port_container_external;
