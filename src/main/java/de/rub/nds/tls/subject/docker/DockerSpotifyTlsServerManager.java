@@ -6,8 +6,6 @@ import com.spotify.docker.client.DockerClient.LogsParam;
 import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.ContainerNotFoundException;
 import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.exceptions.ImageNotFoundException;
-import com.spotify.docker.client.exceptions.VolumeNotFoundException;
 import com.spotify.docker.client.messages.*;
 import de.rub.nds.tls.subject.TlsServer;
 import de.rub.nds.tls.subject.TlsServerManager;
