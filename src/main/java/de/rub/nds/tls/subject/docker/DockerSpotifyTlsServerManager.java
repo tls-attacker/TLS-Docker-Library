@@ -11,13 +11,17 @@ import de.rub.nds.tls.subject.TlsServer;
 import de.rub.nds.tls.subject.TlsServerManager;
 import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,6 +55,10 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
     DockerSpotifyTlsServerManager setStartParameter(String... startParmeters) {
         this.startParmeters = startParmeters;
         return this;
+    }
+    
+    public void appendStartParameter(String[] moreParameters) {
+    	this.startParmeters = (String[]) ArrayUtils.addAll(this.startParmeters, moreParameters);
     }
 
     DockerSpotifyTlsServerManager setInternalPort(int internalPort) {
