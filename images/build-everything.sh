@@ -15,6 +15,9 @@ cd ..
 cd bouncycastle
 ./bouncycastletls.sh
 cd ..
+cd DamnVulnerableOpenSSL
+./damnvulnerableopenssl.sh
+cd ..
 cd gnutls
 ./gnutls.sh
 cd ..
