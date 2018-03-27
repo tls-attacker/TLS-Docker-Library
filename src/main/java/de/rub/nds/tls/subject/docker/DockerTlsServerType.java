@@ -9,6 +9,7 @@ public enum DockerTlsServerType {
 
     MBED("mbed", 4430, "debug_level=4"),
     OPENSSL("openssl", 4433, "-debug", "-state", "-msg", "-cert", Const.CERT_CERT_PEM, "-key", Const.CERT_KEY_PEM),
+    DAMN_VULNERABLE_OPENSSL("damnvulnerableopenssl", 4433, "-cert", Const.CERT_CERT_PEM, "-key", Const.CERT_KEY_PEM),
     NSS("nss", 4430, "-p", "4430", "-v", "-d", "/cert/db/", "-n", "cert"),
     GNUTLS("gnutls", 5556, "--disable-client-cert", "--debug", "4", "--x509certfile", Const.CERT_CERT_PEM, "--x509keyfile", Const.CERT_KEY_PEM),
     BORINGSSL("boringssl", 4430, "-accept", "4430", "-debug", "-loop", "-cert", Const.CERT_CERT_PEM, "-key", Const.CERT_KEY_PEM),
