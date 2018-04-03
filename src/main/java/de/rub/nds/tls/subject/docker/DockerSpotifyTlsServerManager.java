@@ -45,7 +45,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
     public TlsServer getTlsServer(ImageProperties properties, ParameterProfile profile, String version) {
         int port_container_external;
         try {
-            Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name()), DockerClient.ListImagesParam.withLabel(VERSION_LABEL, version)).stream()
+            Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(VERSION_LABEL, version)).stream()
                     .findFirst()
                     .orElseThrow(() -> new TlsVersionNotFoundException());
             Volume volume = docker.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()

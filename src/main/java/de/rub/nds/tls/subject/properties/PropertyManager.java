@@ -20,8 +20,8 @@ public class PropertyManager {
     public PropertyManager() {
         propertyList = new LinkedList<>();
         propertyList.add(new ImageProperties(TlsImplementationType.MBED, 4430, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        propertyList.add(new ImageProperties(TlsImplementationType.OPENSSL, 4433, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        propertyList.add(new ImageProperties(TlsImplementationType.DAMN_VULNERABLE_OPENSSL, 4433, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        propertyList.add(new ImageProperties(TlsImplementationType.OPENSSL, 4433, "1.1.0f", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        propertyList.add(new ImageProperties(TlsImplementationType.DAMNVULNERABLEOPENSSL, 4433, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         propertyList.add(new ImageProperties(TlsImplementationType.NSS, 4430, "", "/cert/db/", "cert"));
         propertyList.add(new ImageProperties(TlsImplementationType.GNUTLS, 5556, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         propertyList.add(new ImageProperties(TlsImplementationType.BORINGSSL, 4430, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));

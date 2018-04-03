@@ -7,8 +7,10 @@ import com.spotify.docker.client.messages.Image;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.TlsServer;
+import de.rub.nds.tls.subject.params.Parameter;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.params.ParameterProfileManager;
+import de.rub.nds.tls.subject.params.ParameterType;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import de.rub.nds.tls.subject.properties.PropertyManager;
 import java.util.LinkedList;
@@ -37,7 +39,14 @@ public class DockerTlsServerManagerFactory {
         ParameterProfile defaultProfile = parameterManager.getDefaultProfile(type, ConnectionRole.SERVER);
         ImageProperties defaultProperties = propertyManager.getProperties(type);
 
-        return new DockerSpotifyTlsServerManager().getTlsServer(defaultProperties, defaultProfile);
+        return new DockerSpotifyTlsServerManager().getTlsServer(defaultProperties, defaultProfile, version);
+    }
+
+    public TlsServer get(TlsImplementationType type, String version, String additionalParams) {
+        ParameterProfile defaultProfile = parameterManager.getDefaultProfile(type, ConnectionRole.SERVER);
+        defaultProfile.getParameterList().add(new Parameter(additionalParams, ParameterType.NONE));
+        ImageProperties defaultProperties = propertyManager.getProperties(type);
+        return new DockerSpotifyTlsServerManager().getTlsServer(defaultProperties, defaultProfile, version);
     }
 
     public List<String> getAvailableVersions(DockerTlsServerType serverType) {

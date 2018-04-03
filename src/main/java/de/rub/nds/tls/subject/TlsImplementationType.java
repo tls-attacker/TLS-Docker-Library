@@ -7,7 +7,7 @@ public enum TlsImplementationType {
     BOUNCYCASTLE,
     CRYPTO_COMPLY,
     CRYPTLIB,
-    DAMN_VULNERABLE_OPENSSL,
+    DAMNVULNERABLEOPENSSL,
     GNUTLS,
     JSSE,
     GO,
