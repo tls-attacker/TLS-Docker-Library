@@ -11,17 +11,17 @@ import de.rub.nds.tls.subject.TlsServer;
 import de.rub.nds.tls.subject.TlsServerManager;
 import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
+import de.rub.nds.tls.subject.params.Parameter;
+import de.rub.nds.tls.subject.params.ParameterProfile;
+import de.rub.nds.tls.subject.properties.ImageProperties;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,7 +29,6 @@ import java.util.Map;
  *
  * One instance is needed for each server type.
  */
-
 public class DockerSpotifyTlsServerManager implements TlsServerManager {
 
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsServerManager.class);
@@ -37,40 +36,16 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
     private static final String SERVER_LABEL = "server_type";
     private static final String VERSION_LABEL = "server_version";
     private final Map<String, Integer> logReadOffset;
-    private String name;
-    private String version;
-    private String[] startParmeters;
-    private int internalPort;
-    
+
     DockerSpotifyTlsServerManager() {
         logReadOffset = new HashMap<>();
     }
 
-    DockerSpotifyTlsServerManager setTlsServerNameVersion(String name, String version) {
-        this.name = name;
-        this.version = version;
-        return this;
-    }
-
-    DockerSpotifyTlsServerManager setStartParameter(String... startParmeters) {
-        this.startParmeters = startParmeters;
-        return this;
-    }
-    
-    public void appendStartParameter(String[] moreParameters) {
-    	this.startParmeters = (String[]) ArrayUtils.addAll(this.startParmeters, moreParameters);
-    }
-
-    DockerSpotifyTlsServerManager setInternalPort(int internalPort) {
-        this.internalPort = internalPort;
-        return this;
-    }
-    
     @Override
-    public TlsServer getTlsServer() {
+    public TlsServer getTlsServer(ImageProperties properties, ParameterProfile profile, String version) {
         int port_container_external;
         try {
-            Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, name),DockerClient.ListImagesParam.withLabel(VERSION_LABEL, version)).stream()
+            Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name()), DockerClient.ListImagesParam.withLabel(VERSION_LABEL, version)).stream()
                     .findFirst()
                     .orElseThrow(() -> new TlsVersionNotFoundException());
             Volume volume = docker.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
@@ -80,7 +55,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
                     ContainerConfig.builder()
                             .image(image.id())
                             .hostConfig(HostConfig.builder()
-                                    .portBindings(Collections.singletonMap(internalPort + "/tcp", Collections.singletonList(PortBinding.randomPort("127.0.0.42"))))
+                                    .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort("127.0.0.42"))))
                                     .binds(HostConfig.Bind.builder()
                                             .from(volume)
                                             .readOnly(true)
@@ -91,7 +66,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
                                     .readonlyRootfs(true)
                                     //.capAdd("SYS_PTRACE")
                                     .build())
-                            .exposedPorts(internalPort + "/tcp")
+                            .exposedPorts(properties.getInternalPort() + "/tcp")
                             .attachStderr(true)
                             .attachStdout(true)
                             .attachStdin(true)
@@ -99,27 +74,38 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
                             .stdinOnce(true)
                             .openStdin(true)
                             //.entrypoint("strace")
-                            .cmd(startParmeters)
+                            .cmd(convertProfileToParams(profile, properties.getInternalPort(), properties.getDefaultKeyPath(), properties.getDefaultCertPath()))
                             .build(),
-                    name + "_" + RandomStringUtils.randomAlphanumeric(8)
+                    profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
             LOGGER.debug("Starting TLS Server " + id);
             docker.startContainer(id);
-            
-            port_container_external = new Integer(docker.inspectContainer(id).networkSettings().ports().get(internalPort + "/tcp").get(0).hostPort());
-            TlsServer tlsServer = new TlsServer(id, port_container_external, name, this);
+
+            port_container_external = new Integer(docker.inspectContainer(id).networkSettings().ports().get(properties.getInternalPort() + "/tcp").get(0).hostPort());
+            TlsServer tlsServer = new TlsServer(id, port_container_external, profile.getType().name(), this);
             //LOGGER.trace(getLogsFromTlsServer(tlsServer)); //skip server startup output
-            LOGGER.debug(String.format("Started TLS Server %s : %s(%s)", id, name, version));
+            LOGGER.debug(String.format("Started TLS Server %s : %s(%s)", id, profile.getType().name(), version));
 
             return tlsServer;
         } catch (DockerException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
+
     }
 
-    public String getServerName(TlsServer tlsServer) {
-        return name;
+    private String[] convertProfileToParams(ParameterProfile profile, int port, String certPath, String keyPath) {
+        StringBuilder finalParams = new StringBuilder();
+        for (Parameter param : profile.getParameterList()) {
+            finalParams.append(param.getCmdParameter());
+            finalParams.append(" ");
+        }
+        return finalParams.toString().replace("[cert]", certPath).replace("[key]", keyPath).replace("[port]", "" + port).split(" ");
+    }
+
+    @Override
+    public TlsServer getTlsServer(ImageProperties properties, ParameterProfile profile) {
+        return this.getTlsServer(properties, profile, properties.defaultVersion());
     }
 
     @Override

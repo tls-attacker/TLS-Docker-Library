@@ -2,14 +2,17 @@ package de.rub.nds.tls.subject.docker;
 
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
-import static com.spotify.docker.client.DockerClient.ListVolumesParam.name;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.Image;
+import de.rub.nds.tls.subject.ConnectionRole;
+import de.rub.nds.tls.subject.TlsImplementationType;
+import de.rub.nds.tls.subject.TlsServer;
+import de.rub.nds.tls.subject.params.ParameterProfile;
+import de.rub.nds.tls.subject.params.ParameterProfileManager;
+import de.rub.nds.tls.subject.properties.ImageProperties;
+import de.rub.nds.tls.subject.properties.PropertyManager;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static javassist.CtClass.version;
 
 /**
  * Creates TLS-Server Instances as Docker Container Holds the Config for each
@@ -19,20 +22,25 @@ public class DockerTlsServerManagerFactory {
 
     private static final DockerClient docker = new DefaultDockerClient("unix:///var/run/docker.sock");
 
-    private DockerTlsServerManagerFactory() {
+    private final ParameterProfileManager parameterManager;
+    private final PropertyManager propertyManager;
+
+    public DockerTlsServerManagerFactory() {
+        parameterManager = new ParameterProfileManager();
+        propertyManager = new PropertyManager();
     }
 
     private static final String SERVER_LABEL = "server_type";
     private static final String VERSION_LABEL = "server_version";
 
-    public static DockerSpotifyTlsServerManager get(DockerTlsServerType serverType, String version) {
-        return new DockerSpotifyTlsServerManager()
-                .setTlsServerNameVersion(serverType.getName(), version)
-                .setInternalPort(serverType.getInternalPort())
-                .setStartParameter(serverType.getParams());
+    public TlsServer get(TlsImplementationType type, String version) {
+        ParameterProfile defaultProfile = parameterManager.getDefaultProfile(type, ConnectionRole.SERVER);
+        ImageProperties defaultProperties = propertyManager.getProperties(type);
+
+        return new DockerSpotifyTlsServerManager().getTlsServer(defaultProperties, defaultProfile);
     }
 
-    public static List<String> getAvailableVersions(DockerTlsServerType serverType) {
+    public List<String> getAvailableVersions(DockerTlsServerType serverType) {
         List<String> versionList = new LinkedList<>();
         try {
             List<Image> imageList = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, serverType.getName()));

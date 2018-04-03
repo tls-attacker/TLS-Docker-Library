@@ -21,7 +21,7 @@ public class TlsServer {
     }
 
     public String getServerName() {
-        return tlsServerManager.getServerName(this);
+        return name;
     }
 
     public String getServerLogs() {
