@@ -9,17 +9,17 @@ public class ImageProperties {
     private final int internalPort;
 
     private final String defaultVersion;
-    
+
     private final String defaultKeyPath;
-    
+
     private final String defaultCertPath;
 
-    public ImageProperties(TlsImplementationType type, int internalPort, String defaultVersion, String defaultKeyPath, String defaultCertPath) {
+    public ImageProperties(TlsImplementationType type, int internalPort, String defaultVersion, String defaultCertPath, String defaultKeyPath) {
         this.type = type;
         this.internalPort = internalPort;
         this.defaultVersion = defaultVersion;
-        this.defaultKeyPath = defaultKeyPath;
         this.defaultCertPath = defaultCertPath;
+        this.defaultKeyPath = defaultKeyPath;
     }
 
     public TlsImplementationType getType() {
