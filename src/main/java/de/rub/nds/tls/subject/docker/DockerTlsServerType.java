@@ -20,7 +20,8 @@ public enum DockerTlsServerType {
     WOLFSSL("wolfssl", 11111, "-c", Const.CERT_CERT_PEM, "-k", Const.CERT_KEY_PEM, "-d", "-b"),
     RUSTLS("rustls", 443, "--verbose", "--certs", Const.RUST_TEST_CA_FULLCHAIN, "--key", Const.RUST_TEST_CA_KEY, "echo"),
     BOUNCYCASTLE("bouncycastle", 4433, "4433", "/cert/keys.jks", "password", "rsa2048", "/cert/keys.jks", "password", "ec256"),
-    JSSE("jsse", 4433, "4433", "/cert/keys.jks", "password", "rsa2048");
+    JSSE("jsse", 4433, "4433", "/cert/keys.jks", "password", "ec256"),
+    JSSE_WITH_BC("jsse", 4433, "4433", "/cert/keys.jks", "password", "ec256", "BC");
 
     private final String name;
     private final int internalPort;
