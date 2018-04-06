@@ -5,6 +5,7 @@ public enum TlsImplementationType {
     BORINGSSL,
     BOTAN,
     BOUNCYCASTLE,
+    JSSE_WITH_BC,
     CRYPTO_COMPLY,
     CRYPTLIB,
     DAMNVULNERABLEOPENSSL,
