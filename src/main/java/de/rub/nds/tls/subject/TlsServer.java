@@ -6,10 +6,10 @@ package de.rub.nds.tls.subject;
 
 public class TlsServer {
 
-    public String id;
-    public String host = "127.0.0.42";
-    public int port;
-    public int exitCode;
+    private final String id;
+    private final String host = "127.0.0.42";
+    private final int port;
+    private int exitCode;
     private final String name;
     private final TlsServerManager tlsServerManager;
 
@@ -39,5 +39,25 @@ public class TlsServer {
     @Override
     public String toString() {
         return String.format("%s:%d (%s)", host, port, getServerName());
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public int getExitCode() {
+        return exitCode;
+    }
+
+    public void setExitCode(int exitCode) {
+        this.exitCode = exitCode;
+    }
+
+    public String getId() {
+        return id;
     }
 }

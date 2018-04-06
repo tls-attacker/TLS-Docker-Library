@@ -110,16 +110,17 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
 
     @Override
     public void killTlsServer(TlsServer tlsServer) {
-        LOGGER.debug("Shutting down TLS Server " + tlsServer.id);
+        LOGGER.debug("Shutting down TLS Server " + tlsServer.getId());
         try {
-            docker.stopContainer(tlsServer.id, 2);
-            tlsServer.exitCode = docker.inspectContainer(tlsServer.id).state().exitCode();
+            docker.stopContainer(tlsServer.getId(), 2);
+            tlsServer.setExitCode(docker.inspectContainer(tlsServer.getId()).state().exitCode());
             /*tlsServer.exitCode = eventMap.getOrDefault(tlsServer.id, -1);
             eventMap.remove(tlsServer.id);*/
-            docker.removeContainer(tlsServer.id);
-        } catch (ContainerNotFoundException ignored) {
+            docker.removeContainer(tlsServer.getId());
+        } catch (ContainerNotFoundException e) {
+            LOGGER.debug(e);
         } catch (DockerException | InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.debug(e);
         }
     }
 
@@ -127,18 +128,18 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
     public String getLogsFromTlsServer(TlsServer tlsServer) {
         String logs = "-";
         try {
-            LogStream logStream = docker.logs(tlsServer.id, LogsParam.stderr(), LogsParam.stdout());
+            LogStream logStream = docker.logs(tlsServer.getId(), LogsParam.stderr(), LogsParam.stdout());
             String[] lines = logStream.readFully().split("\r\n|\r|\n");
             logs = Arrays.stream(lines)
-                    .skip(logReadOffset.getOrDefault(tlsServer.id, 0))
+                    .skip(logReadOffset.getOrDefault(tlsServer.getId(), 0))
                     .map(s -> s.concat("\n"))
                     .reduce(String::concat)
                     .orElse("-");
-            logReadOffset.put(tlsServer.id, lines.length);
+            logReadOffset.put(tlsServer.getId(), lines.length);
         } catch (ContainerNotFoundException e) {
             return logs;
         } catch (DockerException | InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.debug(e);
         }
         return logs;
     }

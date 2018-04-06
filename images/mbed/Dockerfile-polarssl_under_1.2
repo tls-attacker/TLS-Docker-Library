@@ -8,6 +8,7 @@ RUN cmake -DCMAKE_BUILD_TYPE=Release /src/mbed &&\
   make
 
 FROM scratch
+ARG VERSION
 LABEL "server_type"="mbed"
 LABEL "server_version"="${VERSION}"
 COPY --from=mbed /lib/ld-musl-x86_64.so.* /lib/

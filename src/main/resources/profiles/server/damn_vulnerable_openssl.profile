@@ -2,7 +2,7 @@
 <parameterProfile>
     <name>damnvulnerableopenssl_default</name>
     <description>Default Profile for Damn Vulnerable Openssl</description>
-    <type>DAMN_VULNERABLE_OPENSSL</type>
+    <type>DAMNVULNERABLEOPENSSL</type>
     <role>SERVER</role>
     <Parameter>
         <cmdParameter>-port [port]</cmdParameter>

@@ -19,19 +19,19 @@ public class PropertyManager {
 
     public PropertyManager() {
         propertyList = new LinkedList<>();
-        propertyList.add(new ImageProperties(TlsImplementationType.MBED, 4430, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        propertyList.add(new ImageProperties(TlsImplementationType.MBED, 4430, "2.6.0", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         propertyList.add(new ImageProperties(TlsImplementationType.OPENSSL, 4433, "1.1.0f", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        propertyList.add(new ImageProperties(TlsImplementationType.DAMNVULNERABLEOPENSSL, 4433, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        propertyList.add(new ImageProperties(TlsImplementationType.DAMNVULNERABLEOPENSSL, 4433, "1.0", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         propertyList.add(new ImageProperties(TlsImplementationType.NSS, 4430, "", "/cert/db/", "cert"));
-        propertyList.add(new ImageProperties(TlsImplementationType.GNUTLS, 5556, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        propertyList.add(new ImageProperties(TlsImplementationType.BORINGSSL, 4430, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        propertyList.add(new ImageProperties(TlsImplementationType.GNUTLS, 5556, "3.5.16", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        propertyList.add(new ImageProperties(TlsImplementationType.BORINGSSL, 4430, "master", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         propertyList.add(new ImageProperties(TlsImplementationType.S2N, 4430, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         propertyList.add(new ImageProperties(TlsImplementationType.LIBRESSL, 4433, "", Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
-        propertyList.add(new ImageProperties(TlsImplementationType.BEARSSL, 4433, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        propertyList.add(new ImageProperties(TlsImplementationType.BOTAN, 443, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        propertyList.add(new ImageProperties(TlsImplementationType.WOLFSSL, 11111, "", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        propertyList.add(new ImageProperties(TlsImplementationType.BEARSSL, 4433, "0.5", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        propertyList.add(new ImageProperties(TlsImplementationType.BOTAN, 443, "2.5", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        propertyList.add(new ImageProperties(TlsImplementationType.WOLFSSL, 11111, "3.12.2-stable", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         propertyList.add(new ImageProperties(TlsImplementationType.RUSTLS, 443, "", Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
-        propertyList.add(new ImageProperties(TlsImplementationType.BOUNCYCASTLE, 4433, "", "/cert/keys.jks", "/cert/keys.jks"));
+        propertyList.add(new ImageProperties(TlsImplementationType.BOUNCYCASTLE, 4433, "1.58", "/cert/keys.jks", "/cert/keys.jks"));
     }
 
     public ImageProperties getProperties(TlsImplementationType type) {

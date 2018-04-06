@@ -7,6 +7,8 @@ import com.spotify.docker.client.messages.Image;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.TlsServer;
+import de.rub.nds.tls.subject.exceptions.DefaultProfileNotFoundException;
+import de.rub.nds.tls.subject.exceptions.PropertyNotFoundException;
 import de.rub.nds.tls.subject.params.Parameter;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.params.ParameterProfileManager;
@@ -36,23 +38,29 @@ public class DockerTlsServerManagerFactory {
     private static final String VERSION_LABEL = "server_version";
 
     public TlsServer get(TlsImplementationType type, String version) {
-        ParameterProfile defaultProfile = parameterManager.getDefaultProfile(type, ConnectionRole.SERVER);
-        ImageProperties defaultProperties = propertyManager.getProperties(type);
-
-        return new DockerSpotifyTlsServerManager().getTlsServer(defaultProperties, defaultProfile, version);
+        return get(type, version, null);
     }
 
     public TlsServer get(TlsImplementationType type, String version, String additionalParams) {
         ParameterProfile defaultProfile = parameterManager.getDefaultProfile(type, ConnectionRole.SERVER);
-        defaultProfile.getParameterList().add(new Parameter(additionalParams, ParameterType.NONE));
+        if (defaultProfile == null) {
+            throw new DefaultProfileNotFoundException("Could not find a default Profile for: " + type.name() + ":" + version);
+        }
+        if (additionalParams != null) {
+            defaultProfile.getParameterList().add(new Parameter(additionalParams, ParameterType.NONE));
+        }
         ImageProperties defaultProperties = propertyManager.getProperties(type);
+        if (defaultProperties == null) {
+            throw new PropertyNotFoundException("Could not find a default Property for: " + type.name() + ":" + version);
+
+        }
         return new DockerSpotifyTlsServerManager().getTlsServer(defaultProperties, defaultProfile, version);
     }
 
-    public List<String> getAvailableVersions(DockerTlsServerType serverType) {
+    public List<String> getAvailableVersions(TlsImplementationType implementationType) {
         List<String> versionList = new LinkedList<>();
         try {
-            List<Image> imageList = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, serverType.getName()));
+            List<Image> imageList = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, implementationType.name().toLowerCase()));
             for (Image image : imageList) {
                 if (image.labels() != null) {
                     String version = image.labels().get(VERSION_LABEL);

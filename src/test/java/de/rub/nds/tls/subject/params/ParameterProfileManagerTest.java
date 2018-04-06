@@ -43,7 +43,5 @@ public class ParameterProfileManagerTest {
     public void testGetDefaultProfile() {
         Configurator.setRootLevel(Level.DEBUG);
         ParameterProfileManager manager = new ParameterProfileManager();
-        
     }
-    
 }
