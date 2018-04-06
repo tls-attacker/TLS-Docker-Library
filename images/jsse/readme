@@ -1,0 +1,8 @@
+---------------------------
+The docker script accepts JRE_VERSION and BC_VERSION as parameters
+
+build:      docker build --build-arg JRE_VERSION=openjdk:7-jre-slim --build-arg BC_VERSION=59 -t jssetls-jre-7-bc-1-59-server -f Dockerfile .
+tls server: docker run -it --rm jssetls-jre-7-bc-1-59-server
+
+docker run -v cert-data:/cert/:ro,nocopy -it --rm jssetls-jre-7-bc-1-59-server 4433 /cert/keys.jks password rsa2048
+docker run -v cert-data:/cert/:ro,nocopy -it --rm jssetls-jre-7-bc-1-59-server 4433 /cert/keys.jks password ec256 BC

@@ -32,6 +32,7 @@ public class PropertyManager {
         propertyList.add(new ImageProperties(TlsImplementationType.WOLFSSL, 11111, "3.12.2-stable", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         propertyList.add(new ImageProperties(TlsImplementationType.RUSTLS, 443, "", Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
         propertyList.add(new ImageProperties(TlsImplementationType.BOUNCYCASTLE, 4433, "1.58", "/cert/keys.jks", "/cert/keys.jks"));
+        propertyList.add(new ImageProperties(TlsImplementationType.JSSE, 4433, "openjdk:8u162-jre-slim-bc-1-59", "/cert/keys.jks", "/cert/keys.jks"));
     }
 
     public ImageProperties getProperties(TlsImplementationType type) {

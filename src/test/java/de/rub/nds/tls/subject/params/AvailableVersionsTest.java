@@ -71,4 +71,20 @@ public class AvailableVersionsTest {
         }
 
     }
+
+    @Test
+    public void temptestAllVersionsFunctional() {
+        Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
+        DockerTlsServerManagerFactory factory = new DockerTlsServerManagerFactory();
+        List<String> availableVersions = factory.getAvailableVersions(TlsImplementationType.JSSE);
+        for (String version : availableVersions) {
+            try {
+                System.out.println(TlsImplementationType.JSSE.name() + ":" + version + " - " + isFunctional(factory, TlsImplementationType.JSSE, version));
+            } catch (Exception E) {
+                E.printStackTrace();
+                System.out.println(TlsImplementationType.JSSE.name() + ":" + version + "       ERROR");
+            }
+        }
+    }
 }
+
