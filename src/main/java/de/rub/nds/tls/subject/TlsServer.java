@@ -10,8 +10,8 @@ public class TlsServer {
     public String host = "127.0.0.42";
     public int port;
     public int exitCode;
-    private String name;
-    private TlsServerManager tlsServerManager;
+    private final String name;
+    private final TlsServerManager tlsServerManager;
 
     public TlsServer(String id, int port, String name, TlsServerManager tlsServerManager) {
         this.id = id;
