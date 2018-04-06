@@ -9,7 +9,7 @@
         <type>HOST_PORT</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>[keys] password rsa2048 [keys] password ec256</cmdParameter>
+        <cmdParameter>[key] password rsa2048 [key] password ec256</cmdParameter>
         <type>JKS_CERTIFICATE_KEY</type>
     </Parameter>
 </parameterProfile>
