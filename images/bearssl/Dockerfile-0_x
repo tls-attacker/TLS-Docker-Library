@@ -1,0 +1,13 @@
+FROM alpine-build as bearssl
+ARG VERSION
+RUN git clone --depth=1 --branch=v0.${VERSION} https://www.bearssl.org/git/BearSSL
+WORKDIR BearSSL
+RUN make
+
+FROM scratch
+ARG VERSION
+LABEL "server_type"="bearssl"
+LABEL "server_version"="0.${VERSION}"
+COPY --from=bearssl /lib/ld-musl-x86_64.so.1 /lib/
+COPY --from=bearssl /src/BearSSL/build/brssl /bin/
+ENTRYPOINT ["brssl", "server"]

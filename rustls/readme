@@ -1,3 +1,0 @@
----------------------------
-build:      docker build -t rustls-server .
-run tls server: docker run -it -v cert-data:/cert/:ro,nocopy --rm -p 0.0.0.0:4433:443 rustls-server --certs /cert/rsa2048cert.pem --key /cert/rsa2048key.pem echo

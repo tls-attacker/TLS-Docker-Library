@@ -1,0 +1,16 @@
+FROM alpine-build as openssl
+RUN wget https://www.openssl.org/source/old/1.1.0/openssl-1.1.0f.tar.gz
+RUN tar -xzf openssl-1.1.0f.tar.gz
+WORKDIR /src/openssl-1.1.0f
+RUN ./config --prefix=/build/ --openssldir=/build/ no-async
+RUN make -s && make install -s
+
+FROM scratch
+LABEL "server_type"="openssl"
+LABEL "server_version"="1.1.0f"
+COPY --from=openssl /lib/ld-musl-x86_64.so.* \
+  /usr/lib/libstdc++.so.* \
+  /usr/lib/libgcc_s.so.* \
+  /build/lib/*.so.* /lib/
+COPY --from=openssl /build/bin/openssl /bin/
+ENTRYPOINT ["openssl", "s_server"]

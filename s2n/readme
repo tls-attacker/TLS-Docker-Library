@@ -1,6 +1,0 @@
----------------------------
-build:      docker build -t s2n-server -f Dockerfile .
-tls server: docker run -it --rm -p 0.0.0.0:4433:4433 -v cert-data:/cert/:ro,nocopy s2n-server --cert /cert/rsa2048cert.pem --key /cert/rsa2048key.pem 0.0.0.0 4433
-
-build fips: docker build -t s2n-fips-server -f Dockerfile_fips .
-run tls server fips: docker run -it --rm -p 0.0.0.0:4433:4433 s2n-fips-server 0.0.0.0 4433

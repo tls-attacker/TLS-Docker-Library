@@ -1,8 +1,0 @@
----------------------------
-build:      docker build -t libressl-server .
-tls server: docker run -it --rm libressl-server
-
-build all libressl versions: ./libressl.sh
-build one version: docker build --build-arg VERSION=${version} -t libressl-2_${version}-server -f Dockerfile-2_x .
-example: docker build --build-arg VERSION=6.1 -t libressl-2_6_1-server -f Dockerfile-2_x .
-run example: docker run -it -v cert-data:/cert/:ro,nocopy --rm -p 0.0.0.0:4433:4433 libressl-2_6_1-server -key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem

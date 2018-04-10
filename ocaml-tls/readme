@@ -1,5 +1,0 @@
----------------------------
-pre build:		cp ../certs/rsa2048cert.pem server.pem
-			cp ../certs/rsa2048key.pem server.key
-build:      		docker build -t ocamltls-server .
-start tls server: 	docker run -it --rm -p 0.0.0.0:4433:4433 ocamltls-server

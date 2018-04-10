@@ -1,0 +1,3 @@
+---------------------------
+build:      docker build -t rustls-server .
+tls server: docker run -it --rm rustls-server

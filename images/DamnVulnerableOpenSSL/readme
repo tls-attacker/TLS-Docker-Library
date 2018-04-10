@@ -1,0 +1,5 @@
+build
+---------------------------
+build:      ./damnvulnerableopenssl.sh
+tls server: docker run -it -v cert-data:/cert/:ro,nocopy --rm damnvulnerableopenssl-server -key /cert/ec256key.pem -cert /cert/ec256cert.pem
+tls server: docker run -it -v cert-data:/cert/:ro,nocopy --rm damnvulnerableopenssl-server -key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem

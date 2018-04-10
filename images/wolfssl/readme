@@ -1,0 +1,3 @@
+---------------------------
+build:      docker build -t wolfssl-server .
+tls server: docker run -it --rm wolfssl-server

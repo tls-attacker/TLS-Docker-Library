@@ -1,0 +1,15 @@
+FROM alpine-build as matrixssl
+ARG VERSION
+RUN git clone --depth=1 --branch=v3.${VERSION} https://github.com/jurajsomorovsky/matrixssl.git
+WORKDIR matrixssl
+RUN make
+WORKDIR apps/
+RUN make
+
+FROM scratch
+ARG VERSION
+LABEL "server_type"="matrixssl"
+LABEL "server_version"="3.${VERSION}"
+COPY --from=matrixssl /lib/ld-musl-x86_64.so.* /lib/
+COPY --from=matrixssl /src/matrixssl/apps/server /bin/
+ENTRYPOINT ["server"]

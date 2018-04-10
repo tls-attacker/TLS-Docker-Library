@@ -1,0 +1,16 @@
+FROM alpine-build as s2n
+RUN apk add openssl-dev
+RUN git clone --depth=1 https://github.com/awslabs/s2n
+WORKDIR s2n
+RUN make bin
+
+FROM scratch
+LABEL "server_type"="s2n"
+LABEL "server_version"="latest"
+ENV S2N_DONT_MLOCK=1
+COPY --from=s2n /lib/ld-musl-x86_64.so.1 \
+  /lib/libcrypto.so.1.0.0 \
+  /lib/libz.so.1 \
+  /src/s2n/lib/libs2n.so /lib/
+COPY --from=s2n /src/s2n/bin/s2nd /bin/
+ENTRYPOINT ["s2nd"]

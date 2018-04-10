@@ -1,5 +1,0 @@
----------------------------
-build:      docker build -t bearssl-server .
-tls server: docker run -it --rm bearssl-server
-
-docker run -it --rm -v cert-data:/cert/:ro,nocopy -p 0.0.0.0:4433:4433 bearssl-0_4-server -key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem
