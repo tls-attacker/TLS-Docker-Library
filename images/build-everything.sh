@@ -38,3 +38,7 @@ cd wolfssl
 ./cyassl.sh
 ./wolfssl.sh
 cd ..
+
+cd jsse
+./jsse.sh
+cd ..
