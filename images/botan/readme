@@ -1,6 +1,9 @@
 ---------------------------
-build:      docker build -t botan-server .
-tls server: docker run -it --rm botan-server
+build server:	docker build -t botan-server --target botan-server .
+run tls server: docker run -it --rm botan-server
+
+build client:	docker build -t botan-client --target botan-client .
+run tls client: docker run -it --rm botan-client
 
 build all botan versions of 2.X:	./botan-2.X.sh
 build all botan versions of 1.11.X:	./botan-1_11_X.sh

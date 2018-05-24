@@ -1,4 +1,4 @@
-FROM alpine-build as botan
+FROM alpine-build as botan-base1
 ARG VERSION
 RUN apk add boost-dev
 RUN wget -O botan.tar.gz https://botan.randombit.net/releases/old/Botan-1.11.${VERSION}.tgz
@@ -11,13 +11,21 @@ RUN ./configure.py --prefix=/build/ &&\
 RUN mv /build/lib/libbotan-1.11.so.${VERSION}.${VERSION} /build/lib/libbotan-1.11.so.${VERSION}
 RUN mv /build/bin/botan* /build/bin/botan
 
-FROM alpine
-ARG VERSION
-LABEL "server_type"="botan"
-LABEL "server_version"="1.11.${VERSION}"
-COPY --from=botan /lib/ld-musl-x86_64.so.1 \
+FROM alpine as botan-base2
+COPY --from=botan-base1 /lib/ld-musl-x86_64.so.1 \
   /usr/lib/libstdc++.so.6 \
   /usr/lib/libgcc_s.so.1 \
   /build/lib/libbotan-1.11.so.${VERSION} /lib/
-COPY --from=botan /build/bin/botan /bin/
+COPY --from=botan-base1 /build/bin/botan /bin/
+
+FROM botan-base2 as botan-server
+ARG VERSION
+LABEL "server_type"="botan"
+LABEL "server_version"="1.11.${VERSION}"
 ENTRYPOINT ["botan", "tls_server"]
+
+FROM botan-base2 as botan-client
+ARG VERSION
+LABEL "client_type"="botan"
+LABEL "client_version"="1.11.${VERSION}"
+ENTRYPOINT ["botan", "tls_client"]

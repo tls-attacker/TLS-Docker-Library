@@ -6,7 +6,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Botan 1.11.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-server -f Dockerfile-1_11_3-6 .
+	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-server -f Dockerfile-1_11_3-6 --target botan-server .
+	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-client -f Dockerfile-1_11_3-6 --target botan-client .
 	i=i+1
 done
 
@@ -15,7 +16,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Botan 1.11.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-server -f Dockerfile-1_11_8-13 .
+	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-server -f Dockerfile-1_11_8-13 --target botan-server .
+	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-client -f Dockerfile-1_11_8-13 --target botan-client .
 	i=i+1
 done
 
@@ -24,7 +26,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Botan 1.11.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-server -f Dockerfile-1_11_x .
+	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-server -f Dockerfile-1_11_x --target botan-server .
+	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-client -f Dockerfile-1_11_x --target botan-client .
 	i=i+1
 done
 
@@ -34,6 +37,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Botan 1.11.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-server -f Dockerfile-1_11_25-29 .
+	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-server -f Dockerfile-1_11_25-29 --target botan-server .
+	docker build --build-arg VERSION=${array[$i]} -t botan-1_11_${array[$i]}-client -f Dockerfile-1_11_25-29 --target botan-client .
 	i=i+1
 done
