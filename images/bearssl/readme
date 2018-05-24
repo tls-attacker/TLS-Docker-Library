@@ -4,3 +4,5 @@ run tls server: docker run -it --rm bearssl-server
 
 build client: docker build -t bearssl-client --target bearssl-client .
 run tls client: docker run -it --rm bearssl-client
+
+build all supported bearSSL versions: ./bearssl-0.X.sh
