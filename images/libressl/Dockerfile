@@ -6,10 +6,17 @@ RUN ./autogen.sh &&\
   make &&\
   DESTDIR=/build/ make install
 
-FROM scratch
-LABEL "server_type"="libressl"
-LABEL "server_version"="2.6.1"
+FROM scratch as libressl-base
 COPY --from=libressl /lib/ld-musl-x86_64.so.* \
   /build/usr/local/lib/*.so* /lib/
 COPY --from=libressl /build/usr/local/bin/openssl /bin/
+
+FROM libressl-base as libressl-server
+LABEL "server_type"="libressl"
+LABEL "server_version"="2.6.1"
 ENTRYPOINT ["openssl", "s_server"]
+
+FROM libressl-base as libressl-client
+LABEL "client_type"="libressl"
+LABEL "client_version"="2.6.1"
+ENTRYPOINT ["openssl", "s_client"]
