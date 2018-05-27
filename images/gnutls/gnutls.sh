@@ -4,7 +4,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.6.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_6_${array[$i]}-server -f Dockerfile-3_6_x .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_6_${array[$i]}-server -f Dockerfile-3_6_x --target gnutls-server .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_6_${array[$i]}-client -f Dockerfile-3_6_x --target gnutls-client .
 	i=i+1
 done
 
@@ -13,7 +14,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.5.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_5_${array[$i]}-server -f Dockerfile-3_5_0-7 .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_5_${array[$i]}-server -f Dockerfile-3_5_0-7 --target gnutls-server .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_5_${array[$i]}-client -f Dockerfile-3_5_0-7 --target gnutls-client .
 	i=i+1
 done
 
@@ -22,7 +24,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.5.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_5_${array[$i]}-server -f Dockerfile-3_5_8-16 .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_5_${array[$i]}-server -f Dockerfile-3_5_8-16 --target gnutls-server .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_5_${array[$i]}-client -f Dockerfile-3_5_8-16 --target gnutls-client .
 	i=i+1
 done
 
@@ -31,7 +34,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.4.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_4_${array[$i]}-server -f Dockerfile-3_4_x .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_4_${array[$i]}-server -f Dockerfile-3_4_x --target gnutls-server .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_4_${array[$i]}-client -f Dockerfile-3_4_x --target gnutls-client .
 	i=i+1
 done
 
@@ -40,7 +44,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.3.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_3_${array[$i]}-server -f Dockerfile-3_3_0-15 .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_3_${array[$i]}-server -f Dockerfile-3_3_0-15 --target gnutls-server .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_3_${array[$i]}-client -f Dockerfile-3_3_0-15 --target gnutls-client .
 	i=i+1
 done
 
@@ -49,6 +54,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.3.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_3_${array[$i]}-server -f Dockerfile-3_3_x .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_3_${array[$i]}-server -f Dockerfile-3_3_x --target gnutls-server .
+	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_3_${array[$i]}-client -f Dockerfile-3_3_x --target gnutls-client .
 	i=i+1
 done

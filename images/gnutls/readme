@@ -1,2 +1,8 @@
-build:      docker build -t gnutls-server .
-tls server: docker run -it --rm gnutls-server
+---------------------------
+build server:	docker build -t gnutls-server --target gnutls-server .
+run tls server:	docker run -it --rm gnutls-server
+
+build client:	docker build -t gnutls-client --target gnutls-client .
+run tls client:	docker run -it --rm gnutls-client
+
+build all supported gnutls versions: ./gnutls.sh
