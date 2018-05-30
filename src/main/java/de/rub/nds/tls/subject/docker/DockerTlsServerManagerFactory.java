@@ -63,6 +63,7 @@ public class DockerTlsServerManagerFactory {
 
         }
         TlsServer server = new DockerSpotifyTlsServerManager().getTlsServer(defaultProperties, defaultProfile, version);
+        // TODO: Extract
         long startTime = System.currentTimeMillis();
         while (!isOnline(server.getHost(), server.getPort())) {
             if (startTime + 10000 < System.currentTimeMillis()) {
@@ -77,7 +78,7 @@ public class DockerTlsServerManagerFactory {
         return server;
     }
 
-    public boolean isOnline(String address, int port) {
+    public static boolean isOnline(String address, int port) {
         try {
             LOGGER.debug("Testing if server is online...");
             InetSocketAddress sa = new InetSocketAddress(address, port);
