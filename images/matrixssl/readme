@@ -1,7 +1,8 @@
 ---------------------------
-build:      docker build -t matrixssl-server .
-tls server: docker run -it --rm matrixssl-server
+build server:   docker build -t matrixssl-server --target matrixssl-server .
+run tls server: docker run -it --rm matrixssl-server
 
-build all matrixssl versions: ./matrixssl.sh
-build a single version: docker build --build-arg VERSION=${version} —t matrixssl-3-${version}-server -f Dockerfile-3_x .
-example: docker build --build-arg VERSION=9-1 —t matrixssl-3-9-1-server -f Dockerfile-3_x .
+build client:   docker build -t matrixssl-client --target matrixssl-client .
+run tls client: docker run -it --rm matrixssl-client
+
+build all supported matrixssl versions: ./matrixssl.sh
