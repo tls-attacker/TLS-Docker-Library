@@ -1,3 +1,10 @@
 ---------------------------
-build:      docker build -t ocamltls-server .
-tls server: docker run -it --rm ocamltls-server
+build server:   docker build -t ocamltls-server --target ocamltls-server .
+run tls server: docker run -it --rm ocamltls-server
+
+build client:   docker build -t ocamltls-client --target ocamltls-client .
+run tls client: docker run -it --rm ocamltls-client
+
+build all supported ocamltls versions: ./ocamltls.sh
+
+Hinweis: Doku zum Ausführen von Server und Client fehlt -> Errors
