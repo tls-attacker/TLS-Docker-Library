@@ -18,12 +18,12 @@ RUN /src/wolfssl/examples/client/client -h
 FROM scratch as wolfssl-base2
 COPY --from=wolfssl-base1 /lib/ld-musl-x86_64.so.1 /lib/
 COPY --from=wolfssl-base1 /src/wolfssl/src/.libs/libwolfssl.so.* /src/wolfssl/src/.libs/
+COPY --from=wolfssl-base1 /src/wolfssl/certs /certs/
 
 FROM wolfssl-base2 as wolfssl-server
 ARG VERSION
 LABEL "server_type"="wolfssl"
 LABEL "server_version"="3.${VERSION}"
-COPY --from=wolfssl-base1 /src/wolfssl/certs /certs/
 COPY --from=wolfssl-base1 /src/wolfssl/examples/server/.libs/lt-server /bin/
 ENTRYPOINT ["lt-server"]
 
