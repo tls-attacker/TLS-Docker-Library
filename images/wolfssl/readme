@@ -1,3 +1,8 @@
 ---------------------------
-build:      docker build -t wolfssl-server .
-tls server: docker run -it --rm wolfssl-server
+build server:   docker build -t wolfssl-server --target wolfssl-server .
+run tls server: docker run -it --rm wolfssl-server
+
+build client:   docker build -t wolfssl-client --target wolfssl-client .
+run tls client: docker run -it --rm wolfssl-client
+
+build all supported wolfssl versions: ./wolfssl.sh and ./cyassl.sh
