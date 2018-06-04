@@ -1,13 +1,20 @@
+---------------------------
+build server: 	docker build -t openssl-server --target openssl-server .
+run tls server: docker run -it --rm openssl-server
+
+build client: 	docker build -t openssl-client --target openssl-client .
+run tls client: docker run -it --rm openssl-client
+
+build all supported openSSL versions: ./openssl-build_all.sh
+
+
 development build with shim
 ---------------------------
-build:      docker build -t openssl-server -f Dockerfile-shim .
+build:      docker build -t openssl-server -f Dockerfile-shim --target bearssl-server .
 tls server: docker run -it -v cert-data:/cert/:ro,nocopy --rm openssl-server -key /cert/ec256key.pem -cert /cert/ec256cert.pem
 tls server: docker run -it -v cert-data:/cert/:ro,nocopy --rm openssl-server -key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem
 tls shim:   docker run -it --rm --entrypoint /bin/ossl_shim openssl-server
 
-build all supported openssl versions
----------------------------
-build:      ./openssl-build_all.sh
 
 build a single openssl server
 ---------------------------
