@@ -83,7 +83,7 @@ public class DockerSpotifyTlsClientManager implements TlsClientManager {
     
     @Override
     public TlsClient getTlsClient(ClientImageProperties properties, ParameterProfile profile, String host, int port) {
-        return this.getTlsClient(properties, profile, properties.defaultVersion(), host, port);
+        return this.getTlsClient(properties, profile, properties.getDefaultVersion(), host, port);
     }
     
     @Override

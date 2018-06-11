@@ -17,10 +17,6 @@ public class ClientImageProperties {
         return type;
     }
 
-    public String defaultVersion() {
-        return defaultVersion;
-    }
-
     public String getDefaultVersion() {
         return defaultVersion;
     }

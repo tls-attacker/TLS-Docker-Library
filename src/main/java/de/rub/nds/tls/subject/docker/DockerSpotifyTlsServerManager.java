@@ -105,7 +105,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
 
     @Override
     public TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile) {
-        return this.getTlsServer(properties, profile, properties.defaultVersion());
+        return this.getTlsServer(properties, profile, properties.getDefaultVersion());
     }
 
     @Override

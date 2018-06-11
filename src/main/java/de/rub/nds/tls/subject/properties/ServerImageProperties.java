@@ -30,10 +30,6 @@ public class ServerImageProperties {
         return internalPort;
     }
 
-    public String defaultVersion() {
-        return defaultVersion;
-    }
-
     public String getDefaultVersion() {
         return defaultVersion;
     }
