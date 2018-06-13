@@ -10,7 +10,6 @@ import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
 
@@ -69,7 +68,6 @@ public class AvailableClientVersionsTest {
             try {
                 client = factory.getClient(type, version, HOST, PORT);
                 //System.out.println("Client started successfully");
-                TimeUnit.SECONDS.sleep(2);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 //System.err.println("Failed to start client");
@@ -101,7 +99,6 @@ public class AvailableClientVersionsTest {
 //                String command = "openssl s_client -connect "+HOST+":"+PORT;
 //                Process proc = Runtime.getRuntime().exec(command);
 //                System.out.println("Client started successfully");
-//                TimeUnit.SECONDS.sleep(2);
 //            } catch (Exception ex) {
 //                ex.printStackTrace();
 //                System.err.println("Failed to start client");
