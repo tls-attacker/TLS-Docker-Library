@@ -5,7 +5,7 @@
     <type>MBED</type>
     <role>CLIENT</role>
     <Parameter>
-        <cmdParameter>server_addr=[host] server_port=[port]</cmdParameter>
+        <cmdParameter>server_name=[host] server_port=[port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
 </parameterProfile>
