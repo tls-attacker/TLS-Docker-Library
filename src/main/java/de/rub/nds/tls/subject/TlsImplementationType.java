@@ -15,7 +15,7 @@ public enum TlsImplementationType {
     MATRIXSSL,
     MBED,
     NSS,
-    OCAML_TLS,
+    OCAMLTLS,
     OPENSSL,
     RUSTLS,
     S2N,
