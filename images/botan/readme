@@ -1,4 +1,19 @@
 ---------------------------
+BOTAN
+- versions: 
+	1.11.3, 1.11.4, 1.11.5, 1.11.6, 
+	1.11.8, 1.11.9, 1.11.10, 1.11.11, 1.11.12, 1.11.13, 
+	1.11.14, 1.11.15, 1.11.16, 1.11.17, 1.11.19, 1.11.20, 1.11.21, 1.11.22, 1.11.23, 1.11.24, 1.11.30, 1.11.31, 1.11.32, 1.11.33, 
+	1.11.34,
+	1.11.25, 1.11.26, 1.11.27, 1.11.28, 1.11.29, 
+	2.0.0, 2.0.1, 
+	2.1.0, 
+	2.2.0, 
+	2.3.0
+- server successfully tested: 1.11.6, 1.11.13, 1.11.33, 1.11.34, 1.11.29, 2.0.0, 2.1.0, 2.2.0, 2.3.0
+- clients successfully tested: 1.11.33, 1.11.34, 1.11.29, 2.0.0, 2.1.0, 2.2.0, 2.3.0
+- clients failed test (have to check parameters): 1.11.6, 1.11.13
+
 build server:	docker build -t botan-server --target botan-server .
 run tls server: docker run -it --rm botan-server
 
@@ -12,10 +27,6 @@ Not supported Botan Versions:
 all <= 1.11.2
 1.11.7
 1.11.18
-
-Not working clients -> have to check cmd parameter
-1.11.3, 1.11.4, 1.11.5, 1.11.6, 
-1.11.8, 1.11.9, 1.11.10, 1.11.11, 1.11.12, 1.11.13
 
 Start server versions < 1_11_32:
 docker run -v cert-data:/cert/:ro,nocopy -it --rm botan-1_11_31-server /cert/rsa2048cert.pem /cert/rsa2048key.pem --port=4433

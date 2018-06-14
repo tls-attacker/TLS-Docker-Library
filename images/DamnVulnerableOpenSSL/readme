@@ -1,5 +1,12 @@
-build
 ---------------------------
-build:      ./damnvulnerableopenssl.sh
+DAMNVULNERABLEOPENSSL
+- versions:
+	one version from github available
+- server successfully tested: all versions
+- clients successfully tested: clients not available for this implementation
+
+build: ./damnvulnerableopenssl.sh
+
 tls server: docker run -it -v cert-data:/cert/:ro,nocopy --rm damnvulnerableopenssl-server -key /cert/ec256key.pem -cert /cert/ec256cert.pem
+
 tls server: docker run -it -v cert-data:/cert/:ro,nocopy --rm damnvulnerableopenssl-server -key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem

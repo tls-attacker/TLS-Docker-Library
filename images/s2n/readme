@@ -1,4 +1,10 @@
 ---------------------------
+S2N
+- versions: 
+	latest, fips
+- server successfully tested: latest, fips
+- clients successfully tested: latest, fips
+
 build server:   docker build -t s2n-server --target s2n-server .
 run tls server: docker run -it --rm s2n-server
 
