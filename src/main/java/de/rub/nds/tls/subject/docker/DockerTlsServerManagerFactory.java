@@ -30,6 +30,10 @@ import org.apache.logging.log4j.Logger;
  */
 public class DockerTlsServerManagerFactory {
 
+    private static final int SERVER_POLL_INTERVAL_MILLISECONDS = 50;
+
+    private static final int TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS = 10000;
+
     private static final DockerClient docker = new DefaultDockerClient("unix:///var/run/docker.sock");
 
     private static final Logger LOGGER = LogManager.getLogger(DockerTlsServerManagerFactory.class);
@@ -63,21 +67,25 @@ public class DockerTlsServerManagerFactory {
 
         }
         TlsServer server = new DockerSpotifyTlsServerManager().getTlsServer(defaultProperties, defaultProfile, version);
-        long startTime = System.currentTimeMillis();
-        while (!isOnline(server.getHost(), server.getPort())) {
-            if (startTime + 10000 < System.currentTimeMillis()) {
-                throw new ImplementationDidNotStartException("Timeout");
-            }
-            try {
-                Thread.currentThread().sleep(50);
-            } catch (InterruptedException ex) {
-                throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
-            }
-        }
+        waitUntilServerIsOnline(server.getHost(), server.getPort());
         return server;
     }
 
-    public boolean isOnline(String address, int port) {
+	public static void waitUntilServerIsOnline(String host, int port) {
+		long startTime = System.currentTimeMillis();
+		while (!isOnline(host, port)) {
+			if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS < System.currentTimeMillis()) {
+				throw new ImplementationDidNotStartException("Timeout");
+			}
+			try {
+				Thread.sleep(SERVER_POLL_INTERVAL_MILLISECONDS);
+			} catch (InterruptedException ex) {
+				throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
+			}
+		}
+	}
+
+    private static boolean isOnline(String address, int port) {
         try {
             LOGGER.debug("Testing if server is online...");
             InetSocketAddress sa = new InetSocketAddress(address, port);
