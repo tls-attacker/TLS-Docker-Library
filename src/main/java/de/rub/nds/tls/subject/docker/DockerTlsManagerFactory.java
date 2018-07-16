@@ -42,11 +42,15 @@ public class DockerTlsManagerFactory {
     private final ParameterProfileManager parameterManager;
     private final ServerPropertyManager serverPropertyManager;
     private final ClientPropertyManager clientPropertyManager;
+    private final DockerSpotifyTlsServerManager serverManager;
+    private final DockerSpotifyTlsClientManager clientManager;
 
     public DockerTlsManagerFactory() {
         parameterManager = new ParameterProfileManager();
         serverPropertyManager = new ServerPropertyManager();
         clientPropertyManager = new ClientPropertyManager();
+        clientManager = new DockerSpotifyTlsClientManager();
+        serverManager = new DockerSpotifyTlsServerManager();
     }
 
     private static final String SERVER_LABEL = "server_type";
@@ -79,7 +83,7 @@ public class DockerTlsManagerFactory {
         if (defaultProperties == null) {
             throw new PropertyNotFoundException("Could not find a default Property for server: " + type.name() + ":" + version);
         }
-        TlsServer server = new DockerSpotifyTlsServerManager().getTlsServer(defaultProperties, defaultProfile, version);
+        TlsServer server = serverManager.getTlsServer(defaultProperties, defaultProfile, version);
         long startTime = System.currentTimeMillis();
         while (!isServerOnline(server.getHost(), server.getPort())) {
             if (startTime + 10000 < System.currentTimeMillis()) {
@@ -106,8 +110,16 @@ public class DockerTlsManagerFactory {
         if (defaultProperties == null) {
             throw new PropertyNotFoundException("Could not find a default Property for client: " + type.name() + ":" + version);
         }
-        TlsClient client = new DockerSpotifyTlsClientManager().getTlsClient(defaultProperties, defaultProfile, version, host, port);
+        TlsClient client = clientManager.getTlsClient(defaultProperties, defaultProfile, version, host, port);
         return client;
+    }
+    
+    public void killServer(TlsServer server) {
+        serverManager.killTlsServer(server);
+    }
+    
+    public void killClient(TlsClient client) {
+        clientManager.killTlsClient(client);
     }
     
     public boolean isServerOnline(String address, int port) {
