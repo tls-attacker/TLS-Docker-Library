@@ -114,14 +114,6 @@ public class DockerTlsManagerFactory {
         return client;
     }
     
-    public void killServer(TlsServer server) {
-        serverManager.killTlsServer(server);
-    }
-    
-    public void killClient(TlsClient client) {
-        clientManager.killTlsClient(client);
-    }
-    
     public boolean isServerOnline(String address, int port) {
         try {
             LOGGER.debug("Testing if server is online...");
