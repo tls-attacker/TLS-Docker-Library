@@ -14,6 +14,7 @@ public class ClientPropertyManager {
         propertyList.add(new ClientImageProperties(TlsImplementationType.BEARSSL, "0.5"));
         propertyList.add(new ClientImageProperties(TlsImplementationType.BORINGSSL, "master"));
         propertyList.add(new ClientImageProperties(TlsImplementationType.BOTAN, "2.5"));
+        propertyList.add(new ClientImageProperties(TlsImplementationType.FIREFOX, "61.0.1"));
         propertyList.add(new ClientImageProperties(TlsImplementationType.GNUTLS, "3.5.16"));
         propertyList.add(new ClientImageProperties(TlsImplementationType.LIBRESSL, "2.6.3"));
         propertyList.add(new ClientImageProperties(TlsImplementationType.MATRIXSSL, "3.9.3"));
