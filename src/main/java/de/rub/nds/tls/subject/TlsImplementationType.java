@@ -8,7 +8,6 @@ public enum TlsImplementationType {
     CRYPTO_COMPLY,
     CRYPTLIB,
     DAMNVULNERABLEOPENSSL,
-    FIREFOX,
     GNUTLS,
     JSSE,
     GO,
