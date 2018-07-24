@@ -69,7 +69,7 @@ public class AvailableClientVersionsTest {
             try {
                 client = factory.getClient(type, version, HOST, PORT);
                 //System.out.println("Client started successfully");
-                TimeUnit.SECONDS.sleep(2); //Necessary time to wait for connection = 2 seconds
+                TimeUnit.SECONDS.sleep(3); //Necessary time to wait for connection = 3 seconds
             } catch (Exception ex) {
                 ex.printStackTrace();
                 //System.err.println("Failed to start client");
