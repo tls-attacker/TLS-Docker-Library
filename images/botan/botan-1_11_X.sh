@@ -11,6 +11,7 @@ do
 	i=i+1
 done
 
+#Build error in test with v8 -> check that
 array=(8 9 10 11 12 13)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -32,7 +33,7 @@ do
 done
 
 docker build --build-arg VERSION=34 -t botan-1_11_34-server -f Dockerfile-1_11_34 --target botan-server .
-	docker build --build-arg VERSION=34 -t botan-1_11_34-client -f Dockerfile-1_11_34 --target botan-client .
+docker build --build-arg VERSION=34 -t botan-1_11_34-client -f Dockerfile-1_11_34 --target botan-client .
 
 array=(25 26 27 28 29)
 typeset -i i=0 max=${#array[*]}

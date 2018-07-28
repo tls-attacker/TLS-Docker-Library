@@ -12,6 +12,7 @@ BOTAN
 	2.3.0
 - server successfully tested: 1.11.6, 1.11.13, 1.11.33, 1.11.34, 1.11.29, 2.0.0, 2.1.0, 2.2.0, 2.3.0
 - clients successfully tested: 1.11.33, 1.11.34, 1.11.29, 2.0.0, 2.1.0, 2.2.0, 2.3.0
+- server and client versions failed to build (have to check build process): 1.11.8-1.11.13
 - clients failed test (have to check parameters): 1.11.6, 1.11.13
 
 build server:	docker build -t botan-server --target botan-server .
