@@ -18,6 +18,9 @@ cd ..
 cd DamnVulnerableOpenSSL
 ./damnvulnerableopenssl.sh
 cd ..
+cd firefox
+./firefox.sh
+cd ..
 cd gnutls
 ./gnutls.sh
 cd ..
