@@ -78,9 +78,6 @@ public class TlsTestServer extends Thread {
                 sslSocket = (SSLSocket) sslServerSocket.accept();
                 new ServerConnectionThread(sslSocket).start();
             }
-            if (sslSocket != null) {
-                sslSocket.close();
-            }
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
