@@ -20,6 +20,7 @@ public class AvailableClientVersionsTest {
     
     private static final String HOST = "172.17.0.1";
     private static final int PORT = 8000;
+    private static final int CONNECTIONTIMEOUT = 10;
     
     public AvailableClientVersionsTest() {
     }
@@ -38,29 +39,33 @@ public class AvailableClientVersionsTest {
     }
     
     @Test
-    public void testAllVersionsFunctional() throws IOException {
+    public void testAllVersionsFunctional() {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
         DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         System.out.println("Functional Clients: ");
-        
+        TlsTestServer testServer = new TlsTestServer(PORT);
+        testServer.start();
         for (TlsImplementationType type : TlsImplementationType.values()) {
             List<String> availableVersions = factory.getAvailableClientVersions(type);
             for (String version : availableVersions) {
                 try {
-                    System.out.println(type.name() + ":" + version + " - " + isFunctional(factory, type, version));
+                    System.out.println(type.name() + ":" + version + " - " + isFunctional(testServer, factory, type, version));
                 } catch (Exception E) {
                     E.printStackTrace();
                     System.out.println(type.name() + ":" + version + "       ERROR");
                 }
             }
         }
+        try {
+            testServer.stop(HOST, PORT);
+        } catch (IOException ex) {
+            Logger.getLogger(AvailableClientVersionsTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         System.out.println("Testserver stopped");
     }
     
-    public boolean isFunctional(DockerTlsManagerFactory factory, TlsImplementationType type, String version) throws IOException {
+    public boolean isFunctional(TlsTestServer testServer, DockerTlsManagerFactory factory, TlsImplementationType type, String version) {
         TlsClient client = null;
-        TlsTestServer testServer = new TlsTestServer(PORT);
-        testServer.start();
         testServer.setIsConnectionSuccessful(false);
         try {
             if (version == null || factory == null || type == null) {
@@ -70,7 +75,16 @@ public class AvailableClientVersionsTest {
             try {
                 client = factory.getClient(type, version, HOST, PORT);
                 //System.out.println("Client started successfully");
-                TimeUnit.SECONDS.sleep(3); //Necessary time to wait for connection = 3 seconds
+                boolean waiting = true;
+                int timeout = 0;
+                while (waiting && timeout<CONNECTIONTIMEOUT) {
+                    if (testServer.isConnectionSuccessful()) {
+                        waiting=false;
+                    }
+                    TimeUnit.SECONDS.sleep(1);
+                    timeout++;
+                }
+                //System.out.println("Waited "+timeout+"s for connection");
             } catch (Exception ex) {
                 ex.printStackTrace();
                 //System.err.println("Failed to start client");
@@ -84,19 +98,11 @@ public class AvailableClientVersionsTest {
             if (client != null) {
                 client.kill();
             }
-            testServer.stop(HOST, PORT);
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(AvailableClientVersionsTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
     }
     
-//    public boolean isFunctionalTmp(DockerTlsManagerFactory factory, TlsImplementationType type, String version) throws IOException {
+//    public boolean isFunctionalTmp(TlsTestServer testServer, DockerTlsManagerFactory factory, TlsImplementationType type, String version) throws IOException {
 //        TlsClient client = null;
-//        TlsTestServer testServer = new TlsTestServer(PORT);
-//        testServer.start();
 //        testServer.setIsConnectionSuccessful(false);
 //        try {
 //            if (version == null || factory == null || type == null) {
@@ -104,13 +110,24 @@ public class AvailableClientVersionsTest {
 //                return false;
 //            }
 //            try {
-//                //BearSSLClient
-//                //client = factory.getClient(type, version, HOST, PORT);
+//                //DockerClient
+//                client = factory.getClient(type, version, HOST, PORT);
+//                
 //                //OpenSSLCommand
-//                String command = "openssl s_client -connect "+HOST+":"+PORT;
-//                Process proc = Runtime.getRuntime().exec(command);
+//                //String command = "openssl s_client -connect "+HOST+":"+PORT;
+//                //Process proc = Runtime.getRuntime().exec(command);
+//                
 //                System.out.println("Client started successfully");
-//                TimeUnit.SECONDS.sleep(1);
+//                boolean waiting = true;
+//                int timeout = 0;
+//                while (waiting && timeout<CONNECTIONTIMEOUT) {
+//                    if (testServer.isConnectionSuccessful()) {
+//                        waiting=false;
+//                    }
+//                    TimeUnit.SECONDS.sleep(1);
+//                    timeout++;
+//                }
+//                System.out.println("Waited "+timeout+"s for connection");
 //            } catch (Exception ex) {
 //                ex.printStackTrace();
 //                System.err.println("Failed to start client");
@@ -124,7 +141,6 @@ public class AvailableClientVersionsTest {
 //            if (client != null) {
 //                client.kill();
 //            }
-//            testServer.stop(HOST, PORT);
 //        }
 //    }
 //    
@@ -132,16 +148,26 @@ public class AvailableClientVersionsTest {
 //    public void testAllVersionsFunctionalTmp() throws IOException {
 //        Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
 //        DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
-//        List<String> availableVersions = factory.getAvailableClientVersions(TlsImplementationType.BEARSSL);
+//        System.out.println("Functional Clients: ");
+//        TlsTestServer testServer = new TlsTestServer(PORT);
+//        testServer.start();
+//        
+//        //ToTest
+//        TlsImplementationType tlsType = TlsImplementationType.FIREFOX;
+//        
+//        List<String> availableVersions = factory.getAvailableClientVersions(tlsType);
 //        for (String version : availableVersions) {
 //            try {
-//                //System.out.println(TlsImplementationType.BEARSSL + ":" + version + " - " + isFunctional(factory, TlsImplementationType.BEARSSL, version));
-//                System.out.println("OpenSSLCommandTest: " + isFunctionalTmp(factory, TlsImplementationType.BEARSSL, version));
+//                System.out.println(tlsType + ":" + version + " - " + isFunctional(testServer, factory, tlsType, version));
 //            } catch (Exception E) {
 //                E.printStackTrace();
-//                //System.out.println(TlsImplementationType.BEARSSL + ":" + version + "       ERROR");
-//                System.out.println("OpenSSLCommandTest:       ERROR");
+//                System.out.println(tlsType + ":" + version + "       ERROR");
 //            }
+//        }
+//        try {
+//            testServer.stop(HOST, PORT);
+//        } catch (IOException ex) {
+//            Logger.getLogger(AvailableClientVersionsTest.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //        System.out.println("Testserver stopped");
 //    }
