@@ -46,7 +46,29 @@ public class DockerTlsServerManagerFactory {
     private static final String VERSION_LABEL = "server_version";
 
     public TlsServer get(TlsImplementationType type, String version) {
-        return get(type, version, null);
+        return get(type, version, (String) null);
+    }
+
+    public TlsServer get(TlsImplementationType type, String version, ParameterProfile profile) {
+        ImageProperties defaultProperties = propertyManager.getProperties(type);
+        if (defaultProperties == null) {
+            throw new PropertyNotFoundException("Could not find a default Property for: " + type.name() + ":" + version);
+
+        }
+        TlsServer server = new DockerSpotifyTlsServerManager().getTlsServer(defaultProperties, profile, version);
+        // TODO: Extract
+        long startTime = System.currentTimeMillis();
+        while (!isOnline(server.getHost(), server.getPort())) {
+            if (startTime + 10000 < System.currentTimeMillis()) {
+                throw new ImplementationDidNotStartException("Timeout");
+            }
+            try {
+                Thread.currentThread().sleep(50);
+            } catch (InterruptedException ex) {
+                throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
+            }
+        }
+        return server;
     }
 
     public TlsServer get(TlsImplementationType type, String version, String additionalParams) {
