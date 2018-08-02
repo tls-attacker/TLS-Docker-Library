@@ -18,8 +18,17 @@ cd ..
 cd DamnVulnerableOpenSSL
 ./damnvulnerableopenssl.sh
 cd ..
+cd firefox
+./firefox.sh
+cd ..
 cd gnutls
 ./gnutls.sh
+cd ..
+#cd go
+#./go.sh
+#cd ..
+cd jsse
+./jsse.sh
 cd ..
 cd libressl
 ./libressl.sh
@@ -31,14 +40,22 @@ cd mbed
 ./mbedtls.sh
 ./polarssl.sh
 cd ..
+#cd nss
+#./nss.sh
+#cd ..
+cd ocaml-tls
+./ocamltls.sh
+cd ..
 cd openssl
 ./openssl-build_all.sh
+cd ..
+#cd rustls
+#./rustls.sh
+#cd ..
+cd s2n
+./s2n.sh
 cd ..
 cd wolfssl
 ./cyassl.sh
 ./wolfssl.sh
-cd ..
-
-cd jsse
-./jsse.sh
 cd ..

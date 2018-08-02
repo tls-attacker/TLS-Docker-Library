@@ -7,7 +7,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: BoringSSL ${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-2272-2357 .
+	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-2272-2357 --target boringssl-server .
+	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-client -f Dockerfile-2272-2357 --target boringssl-client .
 	i=i+1
 done
 
@@ -16,7 +17,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: BoringSSL ${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-2214-2661 .
+	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-2214-2661 --target boringssl-server .
+	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-client -f Dockerfile-2214-2661 --target boringssl-client .
 	i=i+1
 done
 
@@ -25,6 +27,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: BoringSSL ${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-x .
+	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-x --target boringssl-server .
+	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-client -f Dockerfile-x --target boringssl-client .
 	i=i+1
 done

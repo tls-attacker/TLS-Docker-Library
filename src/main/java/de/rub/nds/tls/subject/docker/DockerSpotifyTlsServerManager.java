@@ -13,7 +13,7 @@ import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import de.rub.nds.tls.subject.params.Parameter;
 import de.rub.nds.tls.subject.params.ParameterProfile;
-import de.rub.nds.tls.subject.properties.ImageProperties;
+import de.rub.nds.tls.subject.properties.ServerImageProperties;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +34,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsServerManager.class);
     private static final DockerClient docker = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final String SERVER_LABEL = "server_type";
-    private static final String VERSION_LABEL = "server_version";
+    private static final String SERVER_VERSION_LABEL = "server_version";
     private final Map<String, Integer> logReadOffset;
 
     DockerSpotifyTlsServerManager() {
@@ -42,10 +42,10 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
     }
 
     @Override
-    public TlsServer getTlsServer(ImageProperties properties, ParameterProfile profile, String version) {
+    public TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile, String version) {
         int port_container_external;
         try {
-            Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(VERSION_LABEL, version)).stream()
+            Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(SERVER_VERSION_LABEL, version)).stream()
                     .findFirst()
                     .orElseThrow(() -> new TlsVersionNotFoundException());
             Volume volume = docker.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
@@ -104,8 +104,8 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
     }
 
     @Override
-    public TlsServer getTlsServer(ImageProperties properties, ParameterProfile profile) {
-        return this.getTlsServer(properties, profile, properties.defaultVersion());
+    public TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile) {
+        return this.getTlsServer(properties, profile, properties.getDefaultVersion());
     }
 
     @Override

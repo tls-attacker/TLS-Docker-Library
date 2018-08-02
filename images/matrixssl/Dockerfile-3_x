@@ -1,4 +1,4 @@
-FROM alpine-build as matrixssl
+FROM alpine-build as matrixssl-base1
 ARG VERSION
 RUN git clone --depth=1 --branch=3-${VERSION}-open https://github.com/matrixssl/matrixssl
 WORKDIR matrixssl
@@ -6,11 +6,20 @@ RUN if [ "$VERSION" = "8-3" ]; then make; else make libs; fi
 WORKDIR apps/ssl
 RUN make
 
-FROM scratch
+FROM scratch as matrixssl-base2
+COPY --from=matrixssl-base1 /lib/ld-musl-x86_64.so.* /lib/
+
+FROM matrixssl-base2 as matrixssl-server
 ARG VERSION
 LABEL "server_type"="matrixssl"
 LABEL "server_version"="3-${VERSION}"
-COPY --from=matrixssl /lib/ld-musl-x86_64.so.* /lib/
-COPY --from=matrixssl /src/matrixssl/apps/ssl/server /bin/
-COPY --from=matrixssl /src/matrixssl/testkeys /testkeys
+COPY --from=matrixssl-base1 /src/matrixssl/apps/ssl/server /bin/
+COPY --from=matrixssl-base1 /src/matrixssl/testkeys /testkeys
 ENTRYPOINT ["server"]
+
+FROM matrixssl-base2 as matrixssl-client
+ARG VERSION
+LABEL "client_type"="matrixssl"
+LABEL "client_version"="3-${VERSION}"
+COPY --from=matrixssl-base1 /src/matrixssl/apps/ssl/client /bin/
+ENTRYPOINT ["client"]

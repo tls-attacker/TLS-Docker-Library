@@ -1,4 +1,4 @@
-FROM alpine-build as botan
+FROM alpine-build as botan-base1
 ARG VERSION
 RUN wget -O botan.tar.gz https://botan.randombit.net/releases/Botan-2.1.${VERSION}.tgz
 RUN mkdir botan
@@ -9,14 +9,23 @@ RUN ./configure.py --prefix=/build/ &&\
   make install
 RUN mv /build/lib/libbotan-2.so.${VERSION}.1.${VERSION} /build/lib/libbotan-2.so.${VERSION}
 
-FROM alpine-build
+FROM alpine-build as botan-base2
 ARG VERSION
-LABEL "server_type"="botan"
-LABEL "server_version"="2.1.${VERSION}"
-COPY --from=botan /lib/ld-musl-x86_64.so.1 \
+COPY --from=botan-base1 /lib/ld-musl-x86_64.so.1 \
   /usr/lib/libstdc++.so.6 \
   /usr/lib/libgcc_s.so.1 \
   /build/lib/libbotan-2.so.${VERSION} /lib/
-COPY --from=botan /build/bin/botan /bin/
+COPY --from=botan-base1 /build/bin/botan /bin/
 ADD https://raw.githubusercontent.com/randombit/botan/master/src/tests/data/tls-policy/compat.txt /compat.txt
+
+FROM botan-base2 as botan-server
+ARG VERSION
+LABEL "server_type"="botan"
+LABEL "server_version"="2.1.${VERSION}"
 ENTRYPOINT ["botan", "tls_server"]
+
+FROM botan-base2 as botan-client
+ARG VERSION
+LABEL "client_type"="botan"
+LABEL "client_version"="2.1.${VERSION}"
+ENTRYPOINT ["botan", "tls_client"]

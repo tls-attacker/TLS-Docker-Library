@@ -2,7 +2,7 @@
 <parameterProfile>
     <name>s2n_default</name>
     <description>Default Profile for s2n</description>
-    <type>s2n</type>
+    <type>S2N</type>
     <role>SERVER</role>
     <Parameter>
         <cmdParameter>[host] [port]</cmdParameter>
