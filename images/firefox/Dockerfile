@@ -13,4 +13,4 @@ RUN mv firefox /opt/
 RUN ln -sf /opt/firefox/firefox /bin/firefox
 LABEL "client_type"="firefox"
 LABEL "client_version"="${VERSION}"
-ENTRYPOINT ["firefox", "--headless"]
+ENTRYPOINT ["firefox"]
