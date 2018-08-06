@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <parameterProfile>
-    <name>botan<=1.11.25</name>
-    <description>Profile for Botan versions <= 1.11.25</description>
+    <name>botan_before_1.11.26</name>
+    <description>Profile for Botan versions before 1.11.26</description>
     <type>BOTAN</type>
     <role>CLIENT</role>
     <Version>1.11.25</Version>
@@ -21,7 +21,6 @@
     <Version>1.11.10</Version>
     <Version>1.11.9</Version>
     <Version>1.11.8</Version>
-    <Version>1.11.7</Version>
     <Version>1.11.6</Version>
     <Version>1.11.5</Version>
     <Version>1.11.4</Version>
