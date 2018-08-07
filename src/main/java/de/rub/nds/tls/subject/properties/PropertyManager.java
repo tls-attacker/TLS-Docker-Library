@@ -8,8 +8,7 @@ import java.util.List;
 
 public class PropertyManager {
 
-    private final List<ImageProperties> clientPropertyList;
-    private final List<ImageProperties> serverPropertyList;
+    private final List<ImageProperties> imagePropertyList;
 
     private static class Const {
 
@@ -20,57 +19,47 @@ public class PropertyManager {
     }
 
     public PropertyManager() {
-        clientPropertyList = new LinkedList<>();
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.BEARSSL, "0.5"));
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.BORINGSSL, "master"));
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.BOTAN, "2.5"));
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.FIREFOX, "61.0.1"));
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.GNUTLS, "3.5.16"));
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.LIBRESSL, "2.6.3"));
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.MATRIXSSL, "3.9.3"));
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.MBED, "2.6.0"));
-        //clientPropertyList.add(new ImageProperties(TlsImplementationType.OCAML_TLS, ""));
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.OPENSSL, "1.1.0f"));
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.S2N, "latest"));
-        clientPropertyList.add(new ImageProperties(TlsImplementationType.WOLFSSL, "3.12.2-stable"));
+        imagePropertyList = new LinkedList<>();
         
-        serverPropertyList = new LinkedList<>();
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.BEARSSL, 4433, "0.5", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.BORINGSSL, 4430, "master", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.BOTAN, 443, "2.5", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.BOUNCYCASTLE, 4433, "1.58", "/cert/keys.jks", "/cert/keys.jks"));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.DAMNVULNERABLEOPENSSL, 4433, "1.0", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.GNUTLS, 5556, "3.5.16", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.JSSE, 4433, "openjdk:8u162-jre-slim-bc-1-59", "/cert/keys.jks", "/cert/keys.jks"));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.LIBRESSL, 4433, "2.6.3", Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
-        //serverPropertyList.add(new ImageProperties(TlsImplementationType.MATRIXSSL, ...
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.MBED, 4430, "2.6.0", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.NSS, 4430, "", "/cert/db/", "cert"));
-        //serverPropertyList.add(new ImageProperties(TlsImplementationType.OCAML_TLS, ...
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.OPENSSL, 4433, "1.1.0f", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.RUSTLS, 443, "", Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.S2N, 4430, "latest", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        serverPropertyList.add(new ImageProperties(TlsImplementationType.WOLFSSL, 11111, "3.12.2-stable", Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BEARSSL, "0.5"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BORINGSSL, "master"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BOTAN, "2.5"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.FIREFOX, "61.0.1"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.GNUTLS, "3.5.16"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.LIBRESSL, "2.6.3"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MATRIXSSL, "3.9.3"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MBED, "2.6.0"));
+        //imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OCAML_TLS, ""));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OPENSSL, "1.1.0f"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.S2N, "latest"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.WOLFSSL, "3.12.2-stable"));
+        
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BEARSSL, "0.5", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BORINGSSL, "master", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BOTAN, "2.5", 443, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BOUNCYCASTLE, "1.58", 4433, "/cert/keys.jks", "/cert/keys.jks"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.DAMNVULNERABLEOPENSSL, "1.0", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.GNUTLS, "3.5.16", 5556, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.JSSE, "openjdk:8u162-jre-slim-bc-1-59", 4433, "/cert/keys.jks", "/cert/keys.jks"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.LIBRESSL, "2.6.3", 4433, Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
+        //imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MATRIXSSL, ...
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MBED, "2.6.0", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.NSS, "", 4430, "/cert/db/", "cert"));
+        //imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.OCAML_TLS, ...
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.OPENSSL, "1.1.0f", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.RUSTLS, "", 443, Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.S2N, "latest", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.WOLFSSL, "3.12.2-stable", 11111, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
     }
 
     public ImageProperties getProperties(ConnectionRole role, TlsImplementationType type) {
-        switch (role) {
-            case CLIENT:
-                for (ImageProperties properties : clientPropertyList) {
-                    if (properties.getType() == type) {
-                        return properties;
-                    }
+        for (ImageProperties properties : imagePropertyList) {
+            if (properties.getRole().equals(role)) {
+                if (properties.getType() == type) {
+                    return properties;
                 }
-                throw new PropertyNotFoundException("No client properties found for: " + type.name());
-            case SERVER:
-                for (ImageProperties properties : serverPropertyList) {
-                    if (properties.getType() == type) {
-                        return properties;
-                    }
-                }
-                throw new PropertyNotFoundException("No server properties found for: " + type.name());
-            default:
-                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+            }
         }
+        throw new PropertyNotFoundException("No " + role.name() + " properties found for: " + type.name());
     }
 }

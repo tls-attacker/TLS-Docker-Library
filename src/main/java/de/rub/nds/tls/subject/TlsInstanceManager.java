@@ -16,6 +16,8 @@ public interface TlsInstanceManager {
     TlsInstance getTlsClient(ImageProperties properties, ParameterProfile profile, String host, int port);
     
     TlsInstance getTlsClient(ImageProperties properties, ParameterProfile profile, String version, String host, int port);
+    
+    //TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, String host, int port);
 
     void killTlsInstance(TlsInstance tlsInstance);
 
