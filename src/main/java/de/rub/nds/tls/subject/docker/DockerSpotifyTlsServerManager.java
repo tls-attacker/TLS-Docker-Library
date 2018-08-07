@@ -85,7 +85,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
             TlsServer tlsServer = new TlsServer(id, port_container_external, profile.getType().name(), this);
             //LOGGER.trace(getLogsFromTlsServer(tlsServer)); //skip server startup output
             LOGGER.debug(String.format("Started TLS Server %s : %s(%s)", id, profile.getType().name(), version));
-
+            LOGGER.debug(getLogsFromTlsServer(tlsServer));
             return tlsServer;
         } catch (DockerException | InterruptedException e) {
             e.printStackTrace();
@@ -101,9 +101,11 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
             finalParams.append(" ");
         }
         if (additionalParameters != null) {
-            finalParams.append(" ").append(additionalParameters);
+            finalParams.append(additionalParameters);
         }
-        return finalParams.toString().replace("[cert]", certPath).replace("[key]", keyPath).replace("[port]", "" + port).split(" ");
+        String afterReplace = finalParams.toString().replace("[cert]", certPath).replace("[key]", keyPath).replace("[port]", "" + port);
+        LOGGER.debug("Final parameters:" + afterReplace);
+        return afterReplace.trim().split(" ");
     }
 
     @Override

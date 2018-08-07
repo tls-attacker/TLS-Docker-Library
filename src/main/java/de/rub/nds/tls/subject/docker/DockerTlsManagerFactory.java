@@ -92,41 +92,23 @@ public class DockerTlsManagerFactory {
     }
 
     public TlsServer getServer(TlsImplementationType type, String version, String additionalParams) {
-        ParameterProfile defaultProfile = parameterManager.getDefaultProfile(type, ConnectionRole.SERVER);
-        if (defaultProfile == null) {
-            throw new DefaultProfileNotFoundException("Could not find a default Profile for server: " + type.name() + ":" + version);
+        ParameterProfile profile = parameterManager.getProfile(type, version, ConnectionRole.SERVER);
+        if (profile == null) {
+            throw new DefaultProfileNotFoundException("Could not find a Profile for server: " + type.name() + ":" + version);
         }
-        return getServer(type, version, defaultProfile, additionalParams);
+        return getServer(type, version, profile, additionalParams);
     }
 
     public TlsClient getClient(TlsImplementationType type, String version, String host, int port, String additionalParams) {
-        List<ParameterProfile> otherProfileList = parameterManager.getOtherProfiles(type, ConnectionRole.CLIENT);
-        ParameterProfile profile = null;
-        boolean useDefaultProfile = true;
-        if (!otherProfileList.isEmpty()) {
-            for (ParameterProfile sProfile : otherProfileList) {
-                for (String sVersion : sProfile.getVersionList()) {
-                    if (sVersion.equals(version)) {
-                        profile = sProfile;
-                        useDefaultProfile = false;
-                    }
-                }
-            }
-        }
-        if (useDefaultProfile) {
-            profile = parameterManager.getDefaultProfile(type, ConnectionRole.CLIENT);
-        }
+        ParameterProfile profile = parameterManager.getProfile(type, version, ConnectionRole.CLIENT);
         if (profile == null) {
-            throw new DefaultProfileNotFoundException("Could not find a default Profile for client: " + type.name() + ":" + version);
-        }
-        if (additionalParams != null) {
-            profile.getParameterList().add(new Parameter(additionalParams, ParameterType.NONE));
+            throw new DefaultProfileNotFoundException("Could not find a Profile for server: " + type.name() + ":" + version);
         }
         ClientImageProperties defaultProperties = clientPropertyManager.getProperties(type);
         if (defaultProperties == null) {
             throw new PropertyNotFoundException("Could not find a default Property for client: " + type.name() + ":" + version);
         }
-        TlsClient client = clientManager.getTlsClient(defaultProperties, profile, version, host, port);
+        TlsClient client = clientManager.getTlsClient(defaultProperties, profile, host, port);
         return client;
     }
 

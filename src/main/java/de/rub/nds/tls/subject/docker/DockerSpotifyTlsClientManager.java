@@ -61,7 +61,7 @@ public class DockerSpotifyTlsClientManager implements TlsClientManager {
             docker.startContainer(id);
 
             TlsClient tlsClient = new TlsClient(id, host, port, profile.getType().name(), this);
-            //LOGGER.trace(getLogsFromTlsClient(tlsClient)); //skip client startup output
+            LOGGER.debug(getLogsFromTlsClient(tlsClient)); //skip client startup output
             LOGGER.debug(String.format("Started TLS Client %s : %s(%s)", id, profile.getType().name(), version));
 
             return tlsClient;
