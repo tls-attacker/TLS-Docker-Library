@@ -5,7 +5,7 @@
     <type>FIREFOX</type>
     <role>CLIENT</role>
     <Parameter>
-        <cmdParameter>https://[host]:[port]</cmdParameter>
+        <cmdParameter>--headless https://[host]:[port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
 </parameterProfile>

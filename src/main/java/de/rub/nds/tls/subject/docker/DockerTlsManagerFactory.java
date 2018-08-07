@@ -100,18 +100,33 @@ public class DockerTlsManagerFactory {
     }
 
     public TlsClient getClient(TlsImplementationType type, String version, String host, int port, String additionalParams) {
-        ParameterProfile defaultProfile = parameterManager.getDefaultProfile(type, ConnectionRole.CLIENT);
-        if (defaultProfile == null) {
+        List<ParameterProfile> otherProfileList = parameterManager.getOtherProfiles(type, ConnectionRole.CLIENT);
+        ParameterProfile profile = null;
+        boolean useDefaultProfile = true;
+        if (!otherProfileList.isEmpty()) {
+            for (ParameterProfile sProfile : otherProfileList) {
+                for (String sVersion : sProfile.getVersionList()) {
+                    if (sVersion.equals(version)) {
+                        profile = sProfile;
+                        useDefaultProfile = false;
+                    }
+                }
+            }
+        }
+        if (useDefaultProfile) {
+            profile = parameterManager.getDefaultProfile(type, ConnectionRole.CLIENT);
+        }
+        if (profile == null) {
             throw new DefaultProfileNotFoundException("Could not find a default Profile for client: " + type.name() + ":" + version);
         }
         if (additionalParams != null) {
-            defaultProfile.getParameterList().add(new Parameter(additionalParams, ParameterType.NONE));
+            profile.getParameterList().add(new Parameter(additionalParams, ParameterType.NONE));
         }
         ClientImageProperties defaultProperties = clientPropertyManager.getProperties(type);
         if (defaultProperties == null) {
             throw new PropertyNotFoundException("Could not find a default Property for client: " + type.name() + ":" + version);
         }
-        TlsClient client = clientManager.getTlsClient(defaultProperties, defaultProfile, version, host, port);
+        TlsClient client = clientManager.getTlsClient(defaultProperties, profile, version, host, port);
         return client;
     }
 
