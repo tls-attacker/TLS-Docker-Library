@@ -2,7 +2,7 @@ package de.rub.nds.tls.subject.properties;
 
 import de.rub.nds.tls.subject.TlsImplementationType;
 
-public class ServerImageProperties {
+public class ImageProperties {
 
     private final TlsImplementationType type;
 
@@ -13,8 +13,16 @@ public class ServerImageProperties {
     private final String defaultKeyPath;
 
     private final String defaultCertPath;
+    
+    public ImageProperties(TlsImplementationType type, String defaultVersion) {
+        this.type = type;
+        this.internalPort = 0;
+        this.defaultVersion = defaultVersion;
+        this.defaultKeyPath = null;
+        this.defaultCertPath = null;
+    }
 
-    public ServerImageProperties(TlsImplementationType type, int internalPort, String defaultVersion, String defaultCertPath, String defaultKeyPath) {
+    public ImageProperties(TlsImplementationType type, int internalPort, String defaultVersion, String defaultCertPath, String defaultKeyPath) {
         this.type = type;
         this.internalPort = internalPort;
         this.defaultVersion = defaultVersion;

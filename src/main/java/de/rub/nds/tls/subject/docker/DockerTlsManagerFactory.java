@@ -5,9 +5,8 @@ import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.Image;
 import de.rub.nds.tls.subject.ConnectionRole;
-import de.rub.nds.tls.subject.TlsClient;
+import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsImplementationType;
-import de.rub.nds.tls.subject.TlsServer;
 import de.rub.nds.tls.subject.exceptions.DefaultProfileNotFoundException;
 import de.rub.nds.tls.subject.exceptions.ImplementationDidNotStartException;
 import de.rub.nds.tls.subject.exceptions.PropertyNotFoundException;
@@ -15,10 +14,8 @@ import de.rub.nds.tls.subject.params.Parameter;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.params.ParameterProfileManager;
 import de.rub.nds.tls.subject.params.ParameterType;
-import de.rub.nds.tls.subject.properties.ClientImageProperties;
-import de.rub.nds.tls.subject.properties.ClientPropertyManager;
-import de.rub.nds.tls.subject.properties.ServerImageProperties;
-import de.rub.nds.tls.subject.properties.ServerPropertyManager;
+import de.rub.nds.tls.subject.properties.ImageProperties;
+import de.rub.nds.tls.subject.properties.PropertyManager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -29,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Creates TLS-Server or TLS-Client Instances as Docker Container
- * Holds the Config for each TLS-Server or TLS-Client
+ * Holds the Config for each Instance
  */
 public class DockerTlsManagerFactory {
 
@@ -40,17 +37,13 @@ public class DockerTlsManagerFactory {
     private static final int DEFAULT_PORT = 443;
 
     private final ParameterProfileManager parameterManager;
-    private final ServerPropertyManager serverPropertyManager;
-    private final ClientPropertyManager clientPropertyManager;
-    private final DockerSpotifyTlsServerManager serverManager;
-    private final DockerSpotifyTlsClientManager clientManager;
+    private final PropertyManager propertyManager;
+    private final DockerSpotifyTlsInstanceManager instanceManager;
 
     public DockerTlsManagerFactory() {
         parameterManager = new ParameterProfileManager();
-        serverPropertyManager = new ServerPropertyManager();
-        clientPropertyManager = new ClientPropertyManager();
-        clientManager = new DockerSpotifyTlsClientManager();
-        serverManager = new DockerSpotifyTlsServerManager();
+        propertyManager = new PropertyManager();
+        instanceManager = new DockerSpotifyTlsInstanceManager();
     }
 
     private static final String SERVER_LABEL = "server_type";
@@ -59,19 +52,11 @@ public class DockerTlsManagerFactory {
     private static final String CLIENT_LABEL = "client_type";
     private static final String CLIENT_VERSION_LABEL = "client_version";
 
-    public TlsServer getServer(TlsImplementationType type, String version) {
+    public TlsInstance getServer(TlsImplementationType type, String version) {
         return getServer(type, version, null);
     }
-    
-    public TlsClient getClient(TlsImplementationType type, String version, String host) {
-        return getClient(type, version, host, DEFAULT_PORT, null);
-    }
-    
-    public TlsClient getClient(TlsImplementationType type, String version, String host, int port) {
-        return getClient(type, version, host, port, null);
-    }
 
-    public TlsServer getServer(TlsImplementationType type, String version, String additionalParams) {
+    public TlsInstance getServer(TlsImplementationType type, String version, String additionalParams) {
         ParameterProfile defaultProfile = parameterManager.getDefaultProfile(type, ConnectionRole.SERVER);
         if (defaultProfile == null) {
             throw new DefaultProfileNotFoundException("Could not find a default Profile for server: " + type.name() + ":" + version);
@@ -79,11 +64,11 @@ public class DockerTlsManagerFactory {
         if (additionalParams != null) {
             defaultProfile.getParameterList().add(new Parameter(additionalParams, ParameterType.NONE));
         }
-        ServerImageProperties defaultProperties = serverPropertyManager.getProperties(type);
+        ImageProperties defaultProperties = propertyManager.getProperties(ConnectionRole.SERVER, type);
         if (defaultProperties == null) {
             throw new PropertyNotFoundException("Could not find a default Property for server: " + type.name() + ":" + version);
         }
-        TlsServer server = serverManager.getTlsServer(defaultProperties, defaultProfile, version);
+        TlsInstance server = instanceManager.getTlsServer(defaultProperties, defaultProfile, version);
         long startTime = System.currentTimeMillis();
         while (!isServerOnline(server.getHost(), server.getPort())) {
             if (startTime + 10000 < System.currentTimeMillis()) {
@@ -98,7 +83,15 @@ public class DockerTlsManagerFactory {
         return server;
     }
     
-    public TlsClient getClient(TlsImplementationType type, String version, String host, int port, String additionalParams) {
+    public TlsInstance getClient(TlsImplementationType type, String version, String host) {
+        return getClient(type, version, host, DEFAULT_PORT, null);
+    }
+    
+    public TlsInstance getClient(TlsImplementationType type, String version, String host, int port) {
+        return getClient(type, version, host, port, null);
+    }
+    
+    public TlsInstance getClient(TlsImplementationType type, String version, String host, int port, String additionalParams) {
         List<ParameterProfile> otherProfileList = parameterManager.getOtherProfiles(type, ConnectionRole.CLIENT);
         ParameterProfile profile = null;
         boolean useDefaultProfile = true;
@@ -121,11 +114,11 @@ public class DockerTlsManagerFactory {
         if (additionalParams != null) {
             profile.getParameterList().add(new Parameter(additionalParams, ParameterType.NONE));
         }
-        ClientImageProperties defaultProperties = clientPropertyManager.getProperties(type);
+        ImageProperties defaultProperties = propertyManager.getProperties(ConnectionRole.CLIENT, type);
         if (defaultProperties == null) {
             throw new PropertyNotFoundException("Could not find a default Property for client: " + type.name() + ":" + version);
         }
-        TlsClient client = clientManager.getTlsClient(defaultProperties, profile, version, host, port);
+        TlsInstance client = instanceManager.getTlsClient(defaultProperties, profile, version, host, port);
         return client;
     }
     
