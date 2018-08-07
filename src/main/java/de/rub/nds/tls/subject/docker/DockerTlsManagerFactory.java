@@ -76,7 +76,7 @@ public class DockerTlsManagerFactory {
         if (defaultProperties == null) {
             throw new PropertyNotFoundException("Could not find a default Property for server: " + type.name() + ":" + version);
         }
-        TlsServer server = serverManager.getTlsServer(defaultProperties, profile, version);
+        TlsServer server = serverManager.getTlsServer(defaultProperties, profile, version, additionalParams);
         long startTime = System.currentTimeMillis();
         while (!isServerOnline(server.getHost(), server.getPort())) {
             if (startTime + 10000 < System.currentTimeMillis()) {
@@ -90,7 +90,6 @@ public class DockerTlsManagerFactory {
         }
         return server;
     }
-    
 
     public TlsServer getServer(TlsImplementationType type, String version, String additionalParams) {
         ParameterProfile defaultProfile = parameterManager.getDefaultProfile(type, ConnectionRole.SERVER);

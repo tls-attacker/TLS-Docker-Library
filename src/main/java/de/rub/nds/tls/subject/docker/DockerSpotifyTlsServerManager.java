@@ -42,7 +42,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
     }
 
     @Override
-    public TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile, String version) {
+    public TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile, String version, String additionalParameters) {
         int port_container_external;
         try {
             Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(SERVER_VERSION_LABEL, version)).stream()
@@ -74,7 +74,7 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
                             .stdinOnce(true)
                             .openStdin(true)
                             //.entrypoint("strace")
-                            .cmd(convertProfileToParams(profile, properties.getInternalPort(), properties.getDefaultKeyPath(), properties.getDefaultCertPath()))
+                            .cmd(convertProfileToParams(profile, properties.getInternalPort(), properties.getDefaultKeyPath(), properties.getDefaultCertPath(), additionalParameters))
                             .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
@@ -94,18 +94,21 @@ public class DockerSpotifyTlsServerManager implements TlsServerManager {
 
     }
 
-    private String[] convertProfileToParams(ParameterProfile profile, int port, String certPath, String keyPath) {
+    private String[] convertProfileToParams(ParameterProfile profile, int port, String certPath, String keyPath, String additionalParameters) {
         StringBuilder finalParams = new StringBuilder();
         for (Parameter param : profile.getParameterList()) {
             finalParams.append(param.getCmdParameter());
             finalParams.append(" ");
+        }
+        if (additionalParameters != null) {
+            finalParams.append(" ").append(additionalParameters);
         }
         return finalParams.toString().replace("[cert]", certPath).replace("[key]", keyPath).replace("[port]", "" + port).split(" ");
     }
 
     @Override
     public TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile) {
-        return this.getTlsServer(properties, profile, properties.getDefaultVersion());
+        return this.getTlsServer(properties, profile, properties.getDefaultVersion(), null);
     }
 
     @Override

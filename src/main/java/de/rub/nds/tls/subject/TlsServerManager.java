@@ -9,7 +9,7 @@ import de.rub.nds.tls.subject.properties.ServerImageProperties;
 
 public interface TlsServerManager {
 
-    TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile, String version);
+    TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile, String version, String additionalParameters);
     
     TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile);
 
