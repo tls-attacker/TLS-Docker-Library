@@ -1,5 +1,6 @@
 package de.rub.nds.tls.subject.params;
 
+import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
@@ -18,7 +19,7 @@ public class AvailableServerVersionsTest {
     public void listAllServers() {
         DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableServerVersions(type);
+            List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.SERVER, type);
             System.out.println("Server version: " + type);
             for (String version : availableVersions) {
                 System.out.println(version);
@@ -31,7 +32,7 @@ public class AvailableServerVersionsTest {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
         DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableServerVersions(type);
+            List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.SERVER, type);
             for (String version : availableVersions) {
                 try {
                     System.out.println(type.name() + ":" + version + " - " + isFunctional(factory, type, version));

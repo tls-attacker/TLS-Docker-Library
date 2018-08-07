@@ -9,9 +9,9 @@ import de.rub.nds.tls.subject.properties.ImageProperties;
 
 public interface TlsInstanceManager {
 
-    TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile);
+    TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String host);
     
-    TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version);
+    TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version, String host);
     
     TlsInstance getTlsClient(ImageProperties properties, ParameterProfile profile, String host, int port);
     

@@ -5,6 +5,7 @@
  */
 package de.rub.nds.tls.subject.params;
 
+import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
@@ -30,7 +31,7 @@ public class AvailableClientVersionsTest {
         DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         System.out.println("Available Clients: ");
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableClientVersions(type);
+            List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.CLIENT, type);
             System.out.println("Client version: " + type);
             for (String version : availableVersions) {
                 System.out.println(version);
@@ -46,7 +47,7 @@ public class AvailableClientVersionsTest {
         TlsTestServer testServer = new TlsTestServer(PORT);
         testServer.start();
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableClientVersions(type);
+            List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.CLIENT, type);
             for (String version : availableVersions) {
                 try {
                     System.out.println(type.name() + ":" + version + " - " + isFunctional(testServer, factory, type, version));

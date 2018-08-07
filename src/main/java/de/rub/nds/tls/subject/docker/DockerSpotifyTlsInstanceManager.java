@@ -39,7 +39,6 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     private static final String CLIENT_VERSION_LABEL = "client_version";
     private static final String SERVER_LABEL = "server_type";
     private static final String SERVER_VERSION_LABEL = "server_version";
-    private static final String SERVER_HOST = "127.0.0.42";
     private final Map<String, Integer> logReadOffset;
     
     DockerSpotifyTlsInstanceManager() {
@@ -87,12 +86,12 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     }
     
     @Override
-    public TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile) {
-        return this.getTlsServer(properties, profile, properties.getDefaultVersion());
+    public TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String host) {
+        return this.getTlsServer(properties, profile, properties.getDefaultVersion(), host);
     }
     
     @Override
-    public TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version) {
+    public TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version, String host) {
         int port_container_external;
         try {
             Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(SERVER_VERSION_LABEL, version)).stream()
@@ -132,7 +131,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             docker.startContainer(id);
 
             port_container_external = new Integer(docker.inspectContainer(id).networkSettings().ports().get(properties.getInternalPort() + "/tcp").get(0).hostPort());
-            TlsInstance tlsServer = new TlsInstance(id, ConnectionRole.SERVER, SERVER_HOST, port_container_external, profile.getType().name(), this);       
+            TlsInstance tlsServer = new TlsInstance(id, ConnectionRole.SERVER, host, port_container_external, profile.getType().name(), this);       
             //LOGGER.trace(getLogsFromTlsServer(tlsServer)); //skip server startup output
             LOGGER.debug(String.format("Started TLS Server %s : %s(%s)", id, profile.getType().name(), version));
 
