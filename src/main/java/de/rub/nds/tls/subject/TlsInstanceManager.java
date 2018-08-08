@@ -4,14 +4,14 @@ import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 
 /**
- * Interface to manage a specific TLS-Type
+ * Interface to manage a specific TLS-Instance
  */
 
 public interface TlsInstanceManager {
 
     TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String host);
     
-    TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version, String host);
+    TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version, String host, String additionalParameters);
     
     TlsInstance getTlsClient(ImageProperties properties, ParameterProfile profile, String host, int port);
     

@@ -74,33 +74,21 @@ public class DockerTlsManagerFactory {
     }
     
     private TlsInstance getInstance(ConnectionRole role, TlsImplementationType type, String version, String host, int port, String additionalParams) {
-        ParameterProfile profile = null;
+        ParameterProfile profile = parameterManager.getProfile(type, version, role);
+        if (profile == null) {
+            throw new DefaultProfileNotFoundException("Could not find a Profile for " + role.name() + ": " + type.name() + ":" + version);
+        }
         ImageProperties properties = propertyManager.getProperties(role, type);
+        if (properties == null) {
+            throw new PropertyNotFoundException("Could not find a Property for " + role.name() + ": " + type.name() + ":" + version);
+        }
         TlsInstance instance = null;
         switch (role) {
             case CLIENT:
-                List<ParameterProfile> otherProfileList = parameterManager.getOtherProfiles(type, ConnectionRole.CLIENT);
-                boolean useDefaultProfile = true;
-                if (!otherProfileList.isEmpty()) {
-                    for (ParameterProfile sProfile : otherProfileList) {
-                        for (String sVersion : sProfile.getVersionList()) {
-                            if (sVersion.equals(version)) {
-                                profile = sProfile;
-                                useDefaultProfile = false;
-                            }
-                        }
-                    }
-                }
-                if (useDefaultProfile) {
-                    profile = parameterManager.getDefaultProfile(type, ConnectionRole.CLIENT);
-                }
-                prepareInstance(ConnectionRole.CLIENT, type, version, profile, additionalParams, properties);
                 instance = instanceManager.getTlsClient(properties, profile, version, host, port);
                 break;
             case SERVER:
-                profile = parameterManager.getDefaultProfile(type, ConnectionRole.SERVER);
-                prepareInstance(ConnectionRole.SERVER, type, version, profile, additionalParams, properties);
-                instance = instanceManager.getTlsServer(properties, profile, version, DEFAULT_HOST);
+                instance = instanceManager.getTlsServer(properties, profile, version, DEFAULT_HOST, additionalParams);
                 long startTime = System.currentTimeMillis();
                 while (!isServerOnline(instance.getHost(), instance.getPort())) {
                     if (startTime + 10000 < System.currentTimeMillis()) {
@@ -119,16 +107,11 @@ public class DockerTlsManagerFactory {
         return instance;
     }
     
-    private void prepareInstance(ConnectionRole role, TlsImplementationType type, String version, ParameterProfile profile, String additionalParams, ImageProperties properties) {
-        if (profile == null) {
-            throw new DefaultProfileNotFoundException("Could not find a Profile for " + role.name() + ": " + type.name() + ":" + version);
-        }
+    private void prepareInstance(ConnectionRole role, TlsImplementationType type, String version, ParameterProfile profile, String additionalParams, ImageProperties properties) {  
         if (additionalParams != null) {
             profile.getParameterList().add(new Parameter(additionalParams, ParameterType.NONE));
         }
-        if (properties == null) {
-            throw new PropertyNotFoundException("Could not find a Property for " + role.name() + ": " + type.name() + ":" + version);
-        }
+        
     }
     
     public boolean isServerOnline(String address, int port) {

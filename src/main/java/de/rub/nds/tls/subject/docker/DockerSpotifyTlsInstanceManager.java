@@ -74,7 +74,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             docker.startContainer(id);
 
             TlsInstance tlsClient = new TlsInstance(id, ConnectionRole.CLIENT, host, port, profile.getType().name(), this);
-            //LOGGER.trace(getLogsFromTlsClient(tlsClient)); //skip client startup output
+            LOGGER.debug(getLogsFromTlsInstance(tlsClient));
             LOGGER.debug(String.format("Started TLS Client %s : %s(%s)", id, profile.getType().name(), version));
 
             return tlsClient;
@@ -87,11 +87,11 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     
     @Override
     public TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String host) {
-        return this.getTlsServer(properties, profile, properties.getDefaultVersion(), host);
+        return this.getTlsServer(properties, profile, properties.getDefaultVersion(), host, null);
     }
     
     @Override
-    public TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version, String host) {
+    public TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version, String host, String additionalParameters) {
         int port_container_external;
         try {
             Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(SERVER_VERSION_LABEL, version)).stream()
@@ -123,7 +123,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .stdinOnce(true)
                             .openStdin(true)
                             //.entrypoint("strace")
-                            .cmd(convertServerProfileToParams(profile, properties.getInternalPort(), properties.getDefaultKeyPath(), properties.getDefaultCertPath()))
+                            .cmd(convertServerProfileToParams(profile, properties.getInternalPort(), properties.getDefaultKeyPath(), properties.getDefaultCertPath(), additionalParameters))
                             .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
@@ -132,7 +132,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
 
             port_container_external = new Integer(docker.inspectContainer(id).networkSettings().ports().get(properties.getInternalPort() + "/tcp").get(0).hostPort());
             TlsInstance tlsServer = new TlsInstance(id, ConnectionRole.SERVER, host, port_container_external, profile.getType().name(), this);       
-            //LOGGER.trace(getLogsFromTlsServer(tlsServer)); //skip server startup output
+            LOGGER.debug(getLogsFromTlsInstance(tlsServer));
             LOGGER.debug(String.format("Started TLS Server %s : %s(%s)", id, profile.getType().name(), version));
 
             return tlsServer;
@@ -152,13 +152,18 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         return finalParams.toString().replace("[host]", host).replace("[port]", "" + port).split(" ");
     }
     
-    private String[] convertServerProfileToParams(ParameterProfile profile, int port, String certPath, String keyPath) {
+    private String[] convertServerProfileToParams(ParameterProfile profile, int port, String certPath, String keyPath, String additionalParameters) {
         StringBuilder finalParams = new StringBuilder();
         for (Parameter param : profile.getParameterList()) {
             finalParams.append(param.getCmdParameter());
             finalParams.append(" ");
         }
-        return finalParams.toString().replace("[cert]", certPath).replace("[key]", keyPath).replace("[port]", "" + port).split(" ");
+        if (additionalParameters != null) {
+            finalParams.append(additionalParameters);
+        }
+        String afterReplace = finalParams.toString().replace("[cert]", certPath).replace("[key]", keyPath).replace("[port]", "" + port);
+        LOGGER.debug("Final parameters: " + afterReplace);
+        return afterReplace.trim().split(" ");
     }
     
     @Override
