@@ -14,7 +14,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.util.concurrent.TimeUnit;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -31,14 +30,6 @@ public class TlsTestServer extends Thread {
     private boolean isConnectionSuccessful = false;
     private static final String PATH_TO_KEYSTORE = "./certs/keys.jks";
     private static final String KEYSTORE_PASSWORD = "password";
-
-//    public static void main(String[] args) throws IOException, InterruptedException {
-//        TlsTestServer testServer = new TlsTestServer(8000);
-//        testServer.start();
-//        TimeUnit.SECONDS.sleep(6);
-//        System.out.println(testServer.isConnectionSuccessful());
-//        testServer.stop("172.17.0.1", testServer.getPort());
-//    }
 
     TlsTestServer(int port) {
         this.port = port;

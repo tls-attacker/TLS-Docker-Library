@@ -62,7 +62,6 @@ public class AvailableClientVersionsTest {
         } catch (IOException ex) {
             Logger.getLogger(AvailableClientVersionsTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Testserver stopped");
     }
     
     public boolean isFunctional(TlsTestServer testServer, DockerTlsManagerFactory factory, TlsImplementationType type, String version) {

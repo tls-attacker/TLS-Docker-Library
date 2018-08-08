@@ -1,7 +1,7 @@
 package de.rub.nds.tls.subject;
 
 /**
- * The representation of a TLS-Client used for a Test
+ * The representation of a TLS-Instance used for a Test
  */
 
 public class TlsInstance {
