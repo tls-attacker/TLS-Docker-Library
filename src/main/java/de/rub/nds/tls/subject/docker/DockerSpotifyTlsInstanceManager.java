@@ -33,68 +33,23 @@ import org.apache.logging.log4j.Logger;
  * One instance is needed for each client or server type.
  */
 public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
-    private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");    
+
+    private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsInstanceManager.class);
     private static final String CLIENT_LABEL = "client_type";
     private static final String CLIENT_VERSION_LABEL = "client_version";
     private static final String SERVER_LABEL = "server_type";
     private static final String SERVER_VERSION_LABEL = "server_version";
     private final Map<String, Integer> logReadOffset;
-    
+
     DockerSpotifyTlsInstanceManager() {
         logReadOffset = new HashMap<>();
     }
-    
-    @Override
-    public TlsInstance getTlsClient(ImageProperties properties, ParameterProfile profile, String host, int port) {
-        return this.getTlsClient(properties, profile, properties.getDefaultVersion(), host, port);
-    }
-    
-    @Override
-    public TlsInstance getTlsClient(ImageProperties properties, ParameterProfile profile, String version, String host, int port) {
-        try {
-            Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(CLIENT_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(CLIENT_VERSION_LABEL, version)).stream()
-                    .findFirst()
-                    .orElseThrow(() -> new TlsVersionNotFoundException());
-            String id = DOCKER.createContainer(
-                    ContainerConfig.builder()
-                            .image(image.id())
-                            .attachStderr(true)
-                            .attachStdout(true)
-                            .attachStdin(true)
-                            .tty(true)
-                            .stdinOnce(true)
-                            .openStdin(true)
-                            //.entrypoint("strace")
-                            .cmd(convertClientProfileToParams(profile, host, port))
-                            .build(),
-                    profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
-            ).id();
-            LOGGER.debug("Starting TLS Client " + id);
-            DOCKER.startContainer(id);
 
-            TlsInstance tlsClient = new TlsInstance(id, ConnectionRole.CLIENT, host, port, profile.getType().name(), this);
-            LOGGER.debug(getLogsFromTlsInstance(tlsClient));
-            LOGGER.debug(String.format("Started TLS Client %s : %s(%s)", id, profile.getType().name(), version));
-
-            return tlsClient;
-        } catch (DockerException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-        
-    }
-    
     @Override
-    public TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String host) {
-        return this.getTlsServer(properties, profile, properties.getDefaultVersion(), host, null);
-    }
-    
-    @Override
-    public TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version, String host, String additionalParameters) {
-        int port_container_external;
+    public TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, String host, int port, String additionalParameters) {
         try {
-            Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(SERVER_VERSION_LABEL, version)).stream()
+            Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(getInstanceLabel(role), profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(getInstanceVersionLabel(role), version)).stream()
                     .findFirst()
                     .orElseThrow(() -> new TlsVersionNotFoundException());
             Volume volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
@@ -102,57 +57,89 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     .orElseThrow(() -> new CertVolumeNotFoundException());
             String id = DOCKER.createContainer(
                     ContainerConfig.builder()
-                            .image(image.id())
-                            .hostConfig(HostConfig.builder()
-                                    .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort("127.0.0.42"))))
-                                    .binds(HostConfig.Bind.builder()
-                                            .from(volume)
-                                            .readOnly(true)
-                                            .noCopy(true)
-                                            .to("/cert/")
-                                            .build())
-                                    //.autoRemove(true)
-                                    .readonlyRootfs(true)
-                                    //.capAdd("SYS_PTRACE")
-                                    .build())
-                            .exposedPorts(properties.getInternalPort() + "/tcp")
-                            .attachStderr(true)
-                            .attachStdout(true)
-                            .attachStdin(true)
-                            .tty(true)
-                            .stdinOnce(true)
-                            .openStdin(true)
-                            //.entrypoint("strace")
-                            .cmd(convertServerProfileToParams(profile, properties.getInternalPort(), properties.getDefaultKeyPath(), properties.getDefaultCertPath(), additionalParameters))
-                            .build(),
+                    .image(image.id())
+                    .hostConfig(getInstanceHostConfig(role, properties, host, volume))
+                    .exposedPorts(properties.getInternalPort() + "/tcp")
+                    .attachStderr(true)
+                    .attachStdout(true)
+                    .attachStdin(true)
+                    .tty(true)
+                    .stdinOnce(true)
+                    .openStdin(true)
+                    .cmd(convertProfileToParams(role, properties, profile, host, port, properties.getDefaultKeyPath(), properties.getDefaultCertPath(), additionalParameters))
+                    .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
-            LOGGER.debug("Starting TLS Server " + id);
+            LOGGER.debug("Starting TLS Instance " + id);
             DOCKER.startContainer(id);
-
-            port_container_external = new Integer(DOCKER.inspectContainer(id).networkSettings().ports().get(properties.getInternalPort() + "/tcp").get(0).hostPort());
-            TlsInstance tlsServer = new TlsInstance(id, ConnectionRole.SERVER, host, port_container_external, profile.getType().name(), this);       
-            LOGGER.debug(getLogsFromTlsInstance(tlsServer));
-            LOGGER.debug(String.format("Started TLS Server %s : %s(%s)", id, profile.getType().name(), version));
-
-            return tlsServer;
+            TlsInstance tlsInstance = new TlsInstance(id, role, host, getInstancePort(role, port, id), profile.getType().name(), this);
+            LOGGER.debug(getLogsFromTlsInstance(tlsInstance));
+            LOGGER.debug(String.format("Started TLS " + role.name() + " %s : %s(%s)", id, profile.getType().name(), version));
+            return tlsInstance;
         } catch (DockerException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
-
     }
     
-    private String[] convertClientProfileToParams(ParameterProfile profile, String host, int port) {
-        StringBuilder finalParams = new StringBuilder();
-        for (Parameter param : profile.getParameterList()) {
-            finalParams.append(param.getCmdParameter());
-            finalParams.append(" ");
+    public String getInstanceLabel(ConnectionRole role) {
+        switch (role) {
+            case CLIENT:
+                return CLIENT_LABEL;
+            case SERVER:
+                return SERVER_LABEL;
+            default:
+                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }
-        return finalParams.toString().replace("[host]", host).replace("[port]", "" + port).split(" ");
     }
     
-    private String[] convertServerProfileToParams(ParameterProfile profile, int port, String certPath, String keyPath, String additionalParameters) {
+    public String getInstanceVersionLabel(ConnectionRole role) {
+        switch (role) {
+            case CLIENT:
+                return CLIENT_VERSION_LABEL;
+            case SERVER:
+                return SERVER_VERSION_LABEL;
+            default:
+                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+        }
+    }
+    
+    private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, String host, Volume volume) {
+        switch (role) {
+            case CLIENT:
+                return HostConfig.builder().build();
+            case SERVER:
+                return HostConfig.builder()
+                        .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort(host))))
+                        .binds(HostConfig.Bind.builder()
+                                .from(volume)
+                                .readOnly(true)
+                                .noCopy(true)
+                                .to("/cert/")
+                                .build())
+                        .readonlyRootfs(true)
+                        .build();
+            default:
+                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+        }
+    }
+    
+    private int getInstancePort(ConnectionRole role, int port, String id) {
+        switch (role) {
+            case CLIENT:
+                return port;
+            case SERVER:
+                try {
+                    return new Integer(DOCKER.inspectContainer(id).networkSettings().ports().get(port + "/tcp").get(0).hostPort());
+                } catch (DockerException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            default:
+                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+        }
+    }
+
+    private String[] convertProfileToParams(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String host, int port, String certPath, String keyPath, String additionalParameters) {
         StringBuilder finalParams = new StringBuilder();
         for (Parameter param : profile.getParameterList()) {
             finalParams.append(param.getCmdParameter());
@@ -161,11 +148,23 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         if (additionalParameters != null) {
             finalParams.append(additionalParameters);
         }
-        String afterReplace = finalParams.toString().replace("[cert]", certPath).replace("[key]", keyPath).replace("[port]", "" + port);
+        String afterReplace = finalParams.toString();
+        if (host!=null) {
+            afterReplace = afterReplace.replace("[host]", host);
+        }
+        if (port!=0) {
+            afterReplace = afterReplace.replace("[port]", "" + port);
+        }
+        if (certPath!=null) {
+            afterReplace = afterReplace.replace("[cert]", certPath);
+        }
+        if (keyPath!=null) {
+            afterReplace = afterReplace.replace("[key]", keyPath);
+        }
         LOGGER.debug("Final parameters: " + afterReplace);
         return afterReplace.trim().split(" ");
     }
-    
+
     @Override
     public void killTlsInstance(TlsInstance tlsInstance) {
         LOGGER.debug("Shutting down TLS Instance " + tlsInstance.getId());

@@ -74,7 +74,6 @@ public class AvailableClientVersionsTest {
             }
             try {
                 client = factory.getClient(type, version, HOST, PORT);
-                //System.out.println("Client started successfully");
                 boolean waiting = true;
                 int timeout = 0;
                 while (waiting && timeout<CONNECTIONTIMEOUT) {
@@ -84,10 +83,8 @@ public class AvailableClientVersionsTest {
                     TimeUnit.SECONDS.sleep(1);
                     timeout++;
                 }
-                //System.out.println("Waited "+timeout+"s for connection");
             } catch (Exception ex) {
                 ex.printStackTrace();
-                //System.err.println("Failed to start client");
                 return false;
             }
             return testServer.isConnectionSuccessful();

@@ -70,7 +70,6 @@ public class AvailableServerVersionsTest {
                 server.kill();
             }
         }
-
     }
 }
 

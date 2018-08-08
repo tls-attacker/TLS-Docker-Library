@@ -10,10 +10,8 @@ import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.exceptions.DefaultProfileNotFoundException;
 import de.rub.nds.tls.subject.exceptions.ImplementationDidNotStartException;
 import de.rub.nds.tls.subject.exceptions.PropertyNotFoundException;
-import de.rub.nds.tls.subject.params.Parameter;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.params.ParameterProfileManager;
-import de.rub.nds.tls.subject.params.ParameterType;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import de.rub.nds.tls.subject.properties.PropertyManager;
 import java.io.IOException;
@@ -33,11 +31,7 @@ public class DockerTlsManagerFactory {
     private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final Logger LOGGER = LogManager.getLogger(DockerTlsManagerFactory.class);    
     private static final String DEFAULT_HOST = "127.0.0.42";
-    private static final int DEFAULT_PORT = 443;
-    private static final String CLIENT_LABEL = "client_type";
-    private static final String CLIENT_VERSION_LABEL = "client_version";
-    private static final String SERVER_LABEL = "server_type";
-    private static final String SERVER_VERSION_LABEL = "server_version";   
+    private static final int DEFAULT_PORT = 443;  
     private final ParameterProfileManager parameterManager;
     private final PropertyManager propertyManager;
     private final DockerSpotifyTlsInstanceManager instanceManager;
@@ -53,7 +47,7 @@ public class DockerTlsManagerFactory {
     }
 
     public TlsInstance getServer(TlsImplementationType type, String version, String additionalParams) {
-        return getInstance(ConnectionRole.SERVER, type, version, null, DEFAULT_PORT, additionalParams);
+        return getInstance(ConnectionRole.SERVER, type, version, DEFAULT_HOST, DEFAULT_PORT, additionalParams);
     }
     
     public TlsInstance getClient(TlsImplementationType type, String version, String host) {
@@ -80,10 +74,10 @@ public class DockerTlsManagerFactory {
         TlsInstance instance = null;
         switch (role) {
             case CLIENT:
-                instance = instanceManager.getTlsClient(properties, profile, version, host, port);
+                instance = instanceManager.getTlsInstance(role, properties, profile, version, host, port, additionalParams);
                 break;
             case SERVER:
-                instance = instanceManager.getTlsServer(properties, profile, version, DEFAULT_HOST, additionalParams);
+                instance = instanceManager.getTlsInstance(role, properties, profile, version, host, properties.getInternalPort(), additionalParams);
                 long startTime = System.currentTimeMillis();
                 while (!isServerOnline(instance.getHost(), instance.getPort())) {
                     if (startTime + 10000 < System.currentTimeMillis()) {
@@ -119,26 +113,12 @@ public class DockerTlsManagerFactory {
     }
 
     public List<String> getAvailableVersions(ConnectionRole role, TlsImplementationType type) {
-        String instanceLabel;
-        String instanceVersionLabel;
-        switch (role) {
-            case CLIENT:
-                instanceLabel = CLIENT_LABEL;
-                instanceVersionLabel = CLIENT_VERSION_LABEL;
-                break;
-            case SERVER:
-                instanceLabel = SERVER_LABEL;
-                instanceVersionLabel = SERVER_VERSION_LABEL;
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
-        }
         List<String> versionList = new LinkedList<>();
         try {
-            List<Image> serverImageList = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(instanceLabel, type.name().toLowerCase()));
+            List<Image> serverImageList = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(instanceManager.getInstanceLabel(role), type.name().toLowerCase()));
             for (Image image : serverImageList) {
                 if (image.labels() != null) {
-                    String version = image.labels().get(instanceVersionLabel);
+                    String version = image.labels().get(instanceManager.getInstanceVersionLabel(role));
                     if (version != null) {
                         versionList.add(version);
                     }

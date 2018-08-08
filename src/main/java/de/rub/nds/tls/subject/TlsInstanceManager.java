@@ -8,16 +8,8 @@ import de.rub.nds.tls.subject.properties.ImageProperties;
  */
 
 public interface TlsInstanceManager {
-
-    TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String host);
     
-    TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version, String host, String additionalParameters);
-    
-    TlsInstance getTlsClient(ImageProperties properties, ParameterProfile profile, String host, int port);
-    
-    TlsInstance getTlsClient(ImageProperties properties, ParameterProfile profile, String version, String host, int port);
-    
-    //TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, String host, int port);
+    TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, String host, int port, String additionalParameters);
 
     void killTlsInstance(TlsInstance tlsInstance);
 
