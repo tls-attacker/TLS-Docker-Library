@@ -82,6 +82,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         return null;
     }
     
+    @Override
     public String getInstanceLabel(ConnectionRole role) {
         switch (role) {
             case CLIENT:
@@ -93,6 +94,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
     }
     
+    @Override
     public String getInstanceVersionLabel(ConnectionRole role) {
         switch (role) {
             case CLIENT:
@@ -102,6 +104,40 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             default:
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }
+    }
+
+    @Override
+    public void killTlsInstance(TlsInstance tlsInstance) {
+        LOGGER.debug("Shutting down TLS Instance " + tlsInstance.getId());
+        try {
+            DOCKER.stopContainer(tlsInstance.getId(), 2);
+            tlsInstance.setExitCode(DOCKER.inspectContainer(tlsInstance.getId()).state().exitCode());
+            DOCKER.removeContainer(tlsInstance.getId());
+        } catch (ContainerNotFoundException e) {
+            LOGGER.debug(e);
+        } catch (DockerException | InterruptedException e) {
+            LOGGER.debug(e);
+        }
+    }
+
+    @Override
+    public String getLogsFromTlsInstance(TlsInstance tlsInstance) {
+        String logs = "-";
+        try {
+            LogStream logStream = DOCKER.logs(tlsInstance.getId(), LogsParam.stderr(), LogsParam.stdout());
+            String[] lines = logStream.readFully().split("\r\n|\r|\n");
+            logs = Arrays.stream(lines)
+                    .skip(logReadOffset.getOrDefault(tlsInstance.getId(), 0))
+                    .map(s -> s.concat("\n"))
+                    .reduce(String::concat)
+                    .orElse("-");
+            logReadOffset.put(tlsInstance.getId(), lines.length);
+        } catch (ContainerNotFoundException e) {
+            return logs;
+        } catch (DockerException | InterruptedException e) {
+            LOGGER.debug(e);
+        }
+        return logs;
     }
     
     private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, String host, Volume volume) {
@@ -163,39 +199,5 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         LOGGER.debug("Final parameters: " + afterReplace);
         return afterReplace.trim().split(" ");
-    }
-
-    @Override
-    public void killTlsInstance(TlsInstance tlsInstance) {
-        LOGGER.debug("Shutting down TLS Instance " + tlsInstance.getId());
-        try {
-            DOCKER.stopContainer(tlsInstance.getId(), 2);
-            tlsInstance.setExitCode(DOCKER.inspectContainer(tlsInstance.getId()).state().exitCode());
-            DOCKER.removeContainer(tlsInstance.getId());
-        } catch (ContainerNotFoundException e) {
-            LOGGER.debug(e);
-        } catch (DockerException | InterruptedException e) {
-            LOGGER.debug(e);
-        }
-    }
-
-    @Override
-    public String getLogsFromTlsInstance(TlsInstance tlsInstance) {
-        String logs = "-";
-        try {
-            LogStream logStream = DOCKER.logs(tlsInstance.getId(), LogsParam.stderr(), LogsParam.stdout());
-            String[] lines = logStream.readFully().split("\r\n|\r|\n");
-            logs = Arrays.stream(lines)
-                    .skip(logReadOffset.getOrDefault(tlsInstance.getId(), 0))
-                    .map(s -> s.concat("\n"))
-                    .reduce(String::concat)
-                    .orElse("-");
-            logReadOffset.put(tlsInstance.getId(), lines.length);
-        } catch (ContainerNotFoundException e) {
-            return logs;
-        } catch (DockerException | InterruptedException e) {
-            LOGGER.debug(e);
-        }
-        return logs;
     }
 }

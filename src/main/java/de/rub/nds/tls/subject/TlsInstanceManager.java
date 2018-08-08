@@ -11,6 +11,10 @@ public interface TlsInstanceManager {
     
     TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, String host, int port, String additionalParameters);
 
+    String getInstanceLabel(ConnectionRole role);
+    
+    String getInstanceVersionLabel(ConnectionRole role);
+    
     void killTlsInstance(TlsInstance tlsInstance);
 
     String getLogsFromTlsInstance(TlsInstance tlsInstance);
