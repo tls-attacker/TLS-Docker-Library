@@ -33,8 +33,8 @@ import org.apache.logging.log4j.Logger;
  * One instance is needed for each client or server type.
  */
 public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
+    private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");    
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsInstanceManager.class);
-    private static final DockerClient docker = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final String CLIENT_LABEL = "client_type";
     private static final String CLIENT_VERSION_LABEL = "client_version";
     private static final String SERVER_LABEL = "server_type";
@@ -53,10 +53,10 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     @Override
     public TlsInstance getTlsClient(ImageProperties properties, ParameterProfile profile, String version, String host, int port) {
         try {
-            Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(CLIENT_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(CLIENT_VERSION_LABEL, version)).stream()
+            Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(CLIENT_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(CLIENT_VERSION_LABEL, version)).stream()
                     .findFirst()
                     .orElseThrow(() -> new TlsVersionNotFoundException());
-            String id = docker.createContainer(
+            String id = DOCKER.createContainer(
                     ContainerConfig.builder()
                             .image(image.id())
                             .attachStderr(true)
@@ -71,7 +71,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
             LOGGER.debug("Starting TLS Client " + id);
-            docker.startContainer(id);
+            DOCKER.startContainer(id);
 
             TlsInstance tlsClient = new TlsInstance(id, ConnectionRole.CLIENT, host, port, profile.getType().name(), this);
             LOGGER.debug(getLogsFromTlsInstance(tlsClient));
@@ -94,13 +94,13 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     public TlsInstance getTlsServer(ImageProperties properties, ParameterProfile profile, String version, String host, String additionalParameters) {
         int port_container_external;
         try {
-            Image image = docker.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(SERVER_VERSION_LABEL, version)).stream()
+            Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(SERVER_LABEL, profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(SERVER_VERSION_LABEL, version)).stream()
                     .findFirst()
                     .orElseThrow(() -> new TlsVersionNotFoundException());
-            Volume volume = docker.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
+            Volume volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
                     .findFirst()
                     .orElseThrow(() -> new CertVolumeNotFoundException());
-            String id = docker.createContainer(
+            String id = DOCKER.createContainer(
                     ContainerConfig.builder()
                             .image(image.id())
                             .hostConfig(HostConfig.builder()
@@ -128,9 +128,9 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
             LOGGER.debug("Starting TLS Server " + id);
-            docker.startContainer(id);
+            DOCKER.startContainer(id);
 
-            port_container_external = new Integer(docker.inspectContainer(id).networkSettings().ports().get(properties.getInternalPort() + "/tcp").get(0).hostPort());
+            port_container_external = new Integer(DOCKER.inspectContainer(id).networkSettings().ports().get(properties.getInternalPort() + "/tcp").get(0).hostPort());
             TlsInstance tlsServer = new TlsInstance(id, ConnectionRole.SERVER, host, port_container_external, profile.getType().name(), this);       
             LOGGER.debug(getLogsFromTlsInstance(tlsServer));
             LOGGER.debug(String.format("Started TLS Server %s : %s(%s)", id, profile.getType().name(), version));
@@ -170,9 +170,9 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     public void killTlsInstance(TlsInstance tlsInstance) {
         LOGGER.debug("Shutting down TLS Instance " + tlsInstance.getId());
         try {
-            docker.stopContainer(tlsInstance.getId(), 2);
-            tlsInstance.setExitCode(docker.inspectContainer(tlsInstance.getId()).state().exitCode());
-            docker.removeContainer(tlsInstance.getId());
+            DOCKER.stopContainer(tlsInstance.getId(), 2);
+            tlsInstance.setExitCode(DOCKER.inspectContainer(tlsInstance.getId()).state().exitCode());
+            DOCKER.removeContainer(tlsInstance.getId());
         } catch (ContainerNotFoundException e) {
             LOGGER.debug(e);
         } catch (DockerException | InterruptedException e) {
@@ -184,7 +184,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     public String getLogsFromTlsInstance(TlsInstance tlsInstance) {
         String logs = "-";
         try {
-            LogStream logStream = docker.logs(tlsInstance.getId(), LogsParam.stderr(), LogsParam.stdout());
+            LogStream logStream = DOCKER.logs(tlsInstance.getId(), LogsParam.stderr(), LogsParam.stdout());
             String[] lines = logStream.readFully().split("\r\n|\r|\n");
             logs = Arrays.stream(lines)
                     .skip(logReadOffset.getOrDefault(tlsInstance.getId(), 0))

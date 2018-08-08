@@ -30,19 +30,14 @@ import org.apache.logging.log4j.Logger;
  */
 public class DockerTlsManagerFactory {
 
-    private static final DockerClient docker = new DefaultDockerClient("unix:///var/run/docker.sock");
-
-    private static final Logger LOGGER = LogManager.getLogger(DockerTlsManagerFactory.class);
-    
+    private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
+    private static final Logger LOGGER = LogManager.getLogger(DockerTlsManagerFactory.class);    
     private static final String DEFAULT_HOST = "127.0.0.42";
     private static final int DEFAULT_PORT = 443;
-    
-    private static final String SERVER_LABEL = "server_type";
-    private static final String SERVER_VERSION_LABEL = "server_version";
-    
     private static final String CLIENT_LABEL = "client_type";
     private static final String CLIENT_VERSION_LABEL = "client_version";
-
+    private static final String SERVER_LABEL = "server_type";
+    private static final String SERVER_VERSION_LABEL = "server_version";   
     private final ParameterProfileManager parameterManager;
     private final PropertyManager propertyManager;
     private final DockerSpotifyTlsInstanceManager instanceManager;
@@ -107,13 +102,6 @@ public class DockerTlsManagerFactory {
         return instance;
     }
     
-    private void prepareInstance(ConnectionRole role, TlsImplementationType type, String version, ParameterProfile profile, String additionalParams, ImageProperties properties) {  
-        if (additionalParams != null) {
-            profile.getParameterList().add(new Parameter(additionalParams, ParameterType.NONE));
-        }
-        
-    }
-    
     public boolean isServerOnline(String address, int port) {
         try {
             LOGGER.debug("Testing if server is online...");
@@ -147,7 +135,7 @@ public class DockerTlsManagerFactory {
         }
         List<String> versionList = new LinkedList<>();
         try {
-            List<Image> serverImageList = docker.listImages(DockerClient.ListImagesParam.withLabel(instanceLabel, type.name().toLowerCase()));
+            List<Image> serverImageList = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(instanceLabel, type.name().toLowerCase()));
             for (Image image : serverImageList) {
                 if (image.labels() != null) {
                     String version = image.labels().get(instanceVersionLabel);
