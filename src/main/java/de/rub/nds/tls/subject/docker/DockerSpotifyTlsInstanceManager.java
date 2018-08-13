@@ -52,13 +52,10 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(getInstanceLabel(role), profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(getInstanceVersionLabel(role), version)).stream()
                     .findFirst()
                     .orElseThrow(() -> new TlsVersionNotFoundException());
-            Volume volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
-                    .findFirst()
-                    .orElseThrow(() -> new CertVolumeNotFoundException());
             String id = DOCKER.createContainer(
                     ContainerConfig.builder()
                     .image(image.id())
-                    .hostConfig(getInstanceHostConfig(role, properties, host, volume))
+                    .hostConfig(getInstanceHostConfig(role, properties, host))
                     .exposedPorts(properties.getInternalPort() + "/tcp")
                     .attachStderr(true)
                     .attachStdout(true)
@@ -67,6 +64,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     .stdinOnce(true)
                     .openStdin(true)
                     .cmd(convertProfileToParams(role, properties, profile, host, port, properties.getDefaultKeyPath(), properties.getDefaultCertPath(), additionalParameters))
+                    .env("DISPLAY=$DISPLAY")
                     .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
@@ -81,7 +79,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         return null;
     }
-    
+
     @Override
     public String getInstanceLabel(ConnectionRole role) {
         switch (role) {
@@ -93,7 +91,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }
     }
-    
+
     @Override
     public String getInstanceVersionLabel(ConnectionRole role) {
         switch (role) {
@@ -139,27 +137,45 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         return logs;
     }
-    
-    private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, String host, Volume volume) {
-        switch (role) {
-            case CLIENT:
-                return HostConfig.builder().build();
-            case SERVER:
-                return HostConfig.builder()
-                        .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort(host))))
-                        .binds(HostConfig.Bind.builder()
-                                .from(volume)
-                                .readOnly(true)
-                                .noCopy(true)
-                                .to("/cert/")
-                                .build())
-                        .readonlyRootfs(true)
-                        .build();
-            default:
-                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+
+    private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, String host) {
+        try {
+            Volume volume;
+            switch (role) {
+                case CLIENT:
+                    //ToDo: Bind of X11 Settings fails
+                    return HostConfig.builder()
+                            .binds(HostConfig.Bind.builder()        
+                                    .from("/tmp/.X11-unix")
+                                    .readOnly(true)
+                                    .to("/tmp/.X11-unix")
+                                    .build())
+                            .build();
+                case SERVER:
+                    volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
+                            .findFirst()
+                            .orElseThrow(() -> new CertVolumeNotFoundException());
+                    return HostConfig.builder()
+                            .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort(host))))
+                            .binds(HostConfig.Bind.builder()
+                                    .from(volume)
+                                    .readOnly(true)
+                                    .noCopy(true)
+                                    .to("/cert/")
+                                    .build())
+                            .readonlyRootfs(true)
+                            .build();
+                default:
+                    throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+            }
+        } catch (DockerException | InterruptedException e) {
+            e.printStackTrace();
         }
+        return null;
     }
     
+    
+
     private int getInstancePort(ConnectionRole role, int port, String id) {
         switch (role) {
             case CLIENT:
@@ -185,16 +201,16 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             finalParams.append(additionalParameters);
         }
         String afterReplace = finalParams.toString();
-        if (host!=null) {
+        if (host != null) {
             afterReplace = afterReplace.replace("[host]", host);
         }
-        if (port!=0) {
+        if (port != 0) {
             afterReplace = afterReplace.replace("[port]", "" + port);
         }
-        if (certPath!=null) {
+        if (certPath != null) {
             afterReplace = afterReplace.replace("[cert]", certPath);
         }
-        if (keyPath!=null) {
+        if (keyPath != null) {
             afterReplace = afterReplace.replace("[key]", keyPath);
         }
         LOGGER.debug("Final parameters: " + afterReplace);
