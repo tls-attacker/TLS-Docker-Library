@@ -29,7 +29,7 @@ public class PropertyManager {
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.LIBRESSL, "2.6.3"));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MATRIXSSL, "3.9.3"));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MBED, "2.6.0"));
-        //imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OCAML_TLS, ""));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OCAMLTLS, "0.8.0"));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OPENSSL, "1.1.0f"));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.S2N, "latest"));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.WOLFSSL, "3.12.2-stable"));
@@ -45,7 +45,7 @@ public class PropertyManager {
         //imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MATRIXSSL, ...
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MBED, "2.6.0", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.NSS, "", 4430, "/cert/db/", "cert"));
-        //imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.OCAML_TLS, ...
+        //imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.OCAMLTLS, ...
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.OPENSSL, "1.1.0f", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.RUSTLS, "", 443, Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.S2N, "latest", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
