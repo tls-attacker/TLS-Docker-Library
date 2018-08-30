@@ -21,7 +21,7 @@ public class AvailableClientVersionsTest {
     
     private static final String HOST = "172.17.0.1";
     private static final int PORT = 8000;
-    private static final int CONNECTIONTIMEOUT = 10;
+    private static final int CONNECTION_TIMEOUT = 10;
     
     public AvailableClientVersionsTest() {
     }
@@ -76,7 +76,7 @@ public class AvailableClientVersionsTest {
                 client = factory.getClient(type, version, HOST, PORT);
                 boolean waiting = true;
                 int timeout = 0;
-                while (waiting && timeout<CONNECTIONTIMEOUT) {
+                while (waiting && timeout<CONNECTION_TIMEOUT) {
                     if (testServer.isConnectionSuccessful()) {
                         waiting=false;
                     }
