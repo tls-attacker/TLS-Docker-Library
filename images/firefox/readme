@@ -4,10 +4,10 @@ FIREFOX
 STATUS: EXPERIMENTAL
 
 - versions: 
-- server successfully tested: all versions
-- clients successfully tested: all versions
+- server successfully tested: 
+- clients successfully tested: 
 
 build client: 	docker build -t firefox-client --target firefox-client .
 run tls client: docker run -it --rm firefox-client
 
-build all supported bearSSL versions: ./firefox.sh
+build all supported firefox versions: ./firefox.sh
