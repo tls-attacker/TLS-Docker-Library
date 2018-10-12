@@ -17,4 +17,8 @@ RUN apk update &&\
     go \
     strace \
     unzip
+RUN apk add ca-certificates &&\
+  rm -rf /var/cache/apk/*
+COPY ./ca.crt /usr/local/share/ca-certificates/ca.crt
+RUN update-ca-certificates
 WORKDIR /src/

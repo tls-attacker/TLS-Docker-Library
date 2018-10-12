@@ -11,22 +11,22 @@ public class ImageProperties {
 
     private final String defaultVersion;
     
-    private final int internalPort;
+    private final Integer internalPort;
 
     private final String defaultKeyPath;
 
     private final String defaultCertPath;
     
-    public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion) {
+    public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, String defaultCertPath) {
         this.role = role;
         this.type = type;
         this.defaultVersion = defaultVersion;
-        this.internalPort = 0;
+        this.internalPort = null;
+        this.defaultCertPath = defaultCertPath;
         this.defaultKeyPath = null;
-        this.defaultCertPath = null;
     }
 
-    public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, int internalPort, String defaultCertPath, String defaultKeyPath) {
+    public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, Integer internalPort, String defaultCertPath, String defaultKeyPath) {
         this.role = role;
         this.type = type;
         this.defaultVersion = defaultVersion;
@@ -47,7 +47,7 @@ public class ImageProperties {
         return defaultVersion;
     }
     
-    public int getInternalPort() {
+    public Integer getInternalPort() {
         return internalPort;
     }
 

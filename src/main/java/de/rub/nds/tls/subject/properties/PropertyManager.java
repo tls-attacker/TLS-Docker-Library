@@ -16,23 +16,24 @@ public class PropertyManager {
         static final String CERT_CERT_PEM = "/cert/rsa2048cert.pem";
         static final String RUST_TEST_CA_KEY = "/cert/test-ca/rsa/end.rsa";
         static final String RUST_TEST_CA_FULLCHAIN = "/cert/test-ca/rsa/end.fullchain";
+        static final String CA_CERT = "/cert/ca.pem";
     }
 
     public PropertyManager() {
         imagePropertyList = new LinkedList<>();
         
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BEARSSL, "0.5"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BORINGSSL, "master"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BOTAN, "2.5"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.FIREFOX, "61.0.1"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.GNUTLS, "3.5.16"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.LIBRESSL, "2.6.3"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MATRIXSSL, "3.9.3"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MBED, "2.6.0"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OCAMLTLS, "0.8.0"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OPENSSL, "1.1.0f"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.S2N, "latest"));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.WOLFSSL, "3.12.2-stable"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BEARSSL, "0.5", null));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BORINGSSL, "master", null));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BOTAN, "2.5", null));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.FIREFOX, "61.0.1", null));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.GNUTLS, "3.5.16", Const.CA_CERT));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.LIBRESSL, "2.6.3", null));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MATRIXSSL, "3.9.3", null));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MBED, "2.6.0", Const.CA_CERT));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OCAMLTLS, "0.8.0", null));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OPENSSL, "1.1.0f", null));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.S2N, "latest", null));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.WOLFSSL, "3.12.2-stable", Const.CA_CERT));
         
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BEARSSL, "0.5", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BORINGSSL, "master", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
@@ -55,7 +56,7 @@ public class PropertyManager {
     public ImageProperties getProperties(ConnectionRole role, TlsImplementationType type) {
         for (ImageProperties properties : imagePropertyList) {
             if (properties.getRole().equals(role)) {
-                if (properties.getType() == type) {
+                if (properties.getType().equals(type)) {
                     return properties;
                 }
             }

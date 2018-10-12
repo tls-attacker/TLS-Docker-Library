@@ -31,7 +31,7 @@ public class DockerTlsManagerFactory {
     private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final Logger LOGGER = LogManager.getLogger(DockerTlsManagerFactory.class);    
     private static final String DEFAULT_HOST = "127.0.0.42";
-    private static final int DEFAULT_PORT = 443;  
+    private static final int DEFAULT_PORT = 443;
     private final ParameterProfileManager parameterManager;
     private final PropertyManager propertyManager;
     private final DockerSpotifyTlsInstanceManager instanceManager;

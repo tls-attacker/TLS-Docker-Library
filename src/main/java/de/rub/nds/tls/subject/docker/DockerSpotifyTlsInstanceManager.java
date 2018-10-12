@@ -8,6 +8,7 @@ import com.spotify.docker.client.exceptions.ContainerNotFoundException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.HostConfig;
+import com.spotify.docker.client.messages.HostConfig.Bind;
 import com.spotify.docker.client.messages.Image;
 import com.spotify.docker.client.messages.PortBinding;
 import com.spotify.docker.client.messages.Volume;
@@ -63,7 +64,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     .tty(true)
                     .stdinOnce(true)
                     .openStdin(true)
-                    .cmd(convertProfileToParams(role, properties, profile, host, port, properties.getDefaultKeyPath(), properties.getDefaultCertPath(), additionalParameters))
+                    .cmd(convertProfileToParams(profile, host, port, properties, additionalParameters))
                     .env("DISPLAY=$DISPLAY")
                     .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
@@ -143,13 +144,21 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             Volume volume;
             switch (role) {
                 case CLIENT:
-                    //ToDo: Bind of X11 Settings fails
+                    volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
+                            .findFirst()
+                            .orElseThrow(() -> new CertVolumeNotFoundException());
                     return HostConfig.builder()
-                            .binds(HostConfig.Bind.builder()        
-                                    .from("/tmp/.X11-unix")
-                                    .readOnly(true)
+                            .extraHosts("nds.tls-extractor.de:172.17.0.1")
+                            .appendBinds(Bind.from(volume)
+                                .to("/cert/")
+                                .readOnly(true)
+                                .noCopy(true)
+                                .build())
+                            //ToDo: Bind of X11 Settings does not work as expected
+                            .appendBinds(Bind.from("/tmp/.X11-unix")
                                     .to("/tmp/.X11-unix")
                                     .build())
+                            .readonlyRootfs(true)
                             .build();
                 case SERVER:
                     volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
@@ -173,8 +182,6 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         return null;
     }
-    
-    
 
     private int getInstancePort(ConnectionRole role, int port, String id) {
         switch (role) {
@@ -191,7 +198,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
     }
 
-    private String[] convertProfileToParams(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String host, int port, String certPath, String keyPath, String additionalParameters) {
+    private String[] convertProfileToParams(ParameterProfile profile, String host, Integer port, ImageProperties properties, String additionalParameters) {
         StringBuilder finalParams = new StringBuilder();
         for (Parameter param : profile.getParameterList()) {
             finalParams.append(param.getCmdParameter());
@@ -204,14 +211,14 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         if (host != null) {
             afterReplace = afterReplace.replace("[host]", host);
         }
-        if (port != 0) {
+        if (port != null) {
             afterReplace = afterReplace.replace("[port]", "" + port);
         }
-        if (certPath != null) {
-            afterReplace = afterReplace.replace("[cert]", certPath);
+        if (properties.getDefaultCertPath() != null) {
+            afterReplace = afterReplace.replace("[cert]", properties.getDefaultCertPath());
         }
-        if (keyPath != null) {
-            afterReplace = afterReplace.replace("[key]", keyPath);
+        if (properties.getDefaultKeyPath() != null) {
+            afterReplace = afterReplace.replace("[key]", properties.getDefaultKeyPath());
         }
         LOGGER.debug("Final parameters: " + afterReplace);
         return afterReplace.trim().split(" ");
