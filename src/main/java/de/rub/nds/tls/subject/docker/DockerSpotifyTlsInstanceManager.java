@@ -158,6 +158,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .appendBinds(Bind.from("/tmp/.X11-unix")
                                     .to("/tmp/.X11-unix")
                                     .build())
+                            .readonlyRootfs(true)
                             .build();
                 case SERVER:
                     volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
