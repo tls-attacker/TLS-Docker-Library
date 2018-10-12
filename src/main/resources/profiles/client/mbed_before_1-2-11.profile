@@ -12,8 +12,8 @@
     <Version>1.1.3</Version>
     <Version>1.1.2</Version>
     <Version>1.1.0</Version>
-    <Version>0.1.43</Version>
-    <Version>0.1.42</Version>
+    <Version>0.14.3</Version>
+    <Version>0.14.2</Version>
     <Parameter>
         <cmdParameter>server_name=[host] server_port=[port]</cmdParameter>
         <type>HOST_PORT</type>
