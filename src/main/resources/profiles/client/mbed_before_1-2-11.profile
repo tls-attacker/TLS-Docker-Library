@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <parameterProfile>
-    <name>mbed_default</name>
-    <description>Default Profile for MbedTLS</description>
+    <name>mbed_before_1-2-11</name>
+    <description>Profile for MbedTLS versions before 1-2-11</description>
     <type>MBED</type>
     <role>CLIENT</role>
     <Version>1.1.8</Version>
