@@ -22,17 +22,17 @@ public class ImageProperties {
         this.type = type;
         this.defaultVersion = defaultVersion;
         this.internalPort = null;
-        this.defaultCertPath = defaultCertPath;
         this.defaultKeyPath = null;
+        this.defaultCertPath = defaultCertPath;
     }
 
-    public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, Integer internalPort, String defaultCertPath, String defaultKeyPath) {
+    public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, Integer internalPort, String defaultKeyPath, String defaultCertPath) {
         this.role = role;
         this.type = type;
         this.defaultVersion = defaultVersion;
         this.internalPort = internalPort;
-        this.defaultCertPath = defaultCertPath;
         this.defaultKeyPath = defaultKeyPath;
+        this.defaultCertPath = defaultCertPath;
     }
 
     public ConnectionRole getRole() {
