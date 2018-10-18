@@ -1,6 +1,7 @@
 *.pem
 *.srl
 *.csr
+*.crt
 db/
 test-ca/
 apps/

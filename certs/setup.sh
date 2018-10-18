@@ -5,6 +5,7 @@ if [ ! -f ca.pem ] && [ ! -f ca_key.pem ]; then
   openssl req -new -nodes -x509 -subj "/C=DE/ST=NRW/L=Bochum/O=RUB/OU=NDS" -key ca_key.pem -out ca.pem
   openssl req -new -nodes -x509 -subj "/C=DE/ST=NRW/L=Bochum/O=RUB/OU=NDS" -key ca_key.pem -out ca.crt
   cp ca.crt ../images/baseimage/
+  cp ca.pem ../images/firefox/
 fi
 if [ ! -f rsa2048cert.pem ] && [ ! -f rsa2048key.pem ]; then
   echo "Generating RSA keys"
