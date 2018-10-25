@@ -1,10 +1,12 @@
 #!/bin/sh
-if [ ! -f ca.pem ] && [ ! -f ca_key.pem ]; then
-  echo "Generating CA keys"
-  openssl genpkey -algorithm RSA -out ca_key.pem -pkeyopt rsa_keygen_bits:2048
+if [ ! -f ca_key.pem ]; 
+then
+  echo "Getting Root CA private key from resources"
+  cp ../src/main/resources/ca_key.pem ca_key.pem
+  echo "Generating Root CA Certificates"
   openssl req -new -nodes -x509 -subj "/C=DE/ST=NRW/L=Bochum/O=RUB/OU=NDS" -key ca_key.pem -out ca.pem
-  openssl req -new -nodes -x509 -subj "/C=DE/ST=NRW/L=Bochum/O=RUB/OU=NDS" -key ca_key.pem -out ca.crt
-  cp ca.crt ../images/baseimage/
+  echo "Copying Root CA Certificates in relevant image folders"
+  cp ca.pem ../images/baseimage/
   cp ca.pem ../images/firefox/
 fi
 if [ ! -f rsa2048cert.pem ] && [ ! -f rsa2048key.pem ]; then
@@ -49,17 +51,3 @@ docker volume remove cert-data
 docker volume create cert-data
 docker run --rm -v cert-data:/cert/ -v $(pwd):/src/ busybox \
   cp -r /src/rsa2048cert.pem /src/rsa2048key.pem /src/rsa2048combined.pem /src/ec256cert.pem /src/ec256key.pem /src/ec256combined.pem /src/keys.jks /src/ca.pem /src/ca_key.pem /src/dh.pem /src/db/ /src/test-ca/ /cert/
-
-#Generating RSA test keys for tls-extractor
-mkdir tls-extractor-certs
-cd tls-extractor-certs
-for len in 512 1024 2048 3072 4096 5120 6144 7168 8192
-do
-  if [ ! -f rsa${len}_cert.pem ] && [ ! -f rsa${len}_key.pem ]; then
-    echo "Generating RSA test keys for tls-extractor"
-    openssl genpkey -algorithm RSA -out rsa${len}_key.pem -pkeyopt rsa_keygen_bits:${len}
-    openssl req -new -nodes -subj "/C=DE/ST=NRW/L=Bochum/O=RUB/OU=NDS/CN=nds.tls-extractor.de" -key rsa${len}_key.pem -out rsa${len}_cert.csr
-    openssl x509 -req -in rsa${len}_cert.csr -CA ../ca.pem -CAkey ../ca_key.pem -CAcreateserial -out rsa${len}_cert.pem -days 1024
-  fi
-  rm -f *.csr
-done
