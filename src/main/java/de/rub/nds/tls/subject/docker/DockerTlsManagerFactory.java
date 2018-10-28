@@ -5,6 +5,7 @@ import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.Image;
 import de.rub.nds.tls.subject.ConnectionRole;
+import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.exceptions.DefaultProfileNotFoundException;
@@ -30,7 +31,8 @@ public class DockerTlsManagerFactory {
 
     private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final Logger LOGGER = LogManager.getLogger(DockerTlsManagerFactory.class);    
-    private static final String DEFAULT_HOST = "127.0.0.42";
+    private static final String DEFAULT_HOSTNAME = "nds.tls-docker-library.de";
+    private static final String DEFAULT_IP = "127.0.0.42";
     private static final int DEFAULT_PORT = 443;
     private final ParameterProfileManager parameterManager;
     private final PropertyManager propertyManager;
@@ -47,22 +49,36 @@ public class DockerTlsManagerFactory {
     }
 
     public TlsInstance getServer(TlsImplementationType type, String version, String additionalParams) {
-        return getInstance(ConnectionRole.SERVER, type, version, DEFAULT_HOST, DEFAULT_PORT, additionalParams);
+        HostInfo hostInfo = new HostInfo(DEFAULT_IP, DEFAULT_HOSTNAME, DEFAULT_PORT);
+        return getInstance(ConnectionRole.SERVER, type, version, hostInfo, additionalParams);
     }
     
-    public TlsInstance getClient(TlsImplementationType type, String version, String host) {
-        return getClient(type, version, host, DEFAULT_PORT, null);
+    public TlsInstance getClient(TlsImplementationType type, String version, String ip) {
+        return getClient(type, version, ip, null);
     }
     
-    public TlsInstance getClient(TlsImplementationType type, String version, String host, int port) {
-        return getClient(type, version, host, port, null);
+    public TlsInstance getClient(TlsImplementationType type, String version, String ip, String hostname) {
+        return getClient(type, version, ip, hostname, DEFAULT_PORT);
     }
     
-    public TlsInstance getClient(TlsImplementationType type, String version, String host, int port, String additionalParams) {
-        return getInstance(ConnectionRole.CLIENT, type, version, host, port, additionalParams);
+    public TlsInstance getClient(TlsImplementationType type, String version, String ip, int port) {
+        return getClient(type, version, ip, null, port);
     }
     
-    private TlsInstance getInstance(ConnectionRole role, TlsImplementationType type, String version, String host, int port, String additionalParams) {
+    public TlsInstance getClient(TlsImplementationType type, String version, String ip, String hostname, int port) {
+        return getClient(type, version, ip, hostname, port, null);
+    }
+    
+    public TlsInstance getClient(TlsImplementationType type, String version, String ip, int port, String additionalParams) {
+        return getClient(type, version, ip, null, port, additionalParams);
+    }
+    
+    public TlsInstance getClient(TlsImplementationType type, String version, String ip, String hostname, int port, String additionalParams) {
+        HostInfo hostInfo = new HostInfo(ip, hostname, port);
+        return getInstance(ConnectionRole.CLIENT, type, version, hostInfo, additionalParams);
+    }
+    
+    private TlsInstance getInstance(ConnectionRole role, TlsImplementationType type, String version, HostInfo hostInfo, String additionalParams) {
         ParameterProfile profile = parameterManager.getProfile(type, version, role);
         if (profile == null) {
             throw new DefaultProfileNotFoundException("Could not find a Profile for " + role.name() + ": " + type.name() + ":" + version);
@@ -74,10 +90,11 @@ public class DockerTlsManagerFactory {
         TlsInstance instance = null;
         switch (role) {
             case CLIENT:
-                instance = instanceManager.getTlsInstance(role, properties, profile, version, host, port, additionalParams);
+                instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
                 break;
             case SERVER:
-                instance = instanceManager.getTlsInstance(role, properties, profile, version, host, properties.getInternalPort(), additionalParams);
+                hostInfo.updatePort(properties.getInternalPort());
+                instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
                 long startTime = System.currentTimeMillis();
                 while (!isServerOnline(instance.getHost(), instance.getPort())) {
                     if (startTime + 10000 < System.currentTimeMillis()) {

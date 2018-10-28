@@ -9,7 +9,7 @@ import de.rub.nds.tls.subject.properties.ImageProperties;
 
 public interface TlsInstanceManager {
     
-    TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, String host, int port, String additionalParameters);
+    TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, HostInfo hostInfo, String additionalParameters);
 
     String getInstanceLabel(ConnectionRole role);
     

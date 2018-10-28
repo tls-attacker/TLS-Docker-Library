@@ -19,7 +19,8 @@ import org.junit.Test;
 
 public class AvailableClientVersionsTest {
     
-    private static final String HOST = "172.17.0.1";
+    private static final String HOSTNAME = "nds.tls-docker-library-test.de";
+    private static final String IP = "172.17.0.1";
     private static final int PORT = 8000;
     private static final int CONNECTION_TIMEOUT = 10;
     
@@ -58,7 +59,7 @@ public class AvailableClientVersionsTest {
             }
         }
         try {
-            testServer.stop(HOST, PORT);
+            testServer.stop(IP, PORT);
         } catch (IOException ex) {
             Logger.getLogger(AvailableClientVersionsTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -73,7 +74,7 @@ public class AvailableClientVersionsTest {
                 return false;
             }
             try {
-                client = factory.getClient(type, version, HOST, PORT);
+                client = factory.getClient(type, version, IP, HOSTNAME, PORT);
                 boolean waiting = true;
                 int timeout = 0;
                 while (waiting && timeout<CONNECTION_TIMEOUT) {

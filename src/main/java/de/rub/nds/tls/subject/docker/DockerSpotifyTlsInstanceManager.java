@@ -13,6 +13,7 @@ import com.spotify.docker.client.messages.Image;
 import com.spotify.docker.client.messages.PortBinding;
 import com.spotify.docker.client.messages.Volume;
 import de.rub.nds.tls.subject.ConnectionRole;
+import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsInstanceManager;
 import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
@@ -48,7 +49,8 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     }
 
     @Override
-    public TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, String host, int port, String additionalParameters) {
+    public TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, HostInfo hostInfo, String additionalParameters) {
+        String host = getIpOrHostNameToUse(hostInfo, properties);
         try {
             Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(getInstanceLabel(role), profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(getInstanceVersionLabel(role), version)).stream()
                     .findFirst()
@@ -56,7 +58,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             String id = DOCKER.createContainer(
                     ContainerConfig.builder()
                     .image(image.id())
-                    .hostConfig(getInstanceHostConfig(role, properties, host))
+                    .hostConfig(getInstanceHostConfig(role, properties, hostInfo))
                     .exposedPorts(properties.getInternalPort() + "/tcp")
                     .attachStderr(true)
                     .attachStdout(true)
@@ -64,14 +66,14 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     .tty(true)
                     .stdinOnce(true)
                     .openStdin(true)
-                    .cmd(convertProfileToParams(profile, host, port, properties, additionalParameters))
+                    .cmd(convertProfileToParams(profile, host, hostInfo.getPort(), properties, additionalParameters))
                     .env("DISPLAY=$DISPLAY")
                     .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
             LOGGER.debug("Starting TLS Instance " + id);
             DOCKER.startContainer(id);
-            TlsInstance tlsInstance = new TlsInstance(id, role, host, getInstancePort(role, port, id), profile.getType().name(), this);
+            TlsInstance tlsInstance = new TlsInstance(id, role, host, getInstancePort(role, hostInfo.getPort(), id), profile.getType().name(), this);
             LOGGER.debug(getLogsFromTlsInstance(tlsInstance));
             LOGGER.debug(String.format("Started TLS " + role.name() + " %s : %s(%s)", id, profile.getType().name(), version));
             return tlsInstance;
@@ -138,17 +140,31 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         return logs;
     }
+    
+    private String getIpOrHostNameToUse(HostInfo hostInfo, ImageProperties properties) {
+        String host;
+        if (hostInfo.getHostname() == null || properties.isUseIP()) {
+            host = hostInfo.getIp();
+        } else {
+            host = hostInfo.getHostname();
+        }
+        return host;
+    }
 
-    private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, String host) {
+    private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, HostInfo hostInfo) {
         try {
             Volume volume;
+            String extraHost = "test:127.0.0.1";
+            if (hostInfo.getHostname() != null) {
+                extraHost = hostInfo.getHostname() + ":" + hostInfo.getIp();
+            }
             switch (role) {
                 case CLIENT:
                     volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
                             .findFirst()
                             .orElseThrow(() -> new CertVolumeNotFoundException());
                     return HostConfig.builder()
-                            .extraHosts("nds.tls-extractor.de:172.17.0.1")
+                            .extraHosts(extraHost)
                             .appendBinds(Bind.from(volume)
                                 .to("/cert/")
                                 .readOnly(true)
@@ -164,7 +180,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .findFirst()
                             .orElseThrow(() -> new CertVolumeNotFoundException());
                     return HostConfig.builder()
-                            .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort(host))))
+                            .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort(getIpOrHostNameToUse(hostInfo, properties)))))
                             .binds(HostConfig.Bind.builder()
                                     .from(volume)
                                     .readOnly(true)
