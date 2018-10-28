@@ -1,11 +1,10 @@
 #!/bin/sh
-if [ ! -f ca_key.pem ]; 
-then
+if [ ! -f ca_key.pem ]; then
   echo "Getting Root CA private key from resources"
   cp ../src/main/resources/ca_key.pem ca_key.pem
-  echo "Generating Root CA Certificates"
+  echo "Generating Root CA Certificate"
   openssl req -new -nodes -x509 -subj "/C=DE/ST=NRW/L=Bochum/O=RUB/OU=NDS" -key ca_key.pem -out ca.pem
-  echo "Copying Root CA Certificates in relevant image folders"
+  echo "Copying Root CA Certificate in relevant image folders"
   cp ca.pem ../images/baseimage/
   cp ca.pem ../images/firefox/
 fi
