@@ -11,6 +11,7 @@ cd ..
 cd botan
 ./botan-1_11_X.sh
 ./botan-2.X.sh
+./botan-2_X_0.sh
 cd ..
 cd bouncycastle
 ./bouncycastletls.sh

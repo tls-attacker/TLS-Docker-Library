@@ -1,6 +1,6 @@
 FROM alpine-build as openssl
 ARG VERSION
-RUN wget -O openssl.tar.gz https://www.openssl.org/source/old/1.1.0/openssl-1.1.0${VERSION}.tar.gz
+RUN wget -O openssl.tar.gz https://www.openssl.org/source/old/1.1.0/openssl-1.1.0${VERSION}.tar.gz || wget -O openssl.tar.gz https://www.openssl.org/source/openssl-1.1.0${VERSION}.tar.gz
 RUN mkdir openssl
 RUN tar -xzf openssl.tar.gz -C openssl --strip-components 1
 WORKDIR /src/openssl

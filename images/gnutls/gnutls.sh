@@ -1,5 +1,5 @@
 #!/bin/bash
-array=(0 0_1 1)
+array=(0 0_1 1 2 3 4)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
@@ -17,7 +17,7 @@ do
 	i=i+1
 done
 
-array=(8 9 10 11 12 13 14 15 16)
+array=(8 9 10 11 12 13 14 15 16 17 18 19)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
@@ -44,7 +44,7 @@ do
 	i=i+1
 done
 
-array=(16 17 18 19 20 21 22 23 24 25 26 27 28)
+array=(16 17 18 19 20 21 22 23 24 25 26 27 28 29)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do

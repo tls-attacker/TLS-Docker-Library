@@ -1,6 +1,6 @@
 #!/bin/bash
 
-array=(a b c d e f -pre3)
+array=(a b c d e f g h i -pre3)
 typeset -i i=0 max=${#array[*]}
 
 while (( i < max ))
