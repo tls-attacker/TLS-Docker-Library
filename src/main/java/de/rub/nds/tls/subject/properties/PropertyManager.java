@@ -24,11 +24,11 @@ public class PropertyManager {
         
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BEARSSL, "0.5", null, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BORINGSSL, "master", null, false));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BOTAN, "2.5", null, false));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.FIREFOX, "61.0.1", null, false));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BOTAN, "2.3.0", null, false));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.FIREFOX, "61.0.2", null, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.GNUTLS, "3.5.16", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.LIBRESSL, "2.6.3", Const.CA_CERT, false));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MATRIXSSL, "3.9.3", null, true));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MATRIXSSL, "3-9-3", null, true));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MBED, "2.6.0", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OCAMLTLS, "0.8.0", null, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OPENSSL, "1.1.0f", null, false));
