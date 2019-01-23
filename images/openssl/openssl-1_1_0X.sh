@@ -1,6 +1,6 @@
 #!/bin/bash
 
-array=(a b c d e f -pre3)
+array=(a b c d e f g h i -pre3)
 typeset -i i=0 max=${#array[*]}
 docker build --build-arg VERSION= -t openssl-1_1_0-server -f Dockerfile-1_1_0x --target openssl-server .
 docker build --build-arg VERSION= -t openssl-1_1_0-client -f Dockerfile-1_1_0x --target openssl-client .

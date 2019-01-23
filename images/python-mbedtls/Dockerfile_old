@@ -1,0 +1,14 @@
+FROM alpine-build as python-mbedtls
+ARG VERSION
+RUN apk add --no-cache mbedtls-dev py-setuptools python-dev
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+RUN python get-pip.py
+RUN pip install contextlib2 pytest enum34 ipaddress certifi 
+RUN git clone --depth=1 --branch=${VERSION} https://github.com/Synss/python-mbedtls
+WORKDIR python-mbedtls
+RUN python setup.py build && python setup.py install
+WORKDIR tests
+COPY tls_server.py /src/python-mbedtls/tests
+RUN python tls_server.py
+
+
