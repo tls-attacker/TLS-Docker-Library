@@ -1,17 +1,17 @@
 package de.rub.nds.tls.subject;
 
 import de.rub.nds.tls.subject.params.ParameterProfile;
-import de.rub.nds.tls.subject.properties.ImageProperties;
+import de.rub.nds.tls.subject.properties.ServerImageProperties;
 
 /**
- * Interface to manage a specific type of TLS-Servers
+ * Interface to manage a specific type of TLS-Server
  */
 
 public interface TlsServerManager {
 
-    TlsServer getTlsServer(ImageProperties properties, ParameterProfile profile, String version);
+    TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile, String version);
     
-    TlsServer getTlsServer(ImageProperties properties, ParameterProfile profile);
+    TlsServer getTlsServer(ServerImageProperties properties, ParameterProfile profile);
 
     void killTlsServer(TlsServer tlsServer);
 

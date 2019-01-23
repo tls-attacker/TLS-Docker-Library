@@ -1,3 +1,9 @@
 ---------------------------
+RUSTLS
+- versions: 
+	one version (latest) from github available
+- server successfully tested: no build script available
+- clients successfully tested: clients not available for this implementation
+
 build:      docker build -t rustls-server .
 tls server: docker run -it --rm rustls-server

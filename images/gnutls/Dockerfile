@@ -14,9 +14,7 @@ RUN make autoreconf
 RUN ./configure --with-included-libtasn1 --with-included-unistring --disable-maintainer-mode --disable-doc --disable-full-test-suite --disable-cxx --disable-padlock --without-p11-kit --without-tpm --prefix=/build/
 RUN make && make install
 
-FROM scratch
-LABEL "server_type"="gnutls"
-LABEL "server_version"="3.5.15"
+FROM scratch as gnutls-base
 COPY --from=gnutls-gnutls /lib/ld-musl-x86_64.so.* \
   /usr/lib/libgmp.so.* \
   /usr/lib/libintl.so.* \
@@ -24,5 +22,15 @@ COPY --from=gnutls-gnutls /lib/ld-musl-x86_64.so.* \
   /build/lib/libnettle.so.* \
   /build/lib/libhogweed.so.* \
   /lib/libz.so.* /lib/
+
+FROM gnutls-base as gnutls-server
+LABEL "server_type"="gnutls"
+LABEL "server_version"="3.5.15"
 COPY --from=gnutls-gnutls /build/bin/gnutls-serv /bin/
 ENTRYPOINT ["gnutls-serv"]
+
+FROM gnutls-base as gnutls-client
+LABEL "client_type"="gnutls"
+LABEL "client_version"="3.5.15"
+COPY --from=gnutls-gnutls /build/bin/gnutls-cli /bin/
+ENTRYPOINT ["gnutls-cli"]

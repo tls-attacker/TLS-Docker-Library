@@ -5,6 +5,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: CyaSSL 2.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t cyassl_2.${array[$i]}-server -f Dockerfile-2_x .
+	docker build --build-arg VERSION=${array[$i]} -t cyassl_2.${array[$i]}-server -f Dockerfile-2_x --target wolfssl-server .
+	docker build --build-arg VERSION=${array[$i]} -t cyassl_2.${array[$i]}-client -f Dockerfile-2_x --target wolfssl-client .
 	i=i+1
 done

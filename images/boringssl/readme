@@ -1,9 +1,17 @@
-build:      docker build -t boringssl-server .
-tls server: docker run -it --rm boringssl-server
-tls shim:   docker run -it --rm --entrypoint /bin/bssl_shim boringssl-server  
+---------------------------
+BORINGSSL
+- versions: 
+	2272, 2311, 2357, 
+	2490, 2564, 2623, 2661, 3239, 
+	2704, 2883, 2924, 2987, 3029, 3112, 3202, chromium-stable, master
+- server successfully tested: all versions
+- clients successfully tested: all versions
+
+build server:	docker build -t boringssl-server --target bearssl-server .
+run tls server:	docker run -it --rm boringssl-server
+run tls shim:   docker run -it --rm --entrypoint /bin/bssl_shim boringssl-server
+
+build client:	docker build -t boringssl-client --target bearssl-client .
+run tls client:	docker run -it --rm boringssl-client
 
 build all supported boringSSL versions: ./boringssl-X.sh
-
-build a single boringSSL version:  docker build --build-arg VERSION=${VERSION} -t boringssl-${VERSION}-server -f ${Dockerfile_for_your_version} .
-
-	for example:  docker build --build-arg VERSION=2311 -t boringssl-2311-server -f Dockerfile-2272-2357 .

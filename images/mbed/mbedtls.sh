@@ -5,6 +5,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: mbed TLS ${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t mbedtls-${array[$i]}-server -f Dockerfile-mbedtls_x .
+	docker build --build-arg VERSION=${array[$i]} -t mbedtls-${array[$i]}-server -f Dockerfile-mbedtls_x --target mbed-server .
+	docker build --build-arg VERSION=${array[$i]} -t mbedtls-${array[$i]}-client -f Dockerfile-mbedtls_x --target mbed-client .
 	i=i+1
 done

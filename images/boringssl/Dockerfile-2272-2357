@@ -1,4 +1,4 @@
-FROM alpine-build as boringssl
+FROM alpine-build as boringssl-base1
 ARG VERSION
 RUN git clone --depth=1 -b ${VERSION} https://boringssl.googlesource.com/boringssl
 #remove the errorflags in CMakeLists.txt otherwise boringssl will not compile (workaround)
@@ -10,12 +10,20 @@ RUN cmake -DCMAKE_BUILD_TYPE=Release /src/boringssl/
 #ignore the errors while compiling, linker errors in the shim module -> shim is not working
 RUN make -i
 
-FROM scratch
+FROM scratch as boringssl-base2
+COPY --from=boringssl-base1 /lib/ld-musl-x86_64.so.* \
+  /usr/lib/libstdc++.so.* \
+  /usr/lib/libgcc_s.so.* /lib/
+COPY --from=boringssl-base1 /build/tool/bssl /bin/
+
+FROM boringssl-base2 as boringssl-server
 ARG VERSION
 LABEL "server_type"="boringssl"
 LABEL "server_version"="${VERSION}"
-COPY --from=boringssl /lib/ld-musl-x86_64.so.* \
-  /usr/lib/libstdc++.so.* \
-  /usr/lib/libgcc_s.so.* /lib/
-COPY --from=boringssl /build/tool/bssl /bin/
 ENTRYPOINT ["bssl", "s_server"]
+
+FROM boringssl-base2 as boringssl-client
+ARG VERSION
+LABEL "client_type"="boringssl"
+LABEL "client_version"="${VERSION}"
+ENTRYPOINT ["bssl", "s_client"]
