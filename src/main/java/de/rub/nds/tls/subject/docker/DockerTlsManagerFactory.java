@@ -38,6 +38,10 @@ public class DockerTlsManagerFactory {
     private final PropertyManager propertyManager;
     private final DockerSpotifyTlsInstanceManager instanceManager;
 
+    private static final int SERVER_POLL_INTERVAL_MILLISECONDS = 50;
+
+    private static final int TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS = 10000;
+
     public DockerTlsManagerFactory() {
         parameterManager = new ParameterProfileManager();
         propertyManager = new PropertyManager();
@@ -96,16 +100,7 @@ public class DockerTlsManagerFactory {
                 hostInfo.updatePort(properties.getInternalPort());
                 instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
                 long startTime = System.currentTimeMillis();
-                while (!isServerOnline(instance.getHost(), instance.getPort())) {
-                    if (startTime + 10000 < System.currentTimeMillis()) {
-                        throw new ImplementationDidNotStartException("Timeout");
-                    }
-                    try {
-                        Thread.currentThread().sleep(50);
-                    } catch (InterruptedException ex) {
-                        throw new ImplementationDidNotStartException("Interrupted while waiting for server", ex);
-                    }
-                }
+                waitUntilServerIsOnline(version, instance.getPort());
                 break;
             default:
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
@@ -113,7 +108,21 @@ public class DockerTlsManagerFactory {
         return instance;
     }
 
-    public boolean isServerOnline(String address, int port) {
+    public void waitUntilServerIsOnline(String host, int port) {
+        long startTime = System.currentTimeMillis();
+        while (!isOnline(host, port)) {
+            if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS < System.currentTimeMillis()) {
+                throw new ImplementationDidNotStartException("Timeout");
+            }
+            try {
+                Thread.sleep(SERVER_POLL_INTERVAL_MILLISECONDS);
+            } catch (InterruptedException ex) {
+                throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
+            }
+        }
+    }
+
+    public boolean isOnline(String address, int port) {
         try {
             LOGGER.debug("Testing if server is online...");
             InetSocketAddress sa = new InetSocketAddress(address, port);
