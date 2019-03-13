@@ -71,19 +71,19 @@ public class DockerTlsServerManagerFactory {
         return server;
     }
 
-	public static void waitUntilServerIsOnline(String host, int port) {
-		long startTime = System.currentTimeMillis();
-		while (!isOnline(host, port)) {
-			if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS < System.currentTimeMillis()) {
-				throw new ImplementationDidNotStartException("Timeout");
-			}
-			try {
-				Thread.sleep(SERVER_POLL_INTERVAL_MILLISECONDS);
-			} catch (InterruptedException ex) {
-				throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
-			}
-		}
-	}
+    public static void waitUntilServerIsOnline(String host, int port) {
+        long startTime = System.currentTimeMillis();
+        while (!isOnline(host, port)) {
+            if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS < System.currentTimeMillis()) {
+                throw new ImplementationDidNotStartException("Timeout");
+            }
+            try {
+                Thread.sleep(SERVER_POLL_INTERVAL_MILLISECONDS);
+            } catch (InterruptedException ex) {
+                throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
+            }
+        }
+    }
 
     private static boolean isOnline(String address, int port) {
         try {

@@ -23,5 +23,5 @@ public enum TlsImplementationType {
     SECURE_TRANSPORT,
     WOLFSSL,
     ERLANG,
-    
+
 }
