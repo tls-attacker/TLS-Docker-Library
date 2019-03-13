@@ -1,4 +1,5 @@
 #!/bin/sh
+openssl genrsa -out ca_key.pem 2048
 if [ ! -f ca_key.pem ]; then
   echo "Getting Root CA private key from resources"
   cp ../src/main/resources/ca_key.pem ca_key.pem
