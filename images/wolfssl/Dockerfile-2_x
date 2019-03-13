@@ -1,4 +1,4 @@
-FROM alpine-build as wolfssl
+FROM alpine-build as wolfssl-base1
 ARG VERSION
 RUN git clone --depth=1 --branch=v2.${VERSION} https://github.com/wolfSSL/wolfssl
 WORKDIR wolfssl
@@ -13,13 +13,23 @@ WORKDIR /src/wolfssl/examples/server
 #this script is a shell script, which creates (links) the lt-server executable on the fly
 #we need this to copy is later to the execution container
 RUN /src/wolfssl/examples/server/server -h
+RUN /src/wolfssl/examples/client/client -h
 
-FROM scratch
+FROM scratch as wolfssl-base2
+COPY --from=wolfssl-base1 /lib/ld-musl-x86_64.so.1 /lib/
+COPY --from=wolfssl-base1 /src/wolfssl/src/.libs/libcyassl.so.* /src/wolfssl/src/.libs/
+COPY --from=wolfssl-base1 /src/wolfssl/certs /certs/
+
+FROM wolfssl-base2 as wolfssl-server
 ARG VERSION
-LABEL "server_type"="cyassl"
+LABEL "server_type"="wolfssl"
 LABEL "server_version"="2.${VERSION}"
-COPY --from=wolfssl /lib/ld-musl-x86_64.so.1 /lib/
-COPY --from=wolfssl /src/wolfssl/src/.libs/libcyassl.so.* /src/wolfssl/src/.libs/
-COPY --from=wolfssl /src/wolfssl/certs /certs/
-COPY --from=wolfssl /src/wolfssl/examples/server/.libs/lt-server /bin/
+COPY --from=wolfssl-base1 /src/wolfssl/examples/server/.libs/lt-server /bin/
 ENTRYPOINT ["lt-server"]
+
+FROM wolfssl-base2 as wolfssl-client
+ARG VERSION
+LABEL "client_type"="wolfssl"
+LABEL "client_version"="2.${VERSION}"
+COPY --from=wolfssl-base1 /src/wolfssl/examples/client/.libs/lt-client /bin/
+ENTRYPOINT ["lt-client"]

@@ -1,4 +1,4 @@
-FROM alpine-build as openssl
+FROM alpine-build as openssl-base1
 RUN wget https://www.openssl.org/source/old/1.0.2/openssl-1.0.2.tar.gz
 RUN tar -xzf openssl-1.0.2.tar.gz
 WORKDIR /src/openssl-1.0.2
@@ -7,12 +7,19 @@ RUN patch crypto/ui/ui_openssl.c < openssl-004-musl-termios.patch
 RUN ./config --prefix=/build/ --openssldir=/build/ no-async
 RUN make && make test && make install
 
-FROM scratch
-LABEL "server_type"="openssl"
-LABEL "server_version"="1.0.2"
-COPY --from=openssl /lib/ld-musl-x86_64.so.* \
+FROM scratch as openssl-base1
+COPY --from=openssl-base1 /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* \
   /build/lib/*.so.* /lib/
-COPY --from=openssl /build/bin/openssl /bin/
+COPY --from=openssl-base1 /build/bin/openssl /bin/
+
+FROM openssl-base2 as openssl-server
+LABEL "server_type"="openssl"
+LABEL "server_version"="1.0.2"
 ENTRYPOINT ["openssl", "s_server"]
+
+FROM openssl-base2 as openssl-client
+LABEL "client_type"="openssl"
+LABEL "client_version"="1.0.2"
+ENTRYPOINT ["openssl", "s_client"]

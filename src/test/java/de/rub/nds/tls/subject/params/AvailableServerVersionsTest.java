@@ -2,24 +2,24 @@ package de.rub.nds.tls.subject.params;
 
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.TlsServer;
-import de.rub.nds.tls.subject.docker.DockerTlsServerManagerFactory;
+import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
 
-public class AvailableVersionsTest {
+public class AvailableServerVersionsTest {
 
-    public AvailableVersionsTest() {
+    public AvailableServerVersionsTest() {
     }
 
     @Test
     public void listAllServers() {
-        DockerTlsServerManagerFactory factory = new DockerTlsServerManagerFactory();
+        DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableVersions(type);
-            System.out.println("Version: " + type);
+            List<String> availableVersions = factory.getAvailableServerVersions(type);
+            System.out.println("Server version: " + type);
             for (String version : availableVersions) {
                 System.out.println(version);
             }
@@ -29,9 +29,9 @@ public class AvailableVersionsTest {
     @Test
     public void testAllVersionsFunctional() {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
-        DockerTlsServerManagerFactory factory = new DockerTlsServerManagerFactory();
+        DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableVersions(type);
+            List<String> availableVersions = factory.getAvailableServerVersions(type);
             for (String version : availableVersions) {
                 try {
                     System.out.println(type.name() + ":" + version + " - " + isFunctional(factory, type, version));
@@ -43,7 +43,7 @@ public class AvailableVersionsTest {
         }
     }
 
-    public boolean isFunctional(DockerTlsServerManagerFactory factory, TlsImplementationType type, String version) {
+    public boolean isFunctional(DockerTlsManagerFactory factory, TlsImplementationType type, String version) {
         TlsServer server = null;
         try {
             if (version == null || factory == null || type == null) {
@@ -51,7 +51,7 @@ public class AvailableVersionsTest {
                 return false;
             }
             try {
-                server = factory.get(type, version);
+                server = factory.getServer(type, version);
             } catch (Exception E) {
                 E.printStackTrace();
                 return false;
@@ -75,8 +75,8 @@ public class AvailableVersionsTest {
     @Test
     public void temptestAllVersionsFunctional() {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
-        DockerTlsServerManagerFactory factory = new DockerTlsServerManagerFactory();
-        List<String> availableVersions = factory.getAvailableVersions(TlsImplementationType.JSSE);
+        DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
+        List<String> availableVersions = factory.getAvailableServerVersions(TlsImplementationType.JSSE);
         for (String version : availableVersions) {
             try {
                 System.out.println(TlsImplementationType.JSSE.name() + ":" + version + " - " + isFunctional(factory, TlsImplementationType.JSSE, version));

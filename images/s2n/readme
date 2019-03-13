@@ -1,3 +1,14 @@
 ---------------------------
-build:      docker build -t s2n-server .
-tls server: docker run -it --rm s2n-server
+S2N
+- versions: 
+	latest, fips
+- server successfully tested: latest, fips
+- clients successfully tested: latest, fips
+
+build server:   docker build -t s2n-server --target s2n-server .
+run tls server: docker run -it --rm s2n-server
+
+build client:   docker build -t s2n-client --target s2n-client .
+run tls client: docker run -it --rm s2n-client
+
+build all supported s2n versions: ./s2n.sh

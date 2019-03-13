@@ -1,7 +1,20 @@
 ---------------------------
-build:      docker build -t libressl-server .
-tls server: docker run -it --rm libressl-server
+LIBRESSL
+- versions: 
+	2.6.0, 2.6.1, 2.6.2, 2.6.3, 
+	2.5.0, 2.5.1, 2.5.2, 2.5.3, 2.5.4, 2.5.5, 
+	2.4.0 2.4.1 2.4.2 2.4.3 2.4.4 2.4.5,
+	2.3.0, 2.3.1, 2.3.2, 2.3.3, 2.3.4, 2.3.5, 2.3.6, 2.3.7, 2.3.8, 2.3.9, 2.3.10,
+	2.2.0, 2.2.1, 2.2.2, 2.2.3, 2.2.4, 2.2.5, 2.2.6, 2.2.7, 2.2.8, 2.2.9,
+	2.1.0, 2.1.1, 2.1.2, 2.1.3, 2.1.4, 2.1.5, 2.1.6, 2.1.7, 2.1.8, 2.1.9, 2.1.10,
+	2.0.0, 2.0.1, 2.0.2, 2.0.3, 2.0.4, 2.0.5, 2.0.6
+- server successfully tested: 2.6.3, 2.5.5, 2.4.5, 2.3.10, 2.2.9, 2.1.10, 2.0.6
+- clients successfully tested: 2.6.3, 2.5.5, 2.4.5, 2.3.10, 2.2.9, 2.1.10, 2.0.6
 
-build all libressl versions: ./libressl.sh
-build one version: docker build --build-arg VERSION=${version} -t libressl-2_${version}-server -f Dockerfile-2_x .
-example: docker build --build-arg VERSION=6.1 -t libressl-2_6_1-server -f Dockerfile-2_x .
+build server:   docker build -t libressl-server --target libressl-server .
+run tls server: docker run -it --rm libressl-server
+
+build client:   docker build -t libressl-client --target libressl-client .
+run tls client: docker run -it --rm libressl-client
+
+build all supported libressl versions: ./libressl.sh
