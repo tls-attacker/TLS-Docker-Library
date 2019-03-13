@@ -17,4 +17,5 @@ RUN apk update &&\
     go \
     strace \
     unzip
+COPY ./ca.pem /etc/ssl/certs/
 WORKDIR /src/

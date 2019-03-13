@@ -1,8 +1,13 @@
 #!/bin/sh
-if [ ! -f ca.pem ] && [ ! -f ca_key.pem ]; then
-  echo "Generating CA keys"
-  openssl genpkey -algorithm RSA -out ca_key.pem -pkeyopt rsa_keygen_bits:2048
-  openssl req -new -nodes -x509 -subj "/C=DE/ST=NRW/L=Bochum/O=RUB/OU=NDS" -key ca_key.pem -out ca.pem
+openssl genrsa -out ca_key.pem 2048
+if [ ! -f ca_key.pem ]; then
+  echo "Getting Root CA private key from resources"
+  cp ../src/main/resources/ca_key.pem ca_key.pem
+  echo "Generating Root CA Certificate"
+  openssl req -new -nodes -x509 -subj "/C=DE/ST=NRW/L=Bochum/O=RUB/OU=NDS" -key ca_key.pem -out ca.pem -days 1024
+  echo "Copying Root CA Certificate to relevant image folders"
+  cp ca.pem ../images/baseimage/
+  cp ca.pem ../images/firefox/
 fi
 if [ ! -f rsa2048cert.pem ] && [ ! -f rsa2048key.pem ]; then
   echo "Generating RSA keys"

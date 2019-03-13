@@ -5,7 +5,8 @@
  */
 package de.rub.nds.tls.subject.params;
 
-import de.rub.nds.tls.subject.TlsClient;
+import de.rub.nds.tls.subject.ConnectionRole;
+import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import java.io.IOException;
@@ -18,9 +19,10 @@ import org.junit.Test;
 
 public class AvailableClientVersionsTest {
 
-    private static final String HOST = "172.17.0.1";
+    private static final String HOSTNAME = "nds.tls-docker-library-test.de";
+    private static final String IP = "172.17.0.1";
     private static final int PORT = 8000;
-    private static final int CONNECTIONTIMEOUT = 10;
+    private static final int CONNECTION_TIMEOUT = 10;
 
     public AvailableClientVersionsTest() {
     }
@@ -30,7 +32,7 @@ public class AvailableClientVersionsTest {
         DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         System.out.println("Available Clients: ");
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableClientVersions(type);
+            List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.CLIENT, type);
             System.out.println("Client version: " + type);
             for (String version : availableVersions) {
                 System.out.println(version);
@@ -46,7 +48,7 @@ public class AvailableClientVersionsTest {
         TlsTestServer testServer = new TlsTestServer(PORT);
         testServer.start();
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableClientVersions(type);
+            List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.CLIENT, type);
             for (String version : availableVersions) {
                 try {
                     System.out.println(type.name() + ":" + version + " - " + isFunctional(testServer, factory, type, version));
@@ -57,15 +59,14 @@ public class AvailableClientVersionsTest {
             }
         }
         try {
-            testServer.stop(HOST, PORT);
+            testServer.stop(IP, PORT);
         } catch (IOException ex) {
             Logger.getLogger(AvailableClientVersionsTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Testserver stopped");
     }
 
     public boolean isFunctional(TlsTestServer testServer, DockerTlsManagerFactory factory, TlsImplementationType type, String version) {
-        TlsClient client = null;
+        TlsInstance client = null;
         testServer.setIsConnectionSuccessful(false);
         try {
             if (version == null || factory == null || type == null) {
@@ -73,21 +74,18 @@ public class AvailableClientVersionsTest {
                 return false;
             }
             try {
-                client = factory.getClient(type, version, HOST, PORT);
-                //System.out.println("Client started successfully");
+                client = factory.getClient(type, version, IP, HOSTNAME, PORT);
                 boolean waiting = true;
                 int timeout = 0;
-                while (waiting && timeout < CONNECTIONTIMEOUT) {
+                while (waiting && timeout < CONNECTION_TIMEOUT) {
                     if (testServer.isConnectionSuccessful()) {
                         waiting = false;
                     }
                     TimeUnit.SECONDS.sleep(1);
                     timeout++;
                 }
-                //System.out.println("Waited "+timeout+"s for connection");
             } catch (Exception ex) {
                 ex.printStackTrace();
-                //System.err.println("Failed to start client");
                 return false;
             }
             return testServer.isConnectionSuccessful();

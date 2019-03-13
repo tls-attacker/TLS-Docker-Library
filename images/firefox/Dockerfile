@@ -10,6 +10,9 @@ ARG VERSION
 RUN wget https://ftp.mozilla.org/pub/firefox/releases/${VERSION}/linux-$(uname -m)/en-US/firefox-${VERSION}.tar.bz2
 RUN tar -xjf firefox-${VERSION}.tar.bz2
 RUN mv firefox /opt/
+COPY ./autoconfig.js /opt/firefox/defaults/pref/
+COPY ./ca.pem /opt/firefox/defaults/pref/
+COPY ./mozilla.cfg /opt/firefox/
 RUN ln -sf /opt/firefox/firefox /bin/firefox
 LABEL "client_type"="firefox"
 LABEL "client_version"="${VERSION}"
