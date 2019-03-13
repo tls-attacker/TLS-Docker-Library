@@ -6,17 +6,16 @@ import de.rub.nds.tls.subject.properties.ImageProperties;
 /**
  * Interface to manage a specific TLS-Instance
  */
-
 public interface TlsInstanceManager {
-    
+
     TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, HostInfo hostInfo, String additionalParameters);
 
     String getInstanceLabel(ConnectionRole role);
-    
+
     String getInstanceVersionLabel(ConnectionRole role);
-    
+
     void killTlsInstance(TlsInstance tlsInstance);
 
     String getLogsFromTlsInstance(TlsInstance tlsInstance);
-    
+
 }

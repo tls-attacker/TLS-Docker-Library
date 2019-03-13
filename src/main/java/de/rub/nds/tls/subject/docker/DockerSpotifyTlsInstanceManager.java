@@ -57,18 +57,18 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     .orElseThrow(() -> new TlsVersionNotFoundException());
             String id = DOCKER.createContainer(
                     ContainerConfig.builder()
-                    .image(image.id())
-                    .hostConfig(getInstanceHostConfig(role, properties, hostInfo))
-                    .exposedPorts(properties.getInternalPort() + "/tcp")
-                    .attachStderr(true)
-                    .attachStdout(true)
-                    .attachStdin(true)
-                    .tty(true)
-                    .stdinOnce(true)
-                    .openStdin(true)
-                    .cmd(convertProfileToParams(profile, host, hostInfo.getPort(), properties, additionalParameters))
-                    .env("DISPLAY=$DISPLAY")
-                    .build(),
+                            .image(image.id())
+                            .hostConfig(getInstanceHostConfig(role, properties, hostInfo))
+                            .exposedPorts(properties.getInternalPort() + "/tcp")
+                            .attachStderr(true)
+                            .attachStdout(true)
+                            .attachStdin(true)
+                            .tty(true)
+                            .stdinOnce(true)
+                            .openStdin(true)
+                            .cmd(convertProfileToParams(profile, host, hostInfo.getPort(), properties, additionalParameters))
+                            .env("DISPLAY=$DISPLAY")
+                            .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
             LOGGER.debug("Starting TLS Instance " + id);
@@ -140,7 +140,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         return logs;
     }
-    
+
     private String getIpOrHostNameToUse(HostInfo hostInfo, ImageProperties properties) {
         String host;
         if (hostInfo.getHostname() == null || properties.isUseIP()) {
@@ -166,10 +166,10 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     return HostConfig.builder()
                             .extraHosts(extraHost)
                             .appendBinds(Bind.from(volume)
-                                .to("/cert/")
-                                .readOnly(true)
-                                .noCopy(true)
-                                .build())
+                                    .to("/cert/")
+                                    .readOnly(true)
+                                    .noCopy(true)
+                                    .build())
                             //ToDo: Bind of X11 Settings does not work as expected
                             .appendBinds(Bind.from("/tmp/.X11-unix")
                                     .to("/tmp/.X11-unix")

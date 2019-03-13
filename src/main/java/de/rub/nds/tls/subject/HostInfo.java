@@ -5,9 +5,8 @@ package de.rub.nds.tls.subject;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 public class HostInfo {
-    
+
     private final String ip;
     private final String hostname;
     private int port;

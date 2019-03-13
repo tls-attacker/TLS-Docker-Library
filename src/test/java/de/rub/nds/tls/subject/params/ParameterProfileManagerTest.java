@@ -18,22 +18,22 @@ import org.junit.Test;
  * @author robert
  */
 public class ParameterProfileManagerTest {
-    
+
     public ParameterProfileManagerTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }

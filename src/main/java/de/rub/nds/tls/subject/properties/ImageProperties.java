@@ -4,7 +4,7 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 
 public class ImageProperties {
-    
+
     private final ConnectionRole role;
     private final TlsImplementationType type;
     private final String defaultVersion;
@@ -12,7 +12,7 @@ public class ImageProperties {
     private final String defaultKeyPath;
     private final String defaultCertPath;
     private final boolean useIP;
-    
+
     public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, String defaultCertPath, boolean useIP) {
         this.role = role;
         this.type = type;
@@ -40,11 +40,11 @@ public class ImageProperties {
     public TlsImplementationType getType() {
         return type;
     }
-    
+
     public String getDefaultVersion() {
         return defaultVersion;
     }
-    
+
     public Integer getInternalPort() {
         return internalPort;
     }

@@ -18,15 +18,15 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
 
 public class AvailableClientVersionsTest {
-    
+
     private static final String HOSTNAME = "nds.tls-docker-library-test.de";
     private static final String IP = "172.17.0.1";
     private static final int PORT = 8000;
     private static final int CONNECTION_TIMEOUT = 10;
-    
+
     public AvailableClientVersionsTest() {
     }
-    
+
     @Test
     public void listAllClients() {
         DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
@@ -39,7 +39,7 @@ public class AvailableClientVersionsTest {
             }
         }
     }
-    
+
     @Test
     public void testAllVersionsFunctional() {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
@@ -64,7 +64,7 @@ public class AvailableClientVersionsTest {
             Logger.getLogger(AvailableClientVersionsTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public boolean isFunctional(TlsTestServer testServer, DockerTlsManagerFactory factory, TlsImplementationType type, String version) {
         TlsInstance client = null;
         testServer.setIsConnectionSuccessful(false);
@@ -77,9 +77,9 @@ public class AvailableClientVersionsTest {
                 client = factory.getClient(type, version, IP, HOSTNAME, PORT);
                 boolean waiting = true;
                 int timeout = 0;
-                while (waiting && timeout<CONNECTION_TIMEOUT) {
+                while (waiting && timeout < CONNECTION_TIMEOUT) {
                     if (testServer.isConnectionSuccessful()) {
-                        waiting=false;
+                        waiting = false;
                     }
                     TimeUnit.SECONDS.sleep(1);
                     timeout++;

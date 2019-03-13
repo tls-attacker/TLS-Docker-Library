@@ -3,7 +3,6 @@ package de.rub.nds.tls.subject;
 /**
  * The representation of a TLS-Instance used for a Test
  */
-
 public class TlsInstance {
 
     private final String id;
@@ -22,15 +21,15 @@ public class TlsInstance {
         this.name = name;
         this.tlsInstanceManager = tlsInstanceManager;
     }
-    
+
     public String getId() {
         return id;
     }
-    
+
     public ConnectionRole getConnectionRole() {
         return role;
     }
-    
+
     public String getHost() {
         return host;
     }
@@ -46,7 +45,7 @@ public class TlsInstance {
     public String getLogs() {
         return tlsInstanceManager.getLogsFromTlsInstance(this);
     }
-    
+
     public int getExitCode() {
         return exitCode;
     }
@@ -54,7 +53,7 @@ public class TlsInstance {
     public String getExitInfo() {
         return "exitCode: " + exitCode;
     }
-    
+
     public void setExitCode(int exitCode) {
         this.exitCode = exitCode;
     }
@@ -67,5 +66,5 @@ public class TlsInstance {
     public String toString() {
         return String.format("%s: %s:%d (%s)", getConnectionRole().name(), host, port, getName());
     }
-    
+
 }

@@ -12,7 +12,7 @@
         <cmdParameter>[cert] [key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
-	<Parameter>
+    <Parameter>
         <cmdParameter>--policy=compat.txt</cmdParameter>
         <type>NONE</type>
     </Parameter>

@@ -35,7 +35,6 @@ public class ParameterProfileManager {
                 }
             } catch (IOException ex) {
                 LOGGER.warn("ERROR reading profiles", ex);
-                ex.printStackTrace();
             }
         }
     }

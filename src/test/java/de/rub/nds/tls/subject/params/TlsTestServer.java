@@ -24,7 +24,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 public class TlsTestServer extends Thread {
-    
+
     private final int port;
     private boolean isServerDone = false;
     private boolean isConnectionSuccessful = false;
@@ -81,18 +81,19 @@ public class TlsTestServer extends Thread {
             }
         }
     }
-    
+
     private class ServerConnectionThread extends Thread {
+
         private SSLSocket sslSocket = null;
-         
-        ServerConnectionThread(SSLSocket sslSocket){
+
+        ServerConnectionThread(SSLSocket sslSocket) {
             this.sslSocket = sslSocket;
         }
-         
+
         @Override
-        public void run(){
-            sslSocket.setEnabledCipherSuites(sslSocket.getSupportedCipherSuites());            
-            try{
+        public void run() {
+            sslSocket.setEnabledCipherSuites(sslSocket.getSupportedCipherSuites());
+            try {
                 if (sslSocket.isConnected()) {
                     isConnectionSuccessful = true;
                 }
@@ -105,20 +106,20 @@ public class TlsTestServer extends Thread {
     public int getPort() {
         return port;
     }
-    
+
     public boolean isServerDone() {
         return isServerDone;
     }
-    
+
     public void stop(String host, int port) throws IOException {
         this.isServerDone = true;
         Socket socket = new Socket(host, port);
     }
-    
+
     public void setIsConnectionSuccessful(boolean isConnectionSuccessful) {
         this.isConnectionSuccessful = isConnectionSuccessful;
     }
-    
+
     public boolean isConnectionSuccessful() {
         return isConnectionSuccessful;
     }

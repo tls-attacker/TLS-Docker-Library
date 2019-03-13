@@ -24,13 +24,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Creates TLS-Server or TLS-Client Instances as Docker Container
- * Holds the Config for each Instance
+ * Creates TLS-Server or TLS-Client Instances as Docker Container Holds the
+ * Config for each Instance
  */
 public class DockerTlsManagerFactory {
 
     private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
-    private static final Logger LOGGER = LogManager.getLogger(DockerTlsManagerFactory.class);    
+    private static final Logger LOGGER = LogManager.getLogger(DockerTlsManagerFactory.class);
     private static final String DEFAULT_HOSTNAME = "nds.tls-docker-library.de";
     private static final String DEFAULT_IP = "127.0.0.42";
     private static final int DEFAULT_PORT = 443;
@@ -52,32 +52,32 @@ public class DockerTlsManagerFactory {
         HostInfo hostInfo = new HostInfo(DEFAULT_IP, DEFAULT_HOSTNAME, DEFAULT_PORT);
         return getInstance(ConnectionRole.SERVER, type, version, hostInfo, additionalParams);
     }
-    
+
     public TlsInstance getClient(TlsImplementationType type, String version, String ip) {
         return getClient(type, version, ip, null);
     }
-    
+
     public TlsInstance getClient(TlsImplementationType type, String version, String ip, String hostname) {
         return getClient(type, version, ip, hostname, DEFAULT_PORT);
     }
-    
+
     public TlsInstance getClient(TlsImplementationType type, String version, String ip, int port) {
         return getClient(type, version, ip, null, port);
     }
-    
+
     public TlsInstance getClient(TlsImplementationType type, String version, String ip, String hostname, int port) {
         return getClient(type, version, ip, hostname, port, null);
     }
-    
+
     public TlsInstance getClient(TlsImplementationType type, String version, String ip, int port, String additionalParams) {
         return getClient(type, version, ip, null, port, additionalParams);
     }
-    
+
     public TlsInstance getClient(TlsImplementationType type, String version, String ip, String hostname, int port, String additionalParams) {
         HostInfo hostInfo = new HostInfo(ip, hostname, port);
         return getInstance(ConnectionRole.CLIENT, type, version, hostInfo, additionalParams);
     }
-    
+
     private TlsInstance getInstance(ConnectionRole role, TlsImplementationType type, String version, HostInfo hostInfo, String additionalParams) {
         ParameterProfile profile = parameterManager.getProfile(type, version, role);
         if (profile == null) {
@@ -112,7 +112,7 @@ public class DockerTlsManagerFactory {
         }
         return instance;
     }
-    
+
     public boolean isServerOnline(String address, int port) {
         try {
             LOGGER.debug("Testing if server is online...");
