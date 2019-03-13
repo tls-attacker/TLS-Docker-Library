@@ -25,5 +25,5 @@ public class DefaultProfileNotFoundException extends RuntimeException {
     public DefaultProfileNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
-    
+
 }

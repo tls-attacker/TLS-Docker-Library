@@ -3,7 +3,6 @@ package de.rub.nds.tls.subject;
 /**
  * The representation of a TLS-Server used for a Test
  */
-
 public class TlsServer {
 
     private final String id;

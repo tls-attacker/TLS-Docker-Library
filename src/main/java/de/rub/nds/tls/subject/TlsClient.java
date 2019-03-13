@@ -3,7 +3,6 @@ package de.rub.nds.tls.subject;
 /**
  * The representation of a TLS-Client used for a Test
  */
-
 public class TlsClient {
 
     private final String id;
@@ -41,11 +40,11 @@ public class TlsClient {
     public String toString() {
         return String.format("%s (%s:%d)", getClientName(), host, port);
     }
-    
+
     public String getHost() {
         return host;
     }
-    
+
     public int getPort() {
         return port;
     }

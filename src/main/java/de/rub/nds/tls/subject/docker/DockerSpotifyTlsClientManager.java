@@ -27,16 +27,17 @@ import org.apache.logging.log4j.Logger;
  * One instance is needed for each client type.
  */
 public class DockerSpotifyTlsClientManager implements TlsClientManager {
+
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsClientManager.class);
     private static final DockerClient docker = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final String CLIENT_LABEL = "client_type";
     private static final String CLIENT_VERSION_LABEL = "client_version";
     private final Map<String, Integer> logReadOffset;
-    
+
     DockerSpotifyTlsClientManager() {
         logReadOffset = new HashMap<>();
     }
-    
+
     @Override
     public TlsClient getTlsClient(ClientImageProperties properties, ParameterProfile profile, String version, String host, int port) {
         try {
@@ -69,9 +70,9 @@ public class DockerSpotifyTlsClientManager implements TlsClientManager {
             e.printStackTrace();
         }
         return null;
-        
+
     }
-    
+
     private String[] convertProfileToParams(ParameterProfile profile, String host, int port) {
         StringBuilder finalParams = new StringBuilder();
         for (Parameter param : profile.getParameterList()) {
@@ -80,12 +81,12 @@ public class DockerSpotifyTlsClientManager implements TlsClientManager {
         }
         return finalParams.toString().replace("[host]", host).replace("[port]", "" + port).split(" ");
     }
-    
+
     @Override
     public TlsClient getTlsClient(ClientImageProperties properties, ParameterProfile profile, String host, int port) {
         return this.getTlsClient(properties, profile, properties.getDefaultVersion(), host, port);
     }
-    
+
     @Override
     public void killTlsClient(TlsClient tlsClient) {
         LOGGER.debug("Shutting down TLS Client " + tlsClient.getId());

@@ -19,11 +19,11 @@ public class ParameterProfileManager {
     static final Logger LOGGER = LogManager.getLogger(ParameterProfileSerializer.class.getName());
 
     private static final String RESOURCE_PATH = "/profiles/";
-    
+
     private static final String PROFILES_PATH = "src/main/resources/profiles/";
 
     private final List<ParameterProfile> defaultClientProfileList;
-    
+
     private final List<ParameterProfile> otherClientProfileList;
 
     private final List<ParameterProfile> defaultServerProfileList;
@@ -44,7 +44,7 @@ public class ParameterProfileManager {
             String pattern = type.name().toLowerCase() + ".+\\.profile";
             FileFilter filter = new RegexFileFilter(pattern);
             File[] files = dir.listFiles(filter);
-            if (files!=null) {
+            if (files != null) {
                 for (File file : files) {
                     ParameterProfile profile = tryLoadOtherProfile(type, ConnectionRole.CLIENT, file.getName());
                     if (profile != null) {
@@ -74,7 +74,7 @@ public class ParameterProfileManager {
             return null;
         }
     }
-    
+
     private ParameterProfile tryLoadOtherProfile(TlsImplementationType type, ConnectionRole role, String filename) {
         try {
             InputStream stream = ParameterProfileManager.class.getResourceAsStream(RESOURCE_PATH + role.name().toLowerCase() + "/" + filename);
@@ -110,7 +110,7 @@ public class ParameterProfileManager {
             }
         }
     }
-    
+
     public List<ParameterProfile> getOtherProfiles(TlsImplementationType type, ConnectionRole role) {
         if (null == role) {
             throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
@@ -125,7 +125,7 @@ public class ParameterProfileManager {
                     }
                     return profileList;
                 case SERVER:
-                    //Other profiles for server here
+                //Other profiles for server here
                 default:
                     throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
             }

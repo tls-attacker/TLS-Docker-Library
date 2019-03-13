@@ -8,7 +8,7 @@
         <cmdParameter>-c [cert] -k [key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
-	<Parameter>
+    <Parameter>
         <cmdParameter>-d -b</cmdParameter>
         <type>NONE</type>
     </Parameter>
