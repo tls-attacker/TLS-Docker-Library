@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
  * One instance is needed for each client or server type.
  */
 public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
-
+    
     private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsInstanceManager.class);
     private static final String CLIENT_LABEL = "client_type";
@@ -43,11 +43,11 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     private static final String SERVER_LABEL = "server_type";
     private static final String SERVER_VERSION_LABEL = "server_version";
     private final Map<String, Integer> logReadOffset;
-
+    
     DockerSpotifyTlsInstanceManager() {
         logReadOffset = new HashMap<>();
     }
-
+    
     @Override
     public TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, HostInfo hostInfo, String additionalParameters) {
         String host = getIpOrHostNameToUse(hostInfo, properties);
@@ -71,7 +71,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
-            LOGGER.debug("Starting TLS Instance " + id);
+            LOGGER.debug("Starting TLS Instance: " + id);
             DOCKER.startContainer(id);
             TlsInstance tlsInstance = new TlsInstance(id, role, host, getInstancePort(role, hostInfo.getPort(), id), profile.getType().name(), this);
             LOGGER.debug(getLogsFromTlsInstance(tlsInstance));
@@ -82,7 +82,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         return null;
     }
-
+    
     @Override
     public String getInstanceLabel(ConnectionRole role) {
         switch (role) {
@@ -94,7 +94,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }
     }
-
+    
     @Override
     public String getInstanceVersionLabel(ConnectionRole role) {
         switch (role) {
@@ -106,7 +106,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }
     }
-
+    
     @Override
     public void killTlsInstance(TlsInstance tlsInstance) {
         LOGGER.debug("Shutting down TLS Instance " + tlsInstance.getId());
@@ -120,7 +120,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             LOGGER.debug(e);
         }
     }
-
+    
     @Override
     public String getLogsFromTlsInstance(TlsInstance tlsInstance) {
         String logs = "-";
@@ -140,7 +140,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         return logs;
     }
-
+    
     private String getIpOrHostNameToUse(HostInfo hostInfo, ImageProperties properties) {
         String host;
         if (hostInfo.getHostname() == null || properties.isUseIP()) {
@@ -150,7 +150,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         return host;
     }
-
+    
     private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, HostInfo hostInfo) {
         try {
             Volume volume;
@@ -193,11 +193,11 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
             }
         } catch (DockerException | InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("Could not get host config", e);
         }
         return null;
     }
-
+    
     private int getInstancePort(ConnectionRole role, int port, String id) {
         switch (role) {
             case CLIENT:
@@ -212,7 +212,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }
     }
-
+    
     private String[] convertProfileToParams(ParameterProfile profile, String host, Integer port, ImageProperties properties, String additionalParameters) {
         StringBuilder finalParams = new StringBuilder();
         for (Parameter param : profile.getParameterList()) {
@@ -235,7 +235,8 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         if (properties.getDefaultKeyPath() != null) {
             afterReplace = afterReplace.replace("[key]", properties.getDefaultKeyPath());
         }
-        LOGGER.debug("Final parameters: " + afterReplace);
-        return afterReplace.trim().split(" ");
+        afterReplace = afterReplace.trim();
+        LOGGER.debug("Final parameters: " + (afterReplace));
+        return afterReplace.split(" ");
     }
 }

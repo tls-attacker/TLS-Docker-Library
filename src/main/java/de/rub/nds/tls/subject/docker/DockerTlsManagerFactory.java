@@ -114,13 +114,11 @@ public class DockerTlsManagerFactory {
             case SERVER:
                 hostInfo.updatePort(properties.getInternalPort());
                 instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
-                long startTime = System.currentTimeMillis();
                 waitUntilServerIsOnline(version, instance.getPort());
                 break;
             default:
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }
-        TlsInstance server = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
         return instance;
     }
 
