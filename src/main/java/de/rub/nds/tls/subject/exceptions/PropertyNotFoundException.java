@@ -1,6 +1,6 @@
 package de.rub.nds.tls.subject.exceptions;
 
-public class PropertyNotFoundException extends RuntimeException{
+public class PropertyNotFoundException extends RuntimeException {
 
     public PropertyNotFoundException() {
     }

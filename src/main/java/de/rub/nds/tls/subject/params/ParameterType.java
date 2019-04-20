@@ -8,5 +8,5 @@ public enum ParameterType {
     JKS_CERTIFICATE_KEY, //The cert and key which should be used_//JKS
     LOOP, //Keeps the Server from closing after a single connection
     NO_CLIENT_AUTHENTICATION, //Some servers/clients have client authentication active by default
-    
+    CA_CERTIFICATE, //The ca cert which should be used_//CRT
 }

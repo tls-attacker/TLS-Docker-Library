@@ -1,6 +1,26 @@
 #!/bin/bash
+#version 2.8.x
+array=(0 1 2)
+typeset -i i=0 max=${#array[*]}
+while (( i < max ))
+do
+        echo "Building: LibreSSL 2.8.${array[$i]}"
+        docker build --build-arg VERSION=8.${array[$i]} -t libressl-2_8_${array[$i]}-server -f Dockerfile-2_x .
+        i=i+1
+done
+
+#version 2.7.x
+array=(0 1 2 3 4)
+typeset -i i=0 max=${#array[*]}
+while (( i < max ))
+do
+        echo "Building: LibreSSL 2.7.${array[$i]}"
+        docker build --build-arg VERSION=7.${array[$i]} -t libressl-2_7_${array[$i]}-server -f Dockerfile-2_x .
+        i=i+1
+done
+
 #version 2.6.x
-array=(0 1 2 3)
+array=(0 1 2 3 4 5)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do

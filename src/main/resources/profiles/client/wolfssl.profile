@@ -8,4 +8,8 @@
         <cmdParameter>-h [host] -p [port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
+    <Parameter>
+        <cmdParameter>-A [cert]</cmdParameter>
+        <type>CA_CERTIFICATE</type>
+    </Parameter>
 </parameterProfile>

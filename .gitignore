@@ -1,4 +1,3 @@
-*.pem
 *.srl
 *.csr
 db/
@@ -8,7 +7,9 @@ target/
 .classpath
 .project
 .settings/
-certs/keys.jks
-certs/rsa2048.p12
+certs/*.jks
+certs/*.p12
+certs/*.pem
+images/**/*.pem
 images/DamnVulnerableOpenSSL/DamnVulnerableOpenSSL/
 /nbproject/

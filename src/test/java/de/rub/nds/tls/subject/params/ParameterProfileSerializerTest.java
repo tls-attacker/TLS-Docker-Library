@@ -7,7 +7,6 @@ package de.rub.nds.tls.subject.params;
 
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.After;
@@ -15,7 +14,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

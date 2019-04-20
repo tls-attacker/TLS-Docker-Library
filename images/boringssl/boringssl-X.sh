@@ -22,7 +22,7 @@ do
 	i=i+1
 done
 
-array=(2704 2883 2924 2987 3029 3112 3202 chromium-stable master)
+array=(2704 2883 2924 2987 3029 3112 3202 3239 3282 3359 3538 chromium-stable master)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
