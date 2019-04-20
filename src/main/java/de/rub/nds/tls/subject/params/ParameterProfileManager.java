@@ -112,38 +112,6 @@ public class ParameterProfileManager {
         return getDefaultProfile(type, role);
     }
 
-    private List<String> getResourceFiles(String path) throws IOException {
-        List<String> filenames = new ArrayList<>();
-        InputStream in = getResourceAsStream(path);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String resource;
-        while ((resource = br.readLine()) != null) {
-            filenames.add(resource);
-        }
-        return filenames;
-    }
-
-    private InputStream getResourceAsStream(String resource) {
-        InputStream in = getContextClassLoader().getResourceAsStream(resource);
-        return in == null ? getClass().getResourceAsStream(resource) : in;
-    }
-
-    private ClassLoader getContextClassLoader() {
-        return Thread.currentThread().getContextClassLoader();
-    }
-
-    private ParameterProfile tryLoadProfile(ConnectionRole role, String filename) {
-        try {
-            InputStream stream = ParameterProfileManager.class.
-                    getResourceAsStream(RESOURCE_PATH + role.name().toLowerCase() + "/" + filename);
-            return ParameterProfileSerializer.read(stream);
-        } catch (IOException | JAXBException | XMLStreamException E) {
-            LOGGER.debug("Could not find ParameterProfile for: " + RESOURCE_PATH + role.name().toLowerCase() + "/" + filename + ": " + role.name());
-            LOGGER.trace(E);
-            return null;
-        }
-    }
-
     public ParameterProfile getDefaultProfile(TlsImplementationType type, ConnectionRole role) {
         if (null == role) {
             throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
