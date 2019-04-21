@@ -17,9 +17,11 @@ import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsInstanceManager;
 import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
+import de.rub.nds.tls.subject.exceptions.ImplementationDidNotStartException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import de.rub.nds.tls.subject.params.Parameter;
 import de.rub.nds.tls.subject.params.ParameterProfile;
+import de.rub.nds.tls.subject.params.ParameterType;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +37,7 @@ import org.apache.logging.log4j.Logger;
  * One instance is needed for each client or server type.
  */
 public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
-    
+
     private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsInstanceManager.class);
     private static final String CLIENT_LABEL = "client_type";
@@ -43,11 +45,11 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     private static final String SERVER_LABEL = "server_type";
     private static final String SERVER_VERSION_LABEL = "server_version";
     private final Map<String, Integer> logReadOffset;
-    
+
     DockerSpotifyTlsInstanceManager() {
         logReadOffset = new HashMap<>();
     }
-    
+
     @Override
     public TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, HostInfo hostInfo, String additionalParameters) {
         String host = getIpOrHostNameToUse(hostInfo, properties);
@@ -67,7 +69,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .stdinOnce(true)
                             .openStdin(true)
                             .cmd(convertProfileToParams(profile, host, hostInfo.getPort(), properties, additionalParameters))
-                            .env("DISPLAY=$DISPLAY")
+                            //.env("DISPLAY=$DISPLAY")
                             .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
@@ -78,11 +80,11 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             LOGGER.debug(String.format("Started TLS " + role.name() + " %s : %s(%s)", id, profile.getType().name(), version));
             return tlsInstance;
         } catch (DockerException | InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("Could not create instance");
+            throw new ImplementationDidNotStartException("Could not create instance");
         }
-        return null;
     }
-    
+
     @Override
     public String getInstanceLabel(ConnectionRole role) {
         switch (role) {
@@ -94,7 +96,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }
     }
-    
+
     @Override
     public String getInstanceVersionLabel(ConnectionRole role) {
         switch (role) {
@@ -106,7 +108,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }
     }
-    
+
     @Override
     public void killTlsInstance(TlsInstance tlsInstance) {
         LOGGER.debug("Shutting down TLS Instance " + tlsInstance.getId());
@@ -120,7 +122,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             LOGGER.debug(e);
         }
     }
-    
+
     @Override
     public String getLogsFromTlsInstance(TlsInstance tlsInstance) {
         String logs = "-";
@@ -140,7 +142,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         return logs;
     }
-    
+
     private String getIpOrHostNameToUse(HostInfo hostInfo, ImageProperties properties) {
         String host;
         if (hostInfo.getHostname() == null || properties.isUseIP()) {
@@ -150,16 +152,16 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         return host;
     }
-    
+
     private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, HostInfo hostInfo) {
         try {
             Volume volume;
-            String extraHost = "test:127.0.0.1";
-            if (hostInfo.getHostname() != null) {
-                extraHost = hostInfo.getHostname() + ":" + hostInfo.getIp();
-            }
             switch (role) {
                 case CLIENT:
+                    String extraHost = "test:127.0.0.27";
+                    if (hostInfo.getHostname() != null) {
+                        extraHost = hostInfo.getHostname() + ":" + hostInfo.getIp();
+                    }
                     volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
                             .findFirst()
                             .orElseThrow(() -> new CertVolumeNotFoundException());
@@ -180,7 +182,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .findFirst()
                             .orElseThrow(() -> new CertVolumeNotFoundException());
                     return HostConfig.builder()
-                            .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort(getIpOrHostNameToUse(hostInfo, properties)))))
+                            .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort(hostInfo.getHostname()))))
                             .binds(HostConfig.Bind.builder()
                                     .from(volume)
                                     .readOnly(true)
@@ -194,10 +196,10 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             }
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Could not get host config", e);
+            throw new RuntimeException("Cannot create HostConfig", e);
         }
-        return null;
     }
-    
+
     private int getInstancePort(ConnectionRole role, int port, String id) {
         switch (role) {
             case CLIENT:
@@ -206,13 +208,13 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 try {
                     return new Integer(DOCKER.inspectContainer(id).networkSettings().ports().get(port + "/tcp").get(0).hostPort());
                 } catch (DockerException | InterruptedException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Could not retrieve instance port");
                 }
             default:
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }
     }
-    
+
     private String[] convertProfileToParams(ParameterProfile profile, String host, Integer port, ImageProperties properties, String additionalParameters) {
         StringBuilder finalParams = new StringBuilder();
         for (Parameter param : profile.getParameterList()) {

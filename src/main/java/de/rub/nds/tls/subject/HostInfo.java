@@ -13,11 +13,19 @@ public class HostInfo {
     }
 
     public HostInfo(String hostname, int port) {
-        this.ip = null;
-        this.hostname = null;
         this.port = port;
+        if (hostname == null) {
+            this.hostname = "127.0.0.42";
+        } else {
+            this.hostname = hostname;
+        }
+        if (hostname == null) {
+            this.ip = "127.0.0.42";
+        } else {
+            this.ip = hostname;
+        }
     }
-    
+
     public String getIp() {
         return ip;
     }

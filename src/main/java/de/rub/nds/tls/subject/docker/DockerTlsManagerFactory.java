@@ -114,7 +114,7 @@ public class DockerTlsManagerFactory {
             case SERVER:
                 hostInfo.updatePort(properties.getInternalPort());
                 instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
-                waitUntilServerIsOnline(version, instance.getPort());
+                waitUntilServerIsOnline(hostInfo.getHostname(), instance.getPort());
                 break;
             default:
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
@@ -138,14 +138,16 @@ public class DockerTlsManagerFactory {
 
     public boolean isServerOnline(String address, int port) {
         try {
-            LOGGER.debug("Testing if server is online...");
-            InetSocketAddress sa = new InetSocketAddress(address, port);
-            Socket ss = new Socket();
-            ss.connect(sa);
-            ss.close();
-            LOGGER.debug("Server is ready!");
-            return true;
+            Socket ss = new Socket(address, port);
+            if (ss.isConnected()) {
+                ss.close();
+
+                return true;
+            } else {
+                return false;
+            }
         } catch (IOException e) {
+            //e.printStackTrace();
             LOGGER.debug("Server is not online yet");
             LOGGER.trace(e);
             return false;
