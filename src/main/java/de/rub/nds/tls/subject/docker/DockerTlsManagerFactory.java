@@ -114,7 +114,7 @@ public class DockerTlsManagerFactory {
             case SERVER:
                 hostInfo.updatePort(properties.getInternalPort());
                 instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
-                waitUntilServerIsOnline(hostInfo.getHostname(), instance.getPort());
+                waitUntilServerIsOnline(hostInfo.getHostname(), instance.getPort(), instance);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
@@ -122,7 +122,7 @@ public class DockerTlsManagerFactory {
         return instance;
     }
 
-    public void waitUntilServerIsOnline(String host, int port) {
+    public void waitUntilServerIsOnline(String host, int port, TlsInstance instance) {
         long startTime = System.currentTimeMillis();
         while (!isServerOnline(host, port)) {
             if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS < System.currentTimeMillis()) {
@@ -131,6 +131,7 @@ public class DockerTlsManagerFactory {
             try {
                 Thread.sleep(SERVER_POLL_INTERVAL_MILLISECONDS);
             } catch (InterruptedException ex) {
+                LOGGER.error("Could not start:\n\n" + instance.getLogs());
                 throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
             }
         }
