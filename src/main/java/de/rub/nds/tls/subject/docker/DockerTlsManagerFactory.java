@@ -126,6 +126,7 @@ public class DockerTlsManagerFactory {
         long startTime = System.currentTimeMillis();
         while (!isServerOnline(host, port)) {
             if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS < System.currentTimeMillis()) {
+                LOGGER.error("Could not start:\n\n" + instance.getLogs());
                 throw new ImplementationDidNotStartException("Timeout");
             }
             try {
