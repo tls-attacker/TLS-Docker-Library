@@ -20,6 +20,9 @@ public class InstanceContainer implements Serializable {
 
     private boolean functional;
 
+    private InstanceContainer() {
+    }
+
     public InstanceContainer(ConnectionRole role, TlsImplementationType implementationType, String version, boolean functional) {
         this.role = role;
         this.implementationType = implementationType;

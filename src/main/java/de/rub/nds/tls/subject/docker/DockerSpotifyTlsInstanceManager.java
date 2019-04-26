@@ -21,7 +21,6 @@ import de.rub.nds.tls.subject.exceptions.ImplementationDidNotStartException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import de.rub.nds.tls.subject.params.Parameter;
 import de.rub.nds.tls.subject.params.ParameterProfile;
-import de.rub.nds.tls.subject.params.ParameterType;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import java.util.Arrays;
 import java.util.Collections;
