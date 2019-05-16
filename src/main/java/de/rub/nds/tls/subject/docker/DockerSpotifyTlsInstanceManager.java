@@ -17,6 +17,7 @@ import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsInstanceManager;
 import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
+import de.rub.nds.tls.subject.exceptions.ImplementationDidNotStartException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import de.rub.nds.tls.subject.params.Parameter;
 import de.rub.nds.tls.subject.params.ParameterProfile;
@@ -67,20 +68,20 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .stdinOnce(true)
                             .openStdin(true)
                             .cmd(convertProfileToParams(profile, host, hostInfo.getPort(), properties, additionalParameters))
-                            .env("DISPLAY=$DISPLAY")
+                            //.env("DISPLAY=$DISPLAY")
                             .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
-            LOGGER.debug("Starting TLS Instance " + id);
+            LOGGER.debug("Starting TLS Instance: " + id);
             DOCKER.startContainer(id);
             TlsInstance tlsInstance = new TlsInstance(id, role, host, getInstancePort(role, hostInfo.getPort(), id), profile.getType().name(), this);
             LOGGER.debug(getLogsFromTlsInstance(tlsInstance));
             LOGGER.debug(String.format("Started TLS " + role.name() + " %s : %s(%s)", id, profile.getType().name(), version));
             return tlsInstance;
         } catch (DockerException | InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("Could not create instance");
+            throw new ImplementationDidNotStartException("Could not create instance");
         }
-        return null;
     }
 
     @Override
@@ -154,12 +155,12 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, HostInfo hostInfo) {
         try {
             Volume volume;
-            String extraHost = "test:127.0.0.1";
-            if (hostInfo.getHostname() != null) {
-                extraHost = hostInfo.getHostname() + ":" + hostInfo.getIp();
-            }
             switch (role) {
                 case CLIENT:
+                    String extraHost = "test:127.0.0.27";
+                    if (hostInfo.getHostname() != null) {
+                        extraHost = hostInfo.getHostname() + ":" + hostInfo.getIp();
+                    }
                     volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
                             .findFirst()
                             .orElseThrow(() -> new CertVolumeNotFoundException());
@@ -180,7 +181,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .findFirst()
                             .orElseThrow(() -> new CertVolumeNotFoundException());
                     return HostConfig.builder()
-                            .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort(getIpOrHostNameToUse(hostInfo, properties)))))
+                            .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort(hostInfo.getHostname()))))
                             .binds(HostConfig.Bind.builder()
                                     .from(volume)
                                     .readOnly(true)
@@ -193,9 +194,9 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
             }
         } catch (DockerException | InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("Could not get host config", e);
+            throw new RuntimeException("Cannot create HostConfig", e);
         }
-        return null;
     }
 
     private int getInstancePort(ConnectionRole role, int port, String id) {
@@ -206,7 +207,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 try {
                     return new Integer(DOCKER.inspectContainer(id).networkSettings().ports().get(port + "/tcp").get(0).hostPort());
                 } catch (DockerException | InterruptedException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Could not retrieve instance port");
                 }
             default:
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
@@ -235,7 +236,8 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         if (properties.getDefaultKeyPath() != null) {
             afterReplace = afterReplace.replace("[key]", properties.getDefaultKeyPath());
         }
-        LOGGER.debug("Final parameters: " + afterReplace);
-        return afterReplace.trim().split(" ");
+        afterReplace = afterReplace.trim();
+        LOGGER.debug("Final parameters: " + (afterReplace));
+        return afterReplace.split(" ");
     }
 }

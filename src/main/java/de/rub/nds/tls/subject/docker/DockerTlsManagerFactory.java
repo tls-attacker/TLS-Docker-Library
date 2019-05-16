@@ -25,15 +25,14 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Creates TLS-Server or TLS-Client Instances as Docker Container Holds the
- * Config for each Instance
+ * Config for each TLS-Server or TLS-Client
  */
 public class DockerTlsManagerFactory {
 
     private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final Logger LOGGER = LogManager.getLogger(DockerTlsManagerFactory.class);
-    private static final String DEFAULT_HOSTNAME = "nds.tls-docker-library.de";
-    private static final String DEFAULT_IP = "127.0.0.42";
-    private static final int DEFAULT_PORT = 443;
+
+    private static final int DEFAULT_PORT = 4433;
     private final ParameterProfileManager parameterManager;
     private final PropertyManager propertyManager;
     private final DockerSpotifyTlsInstanceManager instanceManager;
@@ -46,15 +45,6 @@ public class DockerTlsManagerFactory {
         parameterManager = new ParameterProfileManager();
         propertyManager = new PropertyManager();
         instanceManager = new DockerSpotifyTlsInstanceManager();
-    }
-
-    public TlsInstance getServer(TlsImplementationType type, String version) {
-        return getServer(type, version, null);
-    }
-
-    public TlsInstance getServer(TlsImplementationType type, String version, String additionalParams) {
-        HostInfo hostInfo = new HostInfo(DEFAULT_IP, DEFAULT_HOSTNAME, DEFAULT_PORT);
-        return getInstance(ConnectionRole.SERVER, type, version, hostInfo, additionalParams);
     }
 
     public TlsInstance getClient(TlsImplementationType type, String version, String ip) {
@@ -82,6 +72,31 @@ public class DockerTlsManagerFactory {
         return getInstance(ConnectionRole.CLIENT, type, version, hostInfo, additionalParams);
     }
 
+    public TlsInstance getServer(TlsImplementationType type, String version) {
+        return getServer(type, version, DEFAULT_PORT);
+    }
+
+    public TlsInstance getServer(TlsImplementationType type, String version, String hostname) {
+        return getServer(type, version, hostname, DEFAULT_PORT);
+    }
+
+    public TlsInstance getServer(TlsImplementationType type, String version, int port) {
+        return getServer(type, version, null, port);
+    }
+
+    public TlsInstance getServer(TlsImplementationType type, String version, String hostname, int port) {
+        return getServer(type, version, hostname, port, null);
+    }
+
+    public TlsInstance getServer(TlsImplementationType type, String version, int port, String additionalParams) {
+        return getServer(type, version, null, port, additionalParams);
+    }
+
+    public TlsInstance getServer(TlsImplementationType type, String version, String hostname, int port, String additionalParams) {
+        HostInfo hostInfo = new HostInfo(hostname, port);
+        return getInstance(ConnectionRole.SERVER, type, version, hostInfo, additionalParams);
+    }
+
     private TlsInstance getInstance(ConnectionRole role, TlsImplementationType type, String version, HostInfo hostInfo, String additionalParams) {
         ParameterProfile profile = parameterManager.getProfile(type, version, role);
         if (profile == null) {
@@ -99,8 +114,7 @@ public class DockerTlsManagerFactory {
             case SERVER:
                 hostInfo.updatePort(properties.getInternalPort());
                 instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
-                long startTime = System.currentTimeMillis();
-                waitUntilServerIsOnline(version, instance.getPort());
+                waitUntilServerIsOnline(hostInfo.getHostname(), instance.getPort(), instance);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
@@ -108,30 +122,34 @@ public class DockerTlsManagerFactory {
         return instance;
     }
 
-    public void waitUntilServerIsOnline(String host, int port) {
+    public void waitUntilServerIsOnline(String host, int port, TlsInstance instance) {
         long startTime = System.currentTimeMillis();
-        while (!isOnline(host, port)) {
+        while (!isServerOnline(host, port)) {
             if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS < System.currentTimeMillis()) {
+                LOGGER.error("Could not start:\n\n" + instance.getLogs());
                 throw new ImplementationDidNotStartException("Timeout");
             }
             try {
                 Thread.sleep(SERVER_POLL_INTERVAL_MILLISECONDS);
             } catch (InterruptedException ex) {
+                LOGGER.error("Could not start:\n\n" + instance.getLogs());
                 throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
             }
         }
     }
 
-    public boolean isOnline(String address, int port) {
+    public boolean isServerOnline(String address, int port) {
         try {
-            LOGGER.debug("Testing if server is online...");
-            InetSocketAddress sa = new InetSocketAddress(address, port);
-            Socket ss = new Socket();
-            ss.connect(sa);
-            ss.close();
-            LOGGER.debug("Server is ready!");
-            return true;
+            Socket ss = new Socket(address, port);
+            if (ss.isConnected()) {
+                ss.close();
+
+                return true;
+            } else {
+                return false;
+            }
         } catch (IOException e) {
+            //e.printStackTrace();
             LOGGER.debug("Server is not online yet");
             LOGGER.trace(e);
             return false;

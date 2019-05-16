@@ -1,10 +1,5 @@
 package de.rub.nds.tls.subject;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 public class HostInfo {
 
     private final String ip;
@@ -15,6 +10,20 @@ public class HostInfo {
         this.ip = ip;
         this.hostname = hostname;
         this.port = port;
+    }
+
+    public HostInfo(String hostname, int port) {
+        this.port = port;
+        if (hostname == null) {
+            this.hostname = "127.0.0.42";
+        } else {
+            this.hostname = hostname;
+        }
+        if (hostname == null) {
+            this.ip = "127.0.0.42";
+        } else {
+            this.ip = hostname;
+        }
     }
 
     public String getIp() {

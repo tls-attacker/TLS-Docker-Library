@@ -20,27 +20,85 @@ public class ParameterProfileManager {
 
     private static final String RESOURCE_PATH = "/profiles/";
 
-    private final List<ParameterProfile> allProfilesList;
+    private final List<ParameterProfile> defaultClientProfileList;
+
+    private final List<ParameterProfile> allProfileList;
+
+    private final List<ParameterProfile> defaultServerProfileList;
 
     public ParameterProfileManager() {
-        allProfilesList = new LinkedList<>();
+        defaultServerProfileList = new LinkedList<>();
+        defaultClientProfileList = new LinkedList<>();
+        allProfileList = new LinkedList<>();
+
         for (ConnectionRole role : ConnectionRole.values()) {
             try {
                 for (String filename : getResourceFiles(RESOURCE_PATH + role.name().toLowerCase() + "/")) {
                     ParameterProfile profile = tryLoadProfile(role, filename);
                     if (profile != null) {
-                        LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name());
-                        allProfilesList.add(profile);
+                        LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name() + " - " + profile.getDescription());
+                        allProfileList.add(profile);
                     }
                 }
             } catch (IOException ex) {
-                LOGGER.warn("ERROR reading profiles", ex);
+                LOGGER.warn("Problem reading profiles", ex);
+                ex.printStackTrace();
+            }
+        }
+
+        for (TlsImplementationType type
+                : TlsImplementationType.values()) {
+            ParameterProfile profile = tryLoadProfile(ConnectionRole.SERVER, "" + type.name().toLowerCase() + ".profile");
+            if (profile != null) {
+                LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name());
+                defaultServerProfileList.add(profile);
+            }
+            profile = tryLoadProfile(ConnectionRole.CLIENT, "" + type.name().toLowerCase() + ".profile");
+            if (profile != null) {
+                LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name());
+                defaultClientProfileList.add(profile);
             }
         }
     }
 
+    private List<String> getResourceFiles(String path) throws IOException {
+        List<String> filenames = new ArrayList<>();
+        try (
+                InputStream in = getResourceAsStream(path);
+                BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+            String resource;
+            while ((resource = br.readLine()) != null) {
+                filenames.add(resource);
+            }
+        }
+
+        return filenames;
+    }
+
+    private InputStream getResourceAsStream(String resource) {
+        InputStream in = getContextClassLoader().getResourceAsStream(resource);
+        return in == null ? getClass().getResourceAsStream(resource) : in;
+    }
+
+    private ClassLoader getContextClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
+
+    }
+
+    private ParameterProfile tryLoadProfile(ConnectionRole role, String filename) {
+        try {
+            InputStream stream = ParameterProfileManager.class
+                    .getResourceAsStream(RESOURCE_PATH + role.name().toLowerCase() + "/" + filename);
+            return ParameterProfileSerializer.read(stream);
+        } catch (IOException | JAXBException | XMLStreamException E) {
+            LOGGER.debug("Could not find other ParameterProfile for: " + RESOURCE_PATH + role.name().toLowerCase() + "/" + filename + ": " + role.name());
+            LOGGER.trace(E);
+            return null;
+        }
+    }
+
     public ParameterProfile getProfile(TlsImplementationType type, String version, ConnectionRole role) {
-        for (ParameterProfile profile : allProfilesList) {
+        for (ParameterProfile profile : allProfileList) {
             if (profile.getRole() == role && profile.getType() == type) {
                 if (profile.getVersionList() != null && !profile.getVersionList().isEmpty()) {
                     for (String versionRegex : profile.getVersionList()) {
@@ -54,46 +112,28 @@ public class ParameterProfileManager {
         return getDefaultProfile(type, role);
     }
 
-    private List<String> getResourceFiles(String path) throws IOException {
-        List<String> filenames = new ArrayList<>();
-        InputStream in = getResourceAsStream(path);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String resource;
-        while ((resource = br.readLine()) != null) {
-            filenames.add(resource);
-        }
-        return filenames;
-    }
-
-    private InputStream getResourceAsStream(String resource) {
-        InputStream in = getContextClassLoader().getResourceAsStream(resource);
-        return in == null ? getClass().getResourceAsStream(resource) : in;
-    }
-
-    private ClassLoader getContextClassLoader() {
-        return Thread.currentThread().getContextClassLoader();
-    }
-
-    private ParameterProfile tryLoadProfile(ConnectionRole role, String filename) {
-        try {
-            InputStream stream = ParameterProfileManager.class.
-                    getResourceAsStream(RESOURCE_PATH + role.name().toLowerCase() + "/" + filename);
-            return ParameterProfileSerializer.read(stream);
-        } catch (IOException | JAXBException | XMLStreamException E) {
-            LOGGER.debug("Could not find ParameterProfile for: " + RESOURCE_PATH + role.name().toLowerCase() + "/" + filename + ": " + role.name());
-            LOGGER.trace(E);
-            return null;
-        }
-    }
-
-    private ParameterProfile getDefaultProfile(TlsImplementationType type, ConnectionRole role) {
-        for (ParameterProfile profile : allProfilesList) {
-            if (profile.getRole() == role && profile.getType() == type) {
-                if (profile.getVersionList() == null) {
-                    return profile;
-                }
+    public ParameterProfile getDefaultProfile(TlsImplementationType type, ConnectionRole role) {
+        if (null == role) {
+            throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+        } else {
+            switch (role) {
+                case CLIENT:
+                    for (ParameterProfile profile : defaultClientProfileList) {
+                        if (profile.getType() == type) {
+                            return profile;
+                        }
+                    }
+                    return null;
+                case SERVER:
+                    for (ParameterProfile profile : defaultServerProfileList) {
+                        if (profile.getType() == type) {
+                            return profile;
+                        }
+                    }
+                    return null;
+                default:
+                    throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
             }
         }
-        return null;
     }
 }

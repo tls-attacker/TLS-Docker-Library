@@ -4,13 +4,21 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
+import de.rub.nds.tls.subject.report.ContainerReport;
+import de.rub.nds.tls.subject.report.InstanceContainer;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
+import javax.xml.bind.JAXBException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
 
 public class AvailableServerVersionsTest {
+
+    private Logger LOGGER = LogManager.getLogger();
 
     public AvailableServerVersionsTest() {
     }
@@ -28,20 +36,25 @@ public class AvailableServerVersionsTest {
     }
 
     @Test
-    public void testAllVersionsFunctional() {
+    public void testAllVersionsFunctional() throws JAXBException, IOException {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
         DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
+        ContainerReport report = new ContainerReport();
         for (TlsImplementationType type : TlsImplementationType.values()) {
             List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.SERVER, type);
             for (String version : availableVersions) {
                 try {
-                    System.out.println(type.name() + ":" + version + " - " + isFunctional(factory, type, version));
+                    boolean isFunctional = isFunctional(factory, type, version);
+                    System.out.println(type.name() + ":" + version + " - " + isFunctional);
+                    report.addInstanceContainer(new InstanceContainer(ConnectionRole.SERVER, type, version, isFunctional));
                 } catch (Exception E) {
                     E.printStackTrace();
                     System.out.println(type.name() + ":" + version + "       ERROR");
                 }
+                
             }
         }
+        ContainerReport.write(new File("server_report.xml"), report);
     }
 
     public boolean isFunctional(DockerTlsManagerFactory factory, TlsImplementationType type, String version) {
@@ -54,7 +67,7 @@ public class AvailableServerVersionsTest {
             try {
                 server = factory.getServer(type, version);
             } catch (Exception E) {
-                E.printStackTrace();
+                LOGGER.warn("Instance seems not runnable", E);
                 return false;
             }
             Socket socket = new Socket(server.getHost(), server.getPort());

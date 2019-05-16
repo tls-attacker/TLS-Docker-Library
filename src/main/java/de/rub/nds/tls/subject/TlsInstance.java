@@ -11,7 +11,7 @@ public class TlsInstance {
     private final int port;
     private final String name;
     private final TlsInstanceManager tlsInstanceManager;
-    private int exitCode;
+    private long exitCode;
 
     public TlsInstance(String id, ConnectionRole role, String host, int port, String name, TlsInstanceManager tlsInstanceManager) {
         this.id = id;
@@ -46,7 +46,7 @@ public class TlsInstance {
         return tlsInstanceManager.getLogsFromTlsInstance(this);
     }
 
-    public int getExitCode() {
+    public long getExitCode() {
         return exitCode;
     }
 
@@ -54,7 +54,7 @@ public class TlsInstance {
         return "exitCode: " + exitCode;
     }
 
-    public void setExitCode(int exitCode) {
+    public void setExitCode(long exitCode) {
         this.exitCode = exitCode;
     }
 

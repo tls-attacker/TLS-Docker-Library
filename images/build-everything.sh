@@ -1,3 +1,4 @@
+#!/bin/bash
 cd baseimage;
 ./build-base-image.sh
 ./build-base-image-ubuntu.sh

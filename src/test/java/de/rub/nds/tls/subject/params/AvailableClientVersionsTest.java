@@ -9,11 +9,15 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
+import de.rub.nds.tls.subject.report.ContainerReport;
+import de.rub.nds.tls.subject.report.InstanceContainer;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
 
@@ -41,23 +45,27 @@ public class AvailableClientVersionsTest {
     }
 
     @Test
-    public void testAllVersionsFunctional() {
+    public void testAllVersionsFunctional() throws JAXBException, IOException {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
         DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         System.out.println("Functional Clients: ");
         TlsTestServer testServer = new TlsTestServer(PORT);
         testServer.start();
+        ContainerReport report = new ContainerReport();
         for (TlsImplementationType type : TlsImplementationType.values()) {
             List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.CLIENT, type);
             for (String version : availableVersions) {
                 try {
-                    System.out.println(type.name() + ":" + version + " - " + isFunctional(testServer, factory, type, version));
+                    boolean isFunctional = isFunctional(testServer, factory, type, version);
+                    System.out.println(type.name() + ":" + version + " - " + isFunctional);
+                    report.addInstanceContainer(new InstanceContainer(ConnectionRole.CLIENT, type, version, isFunctional));
                 } catch (Exception E) {
                     E.printStackTrace();
                     System.out.println(type.name() + ":" + version + "       ERROR");
                 }
             }
         }
+        ContainerReport.write(new File("client_report.xml"), report);
         try {
             testServer.stop(IP, PORT);
         } catch (IOException ex) {
