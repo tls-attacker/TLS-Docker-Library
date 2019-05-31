@@ -109,6 +109,19 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     }
 
     @Override
+    public void restartIntsance(TlsInstance tlsInstance) {
+        LOGGER.debug("Restarting TLS Instance " + tlsInstance.getId());
+        try {
+            DOCKER.stopContainer(tlsInstance.getId(), 2);
+            DOCKER.startContainer(tlsInstance.getId());
+        } catch (ContainerNotFoundException e) {
+            LOGGER.debug(e);
+        } catch (DockerException | InterruptedException e) {
+            LOGGER.debug(e);
+        }
+    }
+
+    @Override
     public void killTlsInstance(TlsInstance tlsInstance) {
         LOGGER.debug("Shutting down TLS Instance " + tlsInstance.getId());
         try {

@@ -62,6 +62,10 @@ public class TlsInstance {
         tlsInstanceManager.killTlsInstance(this);
     }
 
+    public void restart() {
+        tlsInstanceManager.restartIntsance(this);
+    }
+
     @Override
     public String toString() {
         return String.format("%s: %s:%d (%s)", getConnectionRole().name(), host, port, getName());
