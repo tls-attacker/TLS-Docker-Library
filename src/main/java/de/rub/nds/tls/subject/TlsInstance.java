@@ -63,12 +63,20 @@ public class TlsInstance {
     }
 
     public void restart() {
-        tlsInstanceManager.restartIntsance(this);
+        tlsInstanceManager.restartInstance(this);
     }
 
     @Override
     public String toString() {
         return String.format("%s: %s:%d (%s)", getConnectionRole().name(), host, port, getName());
+    }
+
+    public void start() {
+        tlsInstanceManager.startInstance(this);
+    }
+
+    public void stop() {
+        tlsInstanceManager.stopInstance(this);
     }
 
 }

@@ -16,8 +16,12 @@ public interface TlsInstanceManager {
 
     void killTlsInstance(TlsInstance tlsInstance);
 
-    void restartIntsance(TlsInstance tlsInstance);
-    
+    void restartInstance(TlsInstance tlsInstance);
+
+    void startInstance(TlsInstance tlsInstance);
+
+    void stopInstance(TlsInstance tlsInstance);
+
     String getLogsFromTlsInstance(TlsInstance tlsInstance);
 
 }
