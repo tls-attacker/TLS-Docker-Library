@@ -170,7 +170,7 @@ public class DockerTlsManagerFactory {
             }
             return versionList;
         } catch (DockerException | InterruptedException ex) {
-            throw new RuntimeException("Could not retrieve available " + role.name() + " Versions!");
+            throw new RuntimeException("Could not retrieve available " + role.name() + " Versions!", ex);
         }
     }
 }
