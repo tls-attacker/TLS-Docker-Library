@@ -72,11 +72,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
-            LOGGER.debug("Starting TLS Instance: " + id);
-            DOCKER.startContainer(id);
             TlsInstance tlsInstance = new TlsInstance(id, role, host, getInstancePort(role, hostInfo.getPort(), id), profile.getType().name(), this);
-            LOGGER.debug(getLogsFromTlsInstance(tlsInstance));
-            LOGGER.debug(String.format("Started TLS " + role.name() + " %s : %s(%s)", id, profile.getType().name(), version));
             return tlsInstance;
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Could not create instance");
