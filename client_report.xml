@@ -1144,6 +1144,30 @@
         <functional>true</functional>
         <implementationType>OPENSSL</implementationType>
         <role>CLIENT</role>
+        <version>1.0.2p</version>
+    </Container>
+    <Container>
+        <functional>true</functional>
+        <implementationType>OPENSSL</implementationType>
+        <role>CLIENT</role>
+        <version>1.0.2o</version>
+    </Container>
+    <Container>
+        <functional>true</functional>
+        <implementationType>OPENSSL</implementationType>
+        <role>CLIENT</role>
+        <version>1.0.2n</version>
+    </Container>
+    <Container>
+        <functional>true</functional>
+        <implementationType>OPENSSL</implementationType>
+        <role>CLIENT</role>
+        <version>1.0.2m</version>
+    </Container>
+    <Container>
+        <functional>true</functional>
+        <implementationType>OPENSSL</implementationType>
+        <role>CLIENT</role>
         <version>1.0.2-beta3</version>
     </Container>
     <Container>
@@ -4445,6 +4469,30 @@
         <implementationType>OCAMLTLS</implementationType>
         <role>CLIENT</role>
         <version>0.8.0</version>
+    </Container>
+    <Container>
+        <functional>true</functional>
+        <implementationType>OPENSSL</implementationType>
+        <role>CLIENT</role>
+        <version>1.0.2p</version>
+    </Container>
+    <Container>
+        <functional>true</functional>
+        <implementationType>OPENSSL</implementationType>
+        <role>CLIENT</role>
+        <version>1.0.2o</version>
+    </Container>
+    <Container>
+        <functional>true</functional>
+        <implementationType>OPENSSL</implementationType>
+        <role>CLIENT</role>
+        <version>1.0.2n</version>
+    </Container>
+    <Container>
+        <functional>true</functional>
+        <implementationType>OPENSSL</implementationType>
+        <role>CLIENT</role>
+        <version>1.0.2m</version>
     </Container>
     <Container>
         <functional>true</functional>
