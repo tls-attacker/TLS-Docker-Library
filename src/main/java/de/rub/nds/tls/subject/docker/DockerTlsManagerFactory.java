@@ -126,13 +126,11 @@ public class DockerTlsManagerFactory {
         long startTime = System.currentTimeMillis();
         while (!isServerOnline(host, port)) {
             if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS < System.currentTimeMillis()) {
-                LOGGER.error("Could not start:\n\n" + instance.getLogs());
-                throw new ImplementationDidNotStartException("Timeout");
+                throw new ImplementationDidNotStartException("Could not start Server: Timeout");
             }
             try {
                 Thread.sleep(SERVER_POLL_INTERVAL_MILLISECONDS);
             } catch (InterruptedException ex) {
-                LOGGER.error("Could not start:\n\n" + instance.getLogs());
                 throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
             }
         }
@@ -149,9 +147,7 @@ public class DockerTlsManagerFactory {
                 return false;
             }
         } catch (IOException e) {
-            //e.printStackTrace();
-            LOGGER.debug("Server is not online yet");
-            LOGGER.trace(e);
+            LOGGER.debug("Server is not online yet", e);
             return false;
         }
     }
