@@ -66,6 +66,7 @@ public class AvailableServerVersionsTest {
             }
             try {
                 server = factory.getServer(type, version);
+                server.start();
             } catch (Exception E) {
                 LOGGER.warn("Instance seems not runnable", E);
                 return false;

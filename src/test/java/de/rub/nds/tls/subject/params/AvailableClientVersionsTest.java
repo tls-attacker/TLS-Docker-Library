@@ -83,6 +83,7 @@ public class AvailableClientVersionsTest {
             }
             try {
                 client = factory.getClient(type, version, IP, HOSTNAME, PORT);
+                client.start();
                 boolean waiting = true;
                 int timeout = 0;
                 while (waiting && timeout < CONNECTION_TIMEOUT) {
