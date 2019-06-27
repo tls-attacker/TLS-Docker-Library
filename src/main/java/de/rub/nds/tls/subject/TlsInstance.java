@@ -8,18 +8,24 @@ public class TlsInstance {
     private final String id;
     private final ConnectionRole role;
     private final String host;
-    private final int port;
+    private Integer port;
     private final String name;
     private final TlsInstanceManager tlsInstanceManager;
     private long exitCode;
+    private final HostInfo hostInfo;
 
-    public TlsInstance(String id, ConnectionRole role, String host, int port, String name, TlsInstanceManager tlsInstanceManager) {
+    public TlsInstance(String id, ConnectionRole role, String host, Integer port, String name, TlsInstanceManager tlsInstanceManager, HostInfo hostInfo) {
         this.id = id;
         this.role = role;
         this.host = host;
         this.port = port;
         this.name = name;
         this.tlsInstanceManager = tlsInstanceManager;
+        this.hostInfo = hostInfo;
+    }
+
+    public HostInfo getHostInfo() {
+        return hostInfo;
     }
 
     public String getId() {
@@ -34,7 +40,7 @@ public class TlsInstance {
         return host;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return port;
     }
 
@@ -79,4 +85,7 @@ public class TlsInstance {
         tlsInstanceManager.stopInstance(this);
     }
 
+    public void setPort(Integer port) {
+        this.port = port;
+    }
 }

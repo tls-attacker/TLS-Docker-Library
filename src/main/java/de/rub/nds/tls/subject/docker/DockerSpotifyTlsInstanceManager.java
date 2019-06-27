@@ -72,8 +72,12 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
-            TlsInstance tlsInstance = new TlsInstance(id, role, host, getInstancePort(role, hostInfo.getPort(), id), profile.getType().name(), this);
-            return tlsInstance;
+            if (role == ConnectionRole.CLIENT) {
+                return new TlsInstance(id, role, host, getInstancePort(role, hostInfo.getPort(), id), profile.getType().name(), this, hostInfo);
+            } else {
+                return new TlsInstance(id, role, host, null, profile.getType().name(), this, hostInfo);
+            }
+
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Could not create instance");
             throw new ImplementationDidNotStartException("Could not create instance");
@@ -109,6 +113,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         LOGGER.debug("Starting TLS Instance" + tlsInstance.getId());
         try {
             DOCKER.startContainer(tlsInstance.getId());
+            tlsInstance.setPort(getInstancePort(tlsInstance.getConnectionRole(), tlsInstance.getHostInfo().getPort(), tlsInstance.getId()));
         } catch (ContainerNotFoundException e) {
             LOGGER.debug(e);
         } catch (DockerException | InterruptedException e) {
