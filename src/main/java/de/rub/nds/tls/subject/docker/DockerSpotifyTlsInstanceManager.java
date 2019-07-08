@@ -61,6 +61,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .image(image.id())
                             .hostConfig(getInstanceHostConfig(role, properties, hostInfo))
                             .exposedPorts(properties.getInternalPort() + "/tcp")
+                            .exposedPorts(properties.getInternalPort() + "/udp")
                             .attachStderr(true)
                             .attachStdout(true)
                             .attachStdin(true)
@@ -245,7 +246,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 try {
                     return new Integer(DOCKER.inspectContainer(id).networkSettings().ports().get(port + "/tcp").get(0).hostPort());
                 } catch (DockerException | InterruptedException e) {
-                    LOGGER.error("Could not retrieve instance port");
+                    LOGGER.error("Could not retrieve instance port", e);
                 }
             default:
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
