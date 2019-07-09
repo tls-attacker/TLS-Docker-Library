@@ -56,7 +56,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     public TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, HostInfo hostInfo, String additionalParameters) {
         String host = getIpOrHostNameToUse(hostInfo, properties);
         int externalPort = hostInfo.getPort();
-        int targetPort = properties.getInternalPort();
+        Integer targetPort = properties.getInternalPort();
         if (role == ConnectionRole.CLIENT) {
             targetPort = hostInfo.getPort();
         }
