@@ -16,7 +16,6 @@ import de.rub.nds.tls.subject.params.ParameterProfileManager;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import de.rub.nds.tls.subject.properties.PropertyManager;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
@@ -106,19 +105,7 @@ public class DockerTlsManagerFactory {
         if (properties == null) {
             throw new PropertyNotFoundException("Could not find a Property for " + role.name() + ": " + type.name() + ":" + version);
         }
-        TlsInstance instance = null;
-        switch (role) {
-            case CLIENT:
-                instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
-                break;
-            case SERVER:
-                hostInfo.updatePort(properties.getInternalPort());
-                instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
-        }
-        return instance;
+        return instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
     }
 
     public void waitUntilServerIsOnline(String host, int port, TlsInstance instance) {
@@ -140,7 +127,6 @@ public class DockerTlsManagerFactory {
             Socket ss = new Socket(address, port);
             if (ss.isConnected()) {
                 ss.close();
-
                 return true;
             } else {
                 return false;

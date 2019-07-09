@@ -1,5 +1,6 @@
 package de.rub.nds.tls.subject.docker;
 
+import com.google.common.collect.ImmutableMap;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.LogsParam;
@@ -7,9 +8,11 @@ import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.ContainerNotFoundException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
+import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.HostConfig.Bind;
 import com.spotify.docker.client.messages.Image;
+import com.spotify.docker.client.messages.NetworkSettings;
 import com.spotify.docker.client.messages.PortBinding;
 import com.spotify.docker.client.messages.Volume;
 import de.rub.nds.tls.subject.ConnectionRole;
@@ -23,7 +26,6 @@ import de.rub.nds.tls.subject.params.Parameter;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang.RandomStringUtils;
@@ -33,7 +35,8 @@ import org.apache.logging.log4j.Logger;
 /**
  * Manage a TLS-Instance via Docker
  *
- * One instance is needed for each client or server type.
+ * One instance is needed for each client or server type. RM TODO: This class is
+ * a garbagefire. Please change it!
  */
 public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
 
@@ -52,6 +55,11 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
     @Override
     public TlsInstance getTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, HostInfo hostInfo, String additionalParameters) {
         String host = getIpOrHostNameToUse(hostInfo, properties);
+        int externalPort = hostInfo.getPort();
+        int targetPort = properties.getInternalPort();
+        if (role == ConnectionRole.CLIENT) {
+            targetPort = hostInfo.getPort();
+        }
         try {
             Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(getInstanceLabel(role), profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(getInstanceVersionLabel(role), version)).stream()
                     .findFirst()
@@ -59,24 +67,24 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             String id = DOCKER.createContainer(
                     ContainerConfig.builder()
                             .image(image.id())
-                            .hostConfig(getInstanceHostConfig(role, properties, hostInfo))
-                            .exposedPorts(properties.getInternalPort() + "/tcp")
-                            .exposedPorts(properties.getInternalPort() + "/udp")
+                            .hostConfig(getInstanceHostConfig(role, properties, hostInfo, externalPort))
+                            .exposedPorts(properties.getInternalPort() + "/tcp", properties.getInternalPort() + "/udp")
                             .attachStderr(true)
                             .attachStdout(true)
                             .attachStdin(true)
                             .tty(true)
                             .stdinOnce(true)
                             .openStdin(true)
-                            .cmd(convertProfileToParams(profile, host, hostInfo.getPort(), properties, additionalParameters))
+                            .cmd(convertProfileToParams(profile, host, targetPort, properties, additionalParameters))
                             //.env("DISPLAY=$DISPLAY")
                             .build(),
                     profile.getType().name() + "_" + RandomStringUtils.randomAlphanumeric(8)
             ).id();
             if (role == ConnectionRole.CLIENT) {
                 return new TlsInstance(id, role, host, getInstancePort(role, hostInfo.getPort(), id), profile.getType().name(), this, hostInfo);
+
             } else {
-                return new TlsInstance(id, role, host, null, profile.getType().name(), this, hostInfo);
+                return new TlsInstance(id, role, host, externalPort, profile.getType().name(), this, hostInfo);
             }
 
         } catch (DockerException | InterruptedException e) {
@@ -114,7 +122,6 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         LOGGER.debug("Starting TLS Instance" + tlsInstance.getId());
         try {
             DOCKER.startContainer(tlsInstance.getId());
-            tlsInstance.setPort(getInstancePort(tlsInstance.getConnectionRole(), tlsInstance.getHostInfo().getPort(), tlsInstance.getId()));
         } catch (ContainerNotFoundException e) {
             LOGGER.debug(e);
         } catch (DockerException | InterruptedException e) {
@@ -191,7 +198,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         return host;
     }
 
-    private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, HostInfo hostInfo) {
+    private HostConfig getInstanceHostConfig(ConnectionRole role, ImageProperties properties, HostInfo hostInfo, int externalPort) {
         try {
             Volume volume;
             switch (role) {
@@ -220,7 +227,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                             .findFirst()
                             .orElseThrow(() -> new CertVolumeNotFoundException());
                     return HostConfig.builder()
-                            .portBindings(Collections.singletonMap(properties.getInternalPort() + "/tcp", Collections.singletonList(PortBinding.randomPort(hostInfo.getHostname()))))
+                            .portBindings(ImmutableMap.of(properties.getInternalPort() + "/tcp", Arrays.asList(PortBinding.of("127.0.0.42", "" + externalPort)), properties.getInternalPort() + "/udp", Arrays.asList(PortBinding.of("127.0.0.42", "" + externalPort))))
                             .binds(HostConfig.Bind.builder()
                                     .from(volume)
                                     .readOnly(true)
@@ -244,7 +251,15 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 return port;
             case SERVER:
                 try {
-                    return new Integer(DOCKER.inspectContainer(id).networkSettings().ports().get(port + "/tcp").get(0).hostPort());
+                    ContainerInfo containerInfo = DOCKER.inspectContainer(id);
+                    if (containerInfo == null) {
+                        throw new DockerException("Could not find container with ID:" + id);
+                    }
+                    NetworkSettings networkSettings = containerInfo.networkSettings();
+                    if (networkSettings == null) {
+                        throw new DockerException("Cannot retrieve InstacePort, Network not properly configured for container with ID:" + id);
+                    }
+                    return new Integer(networkSettings.ports().values().asList().get(0).get(0).hostPort());
                 } catch (DockerException | InterruptedException e) {
                     LOGGER.error("Could not retrieve instance port", e);
                 }
