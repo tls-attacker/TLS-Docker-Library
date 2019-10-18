@@ -1,5 +1,5 @@
-FROM alpine-build as s2n-base1
-RUN apk add openssl-dev
+FROM alpine as s2n-base1
+RUN apk add openssl-dev git make g++
 RUN git clone --depth=1 https://github.com/awslabs/s2n
 WORKDIR s2n
 RUN make bin
