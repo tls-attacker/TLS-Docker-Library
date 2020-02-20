@@ -1,2 +1,3 @@
-#!/bin/sh
-exec docker build --squash --tag alpine-build .
+#!/bin/bash
+
+docker build -t alpine-build .

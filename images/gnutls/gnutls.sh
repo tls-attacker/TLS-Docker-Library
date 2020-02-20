@@ -9,7 +9,7 @@ do
 	i=i+1
 done
 
-#Build error in test with v7 -> check that
+# FIXME: Build error in test with v7 -> check that
 array=(0 1 2 4 5 6 7)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -30,7 +30,7 @@ do
 	i=i+1
 done
 
-#Build error in test with v17 -> check that
+# FIXME: Build error in test with v17 -> check that
 array=(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -41,7 +41,7 @@ do
 	i=i+1
 done
 
-#Build error in test with v15 -> check that
+# FIXME: Build error in test with v15 -> check that
 array=(0 1 2 3 4 5 6 8 9 10 11 12 13 14 15)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -52,7 +52,7 @@ do
 	i=i+1
 done
 
-#Build error in test with v28 -> check that
+# FIXME: Build error in test with v28 -> check that
 array=(16 17 18 19 20 21 22 23 24 25 26 27 28)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #Builds Container with Compilerenv. !
 
 array=(release-3.1.2)
