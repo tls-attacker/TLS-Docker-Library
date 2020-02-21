@@ -1,8 +1,11 @@
 #!/bin/bash
 set -uo pipefail
 
-LOG_FAILED="$(dirname $BASH_SOURCE)/build_failed.log"
-LOG_SUCCESS="$(dirname $BASH_SOURCE)/build_succeeded.log"
+FOLDER="$(realpath "$(dirname "$BASH_SOURCE")")"
+
+# if set to 1, docker commands are recorded and written to cmds.sh
+# required by build-everythin.py
+CMD_GENERATION_MODE="${CMD_GENERATION_MODE:-0}"
 
 EXITCODE=0
 function _docker {
@@ -16,15 +19,18 @@ for i in s:
 E
 )
 
-  echo -e "\033[1;33mBuilding $tag...\033[0m"
-  if ! outp=$(docker "$@" 2>&1); then
-    echo -e "❌\033[1;31m Failed to build $tag!\033[0m"
-    EXITCODE=$((EXITCODE + 1))
-    echo -e "\n[!-!] Failed to build: $tag\n$outp" >> "$LOG_FAILED"
-    return $EXITCODE
+  if [[ $CMD_GENERATION_MODE -eq 0 ]]; then
+    echo -e "\033[1;33mBuilding $tag...\033[0m"
+    if ! outp=$(docker "$@" 2>&1); then
+      echo -e "[-]\033[1;31m Failed to build $tag!\033[0m\n$outp"
+      EXITCODE=$((EXITCODE + 1))
+      return $EXITCODE
+    else
+      echo -e "[+]\033[1;32m Successfully built $tag!\033[0m"
+    fi
   else
-    echo -e "✅\033[1;31m Successfully built $tag!\033[0m"
-    echo "$tag" >> "$LOG_SUCCESS"
+    echo "cd $(pwd)" >> "$FOLDER/cmds.sh"
+    echo docker "$@" >> "$FOLDER/cmds.sh"
   fi
 
   return $EXITCODE
