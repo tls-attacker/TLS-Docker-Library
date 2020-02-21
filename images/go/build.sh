@@ -1,5 +1,9 @@
 #!/bin/bash
-set -euo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
+exit_on_error
 
-docker build -t gotls .
+_docker build -t gotls .
+
+exit "$EXITCODE"
+exit "$EXITCODE"

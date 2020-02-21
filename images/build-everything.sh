@@ -1,6 +1,10 @@
 #!/bin/bash
-set -euo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
+source ./helper-functions.sh
+exit_on_error
+
+echo "" > "$LOG_SUCCESS"
+echo "" > "$LOG_FAILED"
 
 ./baseimage/build-base.sh
 
@@ -13,14 +17,11 @@ len=${#results[@]}
 for (( i=0; i<len; i++ )); do
   n=$((i + 1))
   echo -e "\033[1;33m${n}/${len}, building $(dirname "${results[$i]}")...\033[0m"
-  if ! outp=$(${results[$i]} 2>&1); then
-    echo "$outp"
-    echo -e "\033[1;31m${n}/${len}, failed to build $(dirname "${results[$i]}")!\033[0m"
+  if ! ${results[$i]} 2>&1; then
+    echo -e "\033[1;31m${n}/${len}, failed building $(dirname "${results[$i]}")!\033[0m"
   else
-    echo -e "\033[1;32m${n}/${len}, building of $(dirname "${results[$i]}") completed!\033[0m"
+    echo -e "\033[1;32m${n}/${len}, succeeded building $(dirname "${results[$i]}")!\033[0m"
   fi
 
   echo " "
 done
-
-

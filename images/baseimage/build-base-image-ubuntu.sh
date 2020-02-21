@@ -1,5 +1,9 @@
 #!/bin/bash
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
 
-docker build --tag alpine-build .
+_docker build --tag alpine-build .
 
 #squash does not work on ubuntu
+
+exit "$EXITCODE"

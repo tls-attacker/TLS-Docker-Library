@@ -1,3 +1,7 @@
 #!/bin/bash
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
 
-docker build -t alpine-build .
+_docker build -t alpine-build .
+
+exit "$EXITCODE"

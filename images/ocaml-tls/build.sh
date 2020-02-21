@@ -1,5 +1,8 @@
 #!/bin/bash
-set -euo pipefail
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
+exit_on_error
 
-cd "$(dirname "$0")"
-./ocamltls.sh
+track_error ./ocamltls.sh
+
+exit "$EXITCODE"

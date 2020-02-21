@@ -1,5 +1,8 @@
 #!/bin/bash
-set -euo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
+exit_on_error
 
-./tlslite-ng.sh
+track_error ./tlslite-ng.sh
+
+exit "$EXITCODE"

@@ -1,7 +1,10 @@
 #!/bin/bash
-set -euo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
+exit_on_error
 
-./botan-1_11_X.sh
-./botan-2_X.sh
-./botan-2_X_0.sh
+track_error ./botan-1_11_X.sh
+track_error ./botan-2_X.sh
+track_error ./botan-2_X_0.sh
+
+exit "$EXITCODE"

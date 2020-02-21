@@ -1,11 +1,14 @@
 #!/bin/bash
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
+
 #version 2.8.x
 array=(0 1 2)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
         echo "Building: LibreSSL 2.8.${array[$i]}"
-        docker build --build-arg VERSION=8.${array[$i]} -t libressl-2_8_${array[$i]}-server -f Dockerfile-2_x .
+        _docker build --build-arg VERSION=8.${array[$i]} -t libressl-2_8_${array[$i]}-server -f Dockerfile-2_x .
         i=i+1
 done
 
@@ -15,7 +18,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
         echo "Building: LibreSSL 2.7.${array[$i]}"
-        docker build --build-arg VERSION=7.${array[$i]} -t libressl-2_7_${array[$i]}-server -f Dockerfile-2_x .
+        _docker build --build-arg VERSION=7.${array[$i]} -t libressl-2_7_${array[$i]}-server -f Dockerfile-2_x .
         i=i+1
 done
 
@@ -25,8 +28,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: LibreSSL 2.6.${array[$i]}"
-	docker build --build-arg VERSION=6.${array[$i]} -t libressl-2_6_${array[$i]}-server -f Dockerfile-2_x libressl-server .
-	docker build --build-arg VERSION=6.${array[$i]} -t libressl-2_6_${array[$i]}-client -f Dockerfile-2_x libressl-client .
+	_docker build --build-arg VERSION=6.${array[$i]} -t libressl-2_6_${array[$i]}-server -f Dockerfile-2_x libressl-server .
+	_docker build --build-arg VERSION=6.${array[$i]} -t libressl-2_6_${array[$i]}-client -f Dockerfile-2_x libressl-client .
 	i=i+1
 done
 
@@ -36,8 +39,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: LibreSSL 2.5.${array[$i]}"
-	docker build --build-arg VERSION=5.${array[$i]} -t libressl-2_5_${array[$i]}-server -f Dockerfile-2_x libressl-server .
-	docker build --build-arg VERSION=5.${array[$i]} -t libressl-2_5_${array[$i]}-client -f Dockerfile-2_x libressl-client .
+	_docker build --build-arg VERSION=5.${array[$i]} -t libressl-2_5_${array[$i]}-server -f Dockerfile-2_x libressl-server .
+	_docker build --build-arg VERSION=5.${array[$i]} -t libressl-2_5_${array[$i]}-client -f Dockerfile-2_x libressl-client .
 	i=i+1
 done
 
@@ -47,8 +50,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: LibreSSL 2.4.${array[$i]}"
-	docker build --build-arg VERSION=4.${array[$i]} -t libressl-2_4_${array[$i]}-server -f Dockerfile-2_x libressl-server .
-	docker build --build-arg VERSION=4.${array[$i]} -t libressl-2_4_${array[$i]}-client -f Dockerfile-2_x libressl-client .
+	_docker build --build-arg VERSION=4.${array[$i]} -t libressl-2_4_${array[$i]}-server -f Dockerfile-2_x libressl-server .
+	_docker build --build-arg VERSION=4.${array[$i]} -t libressl-2_4_${array[$i]}-client -f Dockerfile-2_x libressl-client .
 	i=i+1
 done
 
@@ -58,8 +61,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: LibreSSL 2.3.${array[$i]}"
-	docker build --build-arg VERSION=3.${array[$i]} -t libressl-2_3_${array[$i]}-server -f Dockerfile-2_x libressl-server .
-	docker build --build-arg VERSION=3.${array[$i]} -t libressl-2_3_${array[$i]}-client -f Dockerfile-2_x libressl-client .
+	_docker build --build-arg VERSION=3.${array[$i]} -t libressl-2_3_${array[$i]}-server -f Dockerfile-2_x libressl-server .
+	_docker build --build-arg VERSION=3.${array[$i]} -t libressl-2_3_${array[$i]}-client -f Dockerfile-2_x libressl-client .
 	i=i+1
 done
 
@@ -69,8 +72,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: LibreSSL 2.2.${array[$i]}"
-	docker build --build-arg VERSION=2.${array[$i]} -t libressl-2_2_${array[$i]}-server -f Dockerfile-2_x --target libressl-server .
-	docker build --build-arg VERSION=2.${array[$i]} -t libressl-2_2_${array[$i]}-client -f Dockerfile-2_x --target libressl-client .
+	_docker build --build-arg VERSION=2.${array[$i]} -t libressl-2_2_${array[$i]}-server -f Dockerfile-2_x --target libressl-server .
+	_docker build --build-arg VERSION=2.${array[$i]} -t libressl-2_2_${array[$i]}-client -f Dockerfile-2_x --target libressl-client .
 	i=i+1
 done
 
@@ -80,8 +83,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: LibreSSL 2.1.${array[$i]}"
-	docker build --build-arg VERSION=1.${array[$i]} -t libressl-2_1_${array[$i]}-server -f Dockerfile-2_x --target libressl-server .
-	docker build --build-arg VERSION=1.${array[$i]} -t libressl-2_1_${array[$i]}-client -f Dockerfile-2_x --target libressl-client .
+	_docker build --build-arg VERSION=1.${array[$i]} -t libressl-2_1_${array[$i]}-server -f Dockerfile-2_x --target libressl-server .
+	_docker build --build-arg VERSION=1.${array[$i]} -t libressl-2_1_${array[$i]}-client -f Dockerfile-2_x --target libressl-client .
 	i=i+1
 done
 
@@ -91,7 +94,9 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: LibreSSL 2.0.${array[$i]}"
-	docker build --build-arg VERSION=0.${array[$i]} -t libressl-2_0_${array[$i]}-server -f Dockerfile-2_x --target libressl-server .
-	docker build --build-arg VERSION=0.${array[$i]} -t libressl-2_0_${array[$i]}-client -f Dockerfile-2_x --target libressl-client .
+	_docker build --build-arg VERSION=0.${array[$i]} -t libressl-2_0_${array[$i]}-server -f Dockerfile-2_x --target libressl-server .
+	_docker build --build-arg VERSION=0.${array[$i]} -t libressl-2_0_${array[$i]}-client -f Dockerfile-2_x --target libressl-client .
 	i=i+1
 done
+
+exit "$EXITCODE"

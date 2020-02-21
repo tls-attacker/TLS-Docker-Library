@@ -1,6 +1,10 @@
 #!/bin/bash
-set -euo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
 
-./mbedtls.sh
-./polarssl.sh
+exit_on_error
+
+track_error ./mbedtls.sh
+track_error ./polarssl.sh
+
+exit "$EXITCODE"

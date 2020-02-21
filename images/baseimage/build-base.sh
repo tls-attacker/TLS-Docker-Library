@@ -1,6 +1,9 @@
 #!/bin/bash
-set -euo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
+exit_on_error
 
-./build-base-image.sh
-./build-base-image-ubuntu.sh
+track_error ./build-base-image.sh
+track_error ./build-base-image-ubuntu.sh
+
+exit "$EXITCODE"

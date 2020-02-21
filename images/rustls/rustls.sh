@@ -1,4 +1,8 @@
 #!/bin/bash
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
 
-docker build -t rustls .
+_docker build -t rustls .
 
+
+exit "$EXITCODE"
