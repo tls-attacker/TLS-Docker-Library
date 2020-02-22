@@ -69,9 +69,11 @@ def execute_docker(cmd, cwd):
 
     with LOG_WRITE_LOCK:
         if complete.returncode == 0:
-            LOG_SUCCEED.writelines([tag])
+            LOG_SUCCEED.writelines([tag + "\n"])
+            LOG_SUCCEED.flush()
         else:
-            LOG_FAILED.writelines(["[!-!] Failed to build {}".format(tag), complete.stdout])
+            LOG_FAILED.writelines(["[!-!] Failed to build {}\n".format(tag), complete.stdout + "\n"])
+            LOG_FAILED.flush()
 
     return complete.returncode, tag
 
