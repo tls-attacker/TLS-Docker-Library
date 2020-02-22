@@ -8,6 +8,7 @@ import subprocess
 import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from subprocess import STDOUT, PIPE
+import math
 
 if sys.version_info.major < 3 and sys.version_info.minor < 7:
     print("Requires at least Python 3.7")
@@ -76,9 +77,12 @@ def execute_docker(cmd, cwd):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Build all availble TLS library versions as docker images.")
+    parser = argparse.ArgumentParser(description="Build docker images for all TLS libraries or for specific ones.")
     parser.add_argument("--skip_cmd_generation", help="Skips the regeneration of the docker build commands", action="store_true", default=False)
     parser.add_argument("-p", "--parallel_builds", help="Number of paralllel docker build operations", default=None, type=int)
+    parser.add_argument("-l", "--library", help="Build only docker images of a certain library. " +
+                                                "The value is matched against the subfolder names inside the images folder. " +
+                                                "Can be specified multiple times.", default=[], action="append")
 
     ARGS = parser.parse_args()
 
@@ -89,6 +93,22 @@ def main():
         scripts = list(map(lambda x: os.path.join(dirpath, x), scripts))
 
         build_scripts += scripts
+
+
+    # filter for specific libraries
+    if len(ARGS.library) > 0:
+        def script_belongs_to_library(script):
+            ret = False
+            library_name = os.path.relpath(script, FOLDER).split('/')[0]
+            for i in ARGS.library:
+                ret = ret or (i.lower() == library_name.lower())
+            return ret
+
+        build_scripts = list(filter(script_belongs_to_library, build_scripts))
+        if len(build_scripts) == 0:
+            error("No TLS Libraries found matching the pattern!")
+            sys.exit(1)
+
 
     # cmds.sh is a shell script, that contains every docker build command that is needed
     # to build all images
@@ -112,9 +132,10 @@ def main():
             completed += 1
             printProgressBar(completed, len(build_scripts), length=20)
 
-    info("Building base image...")
+
     # execute ./baseimage/build-base.sh script
     # the resulting docker image is needed as base image for other docker files
+    info("Building base image...")
     completed = subprocess.run(os.path.join(FOLDER, "baseimage", "build-base.sh"), stdout=PIPE, stderr=STDOUT, encoding="utf-8")
     if completed.returncode != 0:
         error("Building base image failed!")
@@ -133,6 +154,7 @@ def main():
     if len(cmds) % 2 != 0:
         error("Something went wrong...")
         sys.exit(1)
+
 
     futures = []
     completed = 0
@@ -153,10 +175,11 @@ def main():
             completed += 1
             returnCode, tag = future.result()
 
+            digits = str(math.ceil(math.log10(len(futures))))
             if returnCode != 0:
-                error("{:4d}/{}, build failed: {} ".format(completed, len(futures), tag))
+                error(("{:" + digits + "d}/{}, build failed: {} ").format(completed, len(futures), tag))
             else:
-                success("{:4d}/{}, build succeeded: {} ".format(completed, len(futures), tag))
+                success(("{:" + digits + "d}/{}, build succeeded: {} ").format(completed, len(futures), tag))
 
 
 
