@@ -17,6 +17,8 @@ if sys.version_info.major < 3 and sys.version_info.minor < 7:
 FOLDER = os.path.abspath(os.path.dirname(__file__))
 LOG_SUCCEED = open(os.path.join(FOLDER, "build_succeeded.log"), "w")
 LOG_FAILED = open(os.path.join(FOLDER, "build_failed.log"), "w")
+ARGS = None
+
 
 # Print iterations progress
 def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█', printEnd="\r"):
@@ -65,7 +67,15 @@ def execute_docker(cmd, cwd):
             tag = cmd[cmd.index(i) + 1]
             break
 
-    complete = subprocess.run(cmd, cwd=cwd, stdout=PIPE, stderr=STDOUT, encoding="utf-8")
+    rebuild = ARGS.force_rebuild
+    if not rebuild:
+        complete = subprocess.run(["docker", "images", "-q", tag], stdout=PIPE, stderr=STDOUT, encoding="utf-8")
+        rebuild = complete.stdout.strip() == ""
+
+    if rebuild:
+        complete = subprocess.run(cmd, cwd=cwd, stdout=PIPE, stderr=STDOUT, encoding="utf-8")
+    else:
+        return -1, tag
 
     with LOG_WRITE_LOCK:
         if complete.returncode == 0:
@@ -77,14 +87,15 @@ def execute_docker(cmd, cwd):
 
     return complete.returncode, tag
 
-
 def main():
+    global ARGS
     parser = argparse.ArgumentParser(description="Build docker images for all TLS libraries or for specific ones.")
     parser.add_argument("--skip_cmd_generation", help="Skips the regeneration of the docker build commands", action="store_true", default=False)
     parser.add_argument("-p", "--parallel_builds", help="Number of paralllel docker build operations", default=os.cpu_count()//2, type=int)
     parser.add_argument("-l", "--library", help="Build only docker images of a certain library. " +
                                                 "The value is matched against the subfolder names inside the images folder. " +
                                                 "Can be specified multiple times.", default=[], action="append")
+    parser.add_argument("-f", "--force_rebuild", help="Build docker containers, even if they already exist.", default=False, action="store_true")
 
     ARGS = parser.parse_args()
 
@@ -160,6 +171,7 @@ def main():
 
     futures = []
     completed = 0
+    force_rebuild_info = False
     # execute multiple docker build commands in parallel
     with ThreadPoolExecutor(ARGS.parallel_builds) as executor:
 
@@ -178,10 +190,17 @@ def main():
             returnCode, tag = future.result()
 
             digits = str(math.ceil(math.log10(len(futures))))
-            if returnCode != 0:
+            if returnCode > 0:
                 error(("{:" + digits + "d}/{}, build failed: {} ").format(completed, len(futures), tag))
-            else:
+            elif returnCode == 0:
                 success(("{:" + digits + "d}/{}, build succeeded: {} ").format(completed, len(futures), tag))
+            if returnCode < 0:
+                warn(("{:" + digits + "d}/{}, build skipped: {} ").format(completed, len(futures), tag))
+                if not force_rebuild_info:
+                    info("Builds are skipped, when the image already exists.")
+                    info("Use '-f' to force a rebuild.")
+                    force_rebuild_info = True
+
 
 
 
