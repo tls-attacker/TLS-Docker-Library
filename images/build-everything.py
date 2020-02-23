@@ -2,11 +2,11 @@
 
 import argparse
 import datetime
-import multiprocessing
+import threading
 import os
 import subprocess
 import sys
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from subprocess import STDOUT, PIPE
 import math
 
@@ -54,7 +54,7 @@ def info(log):
 
 
 
-LOG_WRITE_LOCK = multiprocessing.Lock()
+LOG_WRITE_LOCK = threading.Lock()
 def execute_docker(cmd, cwd):
     # parse the docker build command to get
     # the tag of the docker image, set with docker build -t [TAG]
@@ -81,7 +81,7 @@ def execute_docker(cmd, cwd):
 def main():
     parser = argparse.ArgumentParser(description="Build docker images for all TLS libraries or for specific ones.")
     parser.add_argument("--skip_cmd_generation", help="Skips the regeneration of the docker build commands", action="store_true", default=False)
-    parser.add_argument("-p", "--parallel_builds", help="Number of paralllel docker build operations", default=None, type=int)
+    parser.add_argument("-p", "--parallel_builds", help="Number of paralllel docker build operations", default=os.cpu_count()//2, type=int)
     parser.add_argument("-l", "--library", help="Build only docker images of a certain library. " +
                                                 "The value is matched against the subfolder names inside the images folder. " +
                                                 "Can be specified multiple times.", default=[], action="append")
@@ -161,7 +161,7 @@ def main():
     futures = []
     completed = 0
     # execute multiple docker build commands in parallel
-    with ProcessPoolExecutor(ARGS.parallel_builds) as executor:
+    with ThreadPoolExecutor(ARGS.parallel_builds) as executor:
 
         for i in range(0, len(cmds), 2):
             # first line contains a 'cd ' bash command to the directory containing Dockerfile(s)
