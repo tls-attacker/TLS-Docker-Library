@@ -2,8 +2,9 @@
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
-_docker build --tag alpine-build .
+exit_on_error
 
-#squash does not work on ubuntu
+track_error ./mbedtls.sh
+track_error ./polarssl.sh
 
 exit "$EXITCODE"

@@ -1,4 +1,6 @@
 #!/bin/bash
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
 # Script for building boringssl versions
 # >2214 supports servermode
 # shim is not working for 2272 2311 2357
@@ -7,8 +9,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: BoringSSL ${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-2272-2357 --target boringssl-server .
-	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-client -f Dockerfile-2272-2357 --target boringssl-client .
+	_docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-2272-2357 --target boringssl-server .
+	_docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-client -f Dockerfile-2272-2357 --target boringssl-client .
 	i=i+1
 done
 
@@ -17,8 +19,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: BoringSSL ${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-2214-2661 --target boringssl-server .
-	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-client -f Dockerfile-2214-2661 --target boringssl-client .
+	_docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-2214-2661 --target boringssl-server .
+	_docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-client -f Dockerfile-2214-2661 --target boringssl-client .
 	i=i+1
 done
 
@@ -27,7 +29,9 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: BoringSSL ${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-x --target boringssl-server .
-	docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-client -f Dockerfile-x --target boringssl-client .
+	_docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-server -f Dockerfile-x --target boringssl-server .
+	_docker build --build-arg VERSION=${array[$i]} -t boringssl-${array[$i]}-client -f Dockerfile-x --target boringssl-client .
 	i=i+1
 done
+
+exit "$EXITCODE"

@@ -1,9 +1,9 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
+exit_on_error
 
-_docker build --tag alpine-build .
+_docker build -t gotls .
 
-#squash does not work on ubuntu
-
+exit "$EXITCODE"
 exit "$EXITCODE"

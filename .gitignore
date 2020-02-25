@@ -13,3 +13,7 @@ certs/*.pem
 images/**/*.pem
 images/DamnVulnerableOpenSSL/DamnVulnerableOpenSSL/
 /nbproject/
+.idea
+*.iml
+*.log
+images/cmds.sh

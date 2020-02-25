@@ -1,9 +1,8 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
+exit_on_error
 
-_docker build --tag alpine-build .
-
-#squash does not work on ubuntu
+track_error ./gnutls.sh
 
 exit "$EXITCODE"
