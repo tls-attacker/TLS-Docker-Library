@@ -139,6 +139,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         try {
             DOCKER.stopContainer(tlsInstance.getId(), 2);
             DOCKER.startContainer(tlsInstance.getId());
+            tlsInstance.setPort(getInstancePort(tlsInstance.getConnectionRole(), tlsInstance.getHostInfo().getPort(), tlsInstance.getId()));
         } catch (ContainerNotFoundException e) {
             LOGGER.debug(e);
         } catch (DockerException | InterruptedException e) {

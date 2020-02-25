@@ -4,7 +4,7 @@ public class HostInfo {
 
     private final String ip;
     private final String hostname;
-    private int port;
+    private Integer port;
 
     public HostInfo(String ip, String hostname, int port) {
         this.ip = ip;
@@ -38,7 +38,7 @@ public class HostInfo {
         this.port = port;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return port;
     }
 }

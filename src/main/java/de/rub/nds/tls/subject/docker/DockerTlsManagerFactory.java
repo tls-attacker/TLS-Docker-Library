@@ -107,17 +107,11 @@ public class DockerTlsManagerFactory {
             throw new PropertyNotFoundException("Could not find a Property for " + role.name() + ": " + type.name() + ":" + version);
         }
         TlsInstance instance = null;
-        switch (role) {
-            case CLIENT:
-                instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
-                break;
-            case SERVER:
-                hostInfo.updatePort(properties.getInternalPort());
-                instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+        if (hostInfo.getPort() == null) {
+            hostInfo.updatePort(properties.getInternalPort());
         }
+        instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
+
         return instance;
     }
 
