@@ -6,8 +6,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.6.${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_6_${array[$i]}-server -f Dockerfile-3_6_x --target gnutls-server .
-	docker build --build-arg VERSION=${array[$i]} -t gnutls-3_6_${array[$i]}-client -f Dockerfile-3_6_x --target gnutls-client .
+	_docker build --build-arg VERSION=${array[$i]} -t gnutls-3_6_${array[$i]}-server -f Dockerfile-3_6_x --target gnutls-server .
+	_docker build --build-arg VERSION=${array[$i]} -t gnutls-3_6_${array[$i]}-client -f Dockerfile-3_6_x --target gnutls-client .
 	i=i+1
 done
 
