@@ -1,4 +1,6 @@
 #!/bin/bash
+cd "$(dirname "$0")" || exit 1
+source ../helper-functions.sh
 
 echo "Building Firefox Images"
 
@@ -8,7 +10,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Firefox ${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t firefox-${array[$i]}-client .
+	_docker build --build-arg VERSION=${array[$i]} -t firefox-${array[$i]}-client .
 	i=i+1
 done
 
@@ -18,6 +20,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Firefox ${array[$i]}"
-	docker build --build-arg VERSION=${array[$i]} -t firefox-${array[$i]}-client .
+	_docker build --build-arg VERSION=${array[$i]} -t firefox-${array[$i]}-client .
 	i=i+1
 done
+
+exit "$EXITCODE"

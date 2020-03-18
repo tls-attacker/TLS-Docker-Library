@@ -1,17 +1,19 @@
 # TLS-Docker-Library
 
-## Building
+## Build Docker images
 ### First steps
-#### Build baseimage
-```bash
-cd baseimage
-./build-base-image.sh
-```
-#### Create key.pem and cert.pem
-```bash
-cd cert
-./setup.sh
-```
+1. Create `key.pem` and `cert.pem`
+    ```bash
+    cd cert
+    ./setup.sh
+    ```
+1. Run `build-everything.py` script (requires `python >=3.7`)
+    ```bash
+    cd images
+    python3 build-everything.py
+    ```
+   
+To build only specific TLS Libraries, execute the `build.sh` in of the subfolders.
 ### Inspect container content
 ```bash
 docker build --squash -t <image name> . 
