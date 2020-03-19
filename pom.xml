@@ -172,6 +172,7 @@
                     <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
                 </configuration>
             </plugin>
+            <!-- Deacitvated automatic imageconstruction for now
             <plugin>
                 <artifactId>exec-maven-plugin</artifactId>
                 <groupId>org.codehaus.mojo</groupId>
@@ -189,6 +190,7 @@
                     </execution>
                 </executions>
             </plugin>
+                        -->
         </plugins>
     </build>
     <properties>
