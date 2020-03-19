@@ -1,5 +1,6 @@
 package de.rub.nds.tls.subject.docker;
 
+import com.google.common.collect.ImmutableMap;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.LogsParam;
@@ -7,15 +8,18 @@ import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.ContainerNotFoundException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
+import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.HostConfig.Bind;
 import com.spotify.docker.client.messages.Image;
+import com.spotify.docker.client.messages.NetworkSettings;
 import com.spotify.docker.client.messages.PortBinding;
 import com.spotify.docker.client.messages.Volume;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsInstanceManager;
+import de.rub.nds.tls.subject.constants.TransportType;
 import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
 import de.rub.nds.tls.subject.exceptions.ImplementationDidNotStartException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
@@ -25,6 +29,7 @@ import de.rub.nds.tls.subject.properties.ImageProperties;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -244,7 +249,13 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 return port;
             case SERVER:
                 try {
-                    return new Integer(DOCKER.inspectContainer(id).networkSettings().ports().get(port + "/tcp").get(0).hostPort());
+            ContainerInfo inspectContainer = DOCKER.inspectContainer(id);
+            NetworkSettings networkSettings = inspectContainer.networkSettings();
+            ImmutableMap<String, List<PortBinding>> ports = networkSettings.ports();
+            
+            String hostPort = ports.values().asList().get(0).get(0).hostPort();
+            return new Integer(hostPort);
+            //return new Integer(DOCKER.inspectContainer(id).networkSettings().ports().get(port + "/tcp").get(0).hostPort());
                 } catch (DockerException | InterruptedException e) {
                     LOGGER.error("Could not retrieve instance port");
                 }

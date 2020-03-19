@@ -8,6 +8,7 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsImplementationType;
+import de.rub.nds.tls.subject.constants.TransportType;
 import de.rub.nds.tls.subject.exceptions.DefaultProfileNotFoundException;
 import de.rub.nds.tls.subject.exceptions.ImplementationDidNotStartException;
 import de.rub.nds.tls.subject.exceptions.PropertyNotFoundException;
@@ -16,7 +17,6 @@ import de.rub.nds.tls.subject.params.ParameterProfileManager;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import de.rub.nds.tls.subject.properties.PropertyManager;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class DockerTlsManagerFactory {
     }
 
     public TlsInstance getClient(TlsImplementationType type, String version, String ip, String hostname, int port, String additionalParams) {
-        HostInfo hostInfo = new HostInfo(ip, hostname, port);
+        HostInfo hostInfo = new HostInfo(ip, hostname, port, TransportType.TCP);
         return getInstance(ConnectionRole.CLIENT, type, version, hostInfo, additionalParams);
     }
 
@@ -93,7 +93,7 @@ public class DockerTlsManagerFactory {
     }
 
     public TlsInstance getServer(TlsImplementationType type, String version, String hostname, int port, String additionalParams) {
-        HostInfo hostInfo = new HostInfo(hostname, port);
+        HostInfo hostInfo = new HostInfo(hostname, port, TransportType.TCP);
         return getInstance(ConnectionRole.SERVER, type, version, hostInfo, additionalParams);
     }
 

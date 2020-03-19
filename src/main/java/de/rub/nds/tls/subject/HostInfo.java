@@ -1,18 +1,22 @@
 package de.rub.nds.tls.subject;
 
+import de.rub.nds.tls.subject.constants.TransportType;
+
 public class HostInfo {
 
     private final String ip;
     private final String hostname;
     private Integer port;
+    private final TransportType type;
 
-    public HostInfo(String ip, String hostname, int port) {
+    public HostInfo(String ip, String hostname, int port, TransportType type) {
         this.ip = ip;
         this.hostname = hostname;
         this.port = port;
+        this.type = type;
     }
 
-    public HostInfo(String hostname, int port) {
+    public HostInfo(String hostname, int port, TransportType transportType) {
         this.port = port;
         if (hostname == null) {
             this.hostname = "127.0.0.42";
@@ -24,6 +28,11 @@ public class HostInfo {
         } else {
             this.ip = hostname;
         }
+        this.type = transportType;
+    }
+
+    public TransportType getType() {
+        return type;
     }
 
     public String getIp() {

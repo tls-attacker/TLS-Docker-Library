@@ -1,5 +1,7 @@
 package de.rub.nds.tls.subject;
 
+import de.rub.nds.tls.subject.constants.TransportType;
+
 /**
  * The representation of a TLS-Instance used for a Test
  */
