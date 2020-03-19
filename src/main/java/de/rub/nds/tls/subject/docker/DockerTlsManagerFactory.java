@@ -134,7 +134,6 @@ public class DockerTlsManagerFactory {
             Socket ss = new Socket(address, port);
             if (ss.isConnected()) {
                 ss.close();
-
                 return true;
             } else {
                 return false;
