@@ -82,7 +82,7 @@ public class AvailableClientVersionsTest {
                 return false;
             }
             try {
-                client = factory.getClient(type, version, IP, HOSTNAME, PORT);
+                client = factory.getTlsClient(type, version, IP, HOSTNAME, PORT);
                 client.start();
                 boolean waiting = true;
                 int timeout = 0;

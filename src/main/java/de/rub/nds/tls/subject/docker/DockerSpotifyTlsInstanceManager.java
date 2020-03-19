@@ -44,10 +44,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
 
     private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsInstanceManager.class);
-    private static final String CLIENT_LABEL = "client_type";
-    private static final String CLIENT_VERSION_LABEL = "client_version";
-    private static final String SERVER_LABEL = "server_type";
-    private static final String SERVER_VERSION_LABEL = "server_version";
+    
     private final Map<String, Integer> logReadOffset;
 
     DockerSpotifyTlsInstanceManager() {
@@ -63,14 +60,15 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             targetPort = hostInfo.getPort();
         }
         try {
-            Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(getInstanceLabel(role), profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(getInstanceVersionLabel(role), version)).stream()
+            String protocol = hostInfo.getType() == TransportType.TCP ? "/tcp" : "/udp";
+            Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(ConnectionRole.getInstanceLabel(role), profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(ConnectionRole.getInstanceVersionLabel(role), version)).stream()
                     .findFirst()
                     .orElseThrow(() -> new TlsVersionNotFoundException());
             String id = DOCKER.createContainer(
                     ContainerConfig.builder()
                             .image(image.id())
                             .hostConfig(getInstanceHostConfig(role, properties, hostInfo, externalPort))
-                            .exposedPorts(properties.getInternalPort() + "/tcp", properties.getInternalPort() + "/udp")
+                            .exposedPorts(properties.getInternalPort() + protocol)
                             .attachStderr(true)
                             .attachStdout(true)
                             .attachStdin(true)
@@ -95,29 +93,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
     }
 
-    @Override
-    public String getInstanceLabel(ConnectionRole role) {
-        switch (role) {
-            case CLIENT:
-                return CLIENT_LABEL;
-            case SERVER:
-                return SERVER_LABEL;
-            default:
-                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
-        }
-    }
-
-    @Override
-    public String getInstanceVersionLabel(ConnectionRole role) {
-        switch (role) {
-            case CLIENT:
-                return CLIENT_VERSION_LABEL;
-            case SERVER:
-                return SERVER_VERSION_LABEL;
-            default:
-                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
-        }
-    }
+   
 
     @Override
     public void startInstance(TlsInstance tlsInstance) {
@@ -125,9 +101,9 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         try {
             DOCKER.startContainer(tlsInstance.getId());
         } catch (ContainerNotFoundException e) {
-            LOGGER.debug(e);
+            LOGGER.error(e);
         } catch (DockerException | InterruptedException e) {
-            LOGGER.debug(e);
+            LOGGER.error(e);
         }
     }
 
@@ -137,9 +113,9 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         try {
             DOCKER.stopContainer(tlsInstance.getId(), 2);
         } catch (ContainerNotFoundException e) {
-            LOGGER.debug(e);
+            LOGGER.error(e);
         } catch (DockerException | InterruptedException e) {
-            LOGGER.debug(e);
+            LOGGER.error(e);
         }
     }
 
@@ -151,9 +127,9 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             DOCKER.startContainer(tlsInstance.getId());
             tlsInstance.setPort(getInstancePort(tlsInstance.getConnectionRole(), tlsInstance.getHostInfo().getPort(), tlsInstance.getId()));
         } catch (ContainerNotFoundException e) {
-            LOGGER.debug(e);
+            LOGGER.error(e);
         } catch (DockerException | InterruptedException e) {
-            LOGGER.debug(e);
+            LOGGER.error(e);
         }
     }
 
@@ -165,9 +141,9 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             tlsInstance.setExitCode(DOCKER.inspectContainer(tlsInstance.getId()).state().exitCode());
             DOCKER.removeContainer(tlsInstance.getId());
         } catch (ContainerNotFoundException e) {
-            LOGGER.debug(e);
+            LOGGER.error(e);
         } catch (DockerException | InterruptedException e) {
-            LOGGER.debug(e);
+            LOGGER.error(e);
         }
     }
 
@@ -186,7 +162,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         } catch (ContainerNotFoundException e) {
             return logs;
         } catch (DockerException | InterruptedException e) {
-            LOGGER.debug(e);
+            LOGGER.error(e);
         }
         return logs;
     }
@@ -229,8 +205,9 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                     volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
                             .findFirst()
                             .orElseThrow(() -> new CertVolumeNotFoundException());
+                    String protocol = hostInfo.getType() == TransportType.TCP ? "/tcp" : "/udp";
                     return HostConfig.builder()
-                            .portBindings(ImmutableMap.of(properties.getInternalPort() + "/tcp", Arrays.asList(PortBinding.of("127.0.0.42", "" + externalPort)), properties.getInternalPort() + "/udp", Arrays.asList(PortBinding.of("127.0.0.42", "" + externalPort))))
+                            .portBindings(ImmutableMap.of(properties.getInternalPort() + protocol, Arrays.asList(PortBinding.of("127.0.0.42", "" + externalPort))))
                             .binds(HostConfig.Bind.builder()
                                     .from(volume)
                                     .readOnly(true)
