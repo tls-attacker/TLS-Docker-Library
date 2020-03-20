@@ -28,7 +28,6 @@ import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -44,7 +43,7 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
 
     private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsInstanceManager.class);
-    
+
     private final Map<String, Integer> logReadOffset;
 
     DockerSpotifyTlsInstanceManager() {
@@ -92,8 +91,6 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             throw new ImplementationDidNotStartException("Could not create instance");
         }
     }
-
-   
 
     @Override
     public void startInstance(TlsInstance tlsInstance) {
@@ -231,18 +228,18 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
                 return port;
             case SERVER:
                 try {
-                    ContainerInfo containerInfo = DOCKER.inspectContainer(id);
-                    if (containerInfo == null) {
-                        throw new DockerException("Could not find container with ID:" + id);
-                    }
-                    NetworkSettings networkSettings = containerInfo.networkSettings();
-                    if (networkSettings == null) {
-                        throw new DockerException("Cannot retrieve InstacePort, Network not properly configured for container with ID:" + id);
-                    }
-                    return new Integer(networkSettings.ports().values().asList().get(0).get(0).hostPort());
-                } catch (DockerException | InterruptedException e) {
-                    LOGGER.error("Could not retrieve instance port", e);
+                ContainerInfo containerInfo = DOCKER.inspectContainer(id);
+                if (containerInfo == null) {
+                    throw new DockerException("Could not find container with ID:" + id);
                 }
+                NetworkSettings networkSettings = containerInfo.networkSettings();
+                if (networkSettings == null) {
+                    throw new DockerException("Cannot retrieve InstacePort, Network not properly configured for container with ID:" + id);
+                }
+                return new Integer(networkSettings.ports().values().asList().get(0).get(0).hostPort());
+            } catch (DockerException | InterruptedException e) {
+                LOGGER.error("Could not retrieve instance port", e);
+            }
             default:
                 throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
         }

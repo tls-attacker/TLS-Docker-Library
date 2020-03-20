@@ -123,23 +123,23 @@ public class DockerTlsManagerFactory {
     }
 
     public TlsInstance getDtlsServer(TlsImplementationType type, String version) {
-        return DockerTlsManagerFactory.this.getTlsServer(type, version, DEFAULT_PORT);
+        return getDtlsServer(type, version, DEFAULT_PORT);
     }
 
     public TlsInstance getDtlsServer(TlsImplementationType type, String version, String hostname) {
-        return DockerTlsManagerFactory.this.getTlsServer(type, version, hostname, DEFAULT_PORT);
+        return getDtlsServer(type, version, hostname, DEFAULT_PORT);
     }
 
     public TlsInstance getDtlsServer(TlsImplementationType type, String version, int port) {
-        return DockerTlsManagerFactory.this.getTlsServer(type, version, null, port);
+        return getDtlsServer(type, version, null, port);
     }
 
     public TlsInstance getDtlsServer(TlsImplementationType type, String version, String hostname, int port) {
-        return getTlsServer(type, version, hostname, port, null);
+        return getDtlsServer(type, version, hostname, port, null);
     }
 
     public TlsInstance getDtlsServer(TlsImplementationType type, String version, int port, String additionalParams) {
-        return getTlsServer(type, version, null, port, additionalParams);
+        return getDtlsServer(type, version, null, port, additionalParams);
     }
 
     public TlsInstance getDtlsServer(TlsImplementationType type, String version, String hostname, int port, String additionalParams) {
