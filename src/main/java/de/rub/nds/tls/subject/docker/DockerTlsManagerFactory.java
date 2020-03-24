@@ -8,6 +8,7 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.TlsInstance;
 import de.rub.nds.tls.subject.TlsImplementationType;
+import de.rub.nds.tls.subject.constants.TransportType;
 import de.rub.nds.tls.subject.exceptions.DefaultProfileNotFoundException;
 import de.rub.nds.tls.subject.exceptions.ImplementationDidNotStartException;
 import de.rub.nds.tls.subject.exceptions.PropertyNotFoundException;
@@ -16,7 +17,6 @@ import de.rub.nds.tls.subject.params.ParameterProfileManager;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import de.rub.nds.tls.subject.properties.PropertyManager;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,92 +47,140 @@ public class DockerTlsManagerFactory {
         instanceManager = new DockerSpotifyTlsInstanceManager();
     }
 
-    public TlsInstance getClient(TlsImplementationType type, String version, String ip) {
-        return getClient(type, version, ip, null);
+    public TlsInstance getTlsClient(TlsImplementationType type, String version, String ip) {
+        return DockerTlsManagerFactory.this.getTlsClient(type, version, ip, null);
     }
 
-    public TlsInstance getClient(TlsImplementationType type, String version, String ip, String hostname) {
-        return getClient(type, version, ip, hostname, DEFAULT_PORT);
+    public TlsInstance getTlsClient(TlsImplementationType type, String version, String ip, String hostname) {
+        return DockerTlsManagerFactory.this.getTlsClient(type, version, ip, hostname, DEFAULT_PORT);
     }
 
-    public TlsInstance getClient(TlsImplementationType type, String version, String ip, int port) {
-        return getClient(type, version, ip, null, port);
+    public TlsInstance getTlsClient(TlsImplementationType type, String version, String ip, int port) {
+        return DockerTlsManagerFactory.this.getTlsClient(type, version, ip, null, port);
     }
 
-    public TlsInstance getClient(TlsImplementationType type, String version, String ip, String hostname, int port) {
-        return getClient(type, version, ip, hostname, port, null);
+    public TlsInstance getTlsClient(TlsImplementationType type, String version, String ip, String hostname, int port) {
+        return getTlsClient(type, version, ip, hostname, port, null);
     }
 
-    public TlsInstance getClient(TlsImplementationType type, String version, String ip, int port, String additionalParams) {
-        return getClient(type, version, ip, null, port, additionalParams);
+    public TlsInstance getTlsClient(TlsImplementationType type, String version, String ip, int port, String additionalParams) {
+        return getTlsClient(type, version, ip, null, port, additionalParams);
     }
 
-    public TlsInstance getClient(TlsImplementationType type, String version, String ip, String hostname, int port, String additionalParams) {
-        HostInfo hostInfo = new HostInfo(ip, hostname, port);
+    public TlsInstance getTlsClient(TlsImplementationType type, String version, String ip, String hostname, int port, String additionalParams) {
+        HostInfo hostInfo = new HostInfo(ip, hostname, port, TransportType.TCP);
         return getInstance(ConnectionRole.CLIENT, type, version, hostInfo, additionalParams);
     }
 
-    public TlsInstance getServer(TlsImplementationType type, String version) {
-        return getServer(type, version, DEFAULT_PORT);
+    public TlsInstance getTlsServer(TlsImplementationType type, String version) {
+        return DockerTlsManagerFactory.this.getTlsServer(type, version, DEFAULT_PORT);
     }
 
-    public TlsInstance getServer(TlsImplementationType type, String version, String hostname) {
-        return getServer(type, version, hostname, DEFAULT_PORT);
+    public TlsInstance getTlsServer(TlsImplementationType type, String version, String hostname) {
+        return DockerTlsManagerFactory.this.getTlsServer(type, version, hostname, DEFAULT_PORT);
     }
 
-    public TlsInstance getServer(TlsImplementationType type, String version, int port) {
-        return getServer(type, version, null, port);
+    public TlsInstance getTlsServer(TlsImplementationType type, String version, int port) {
+        return DockerTlsManagerFactory.this.getTlsServer(type, version, null, port);
     }
 
-    public TlsInstance getServer(TlsImplementationType type, String version, String hostname, int port) {
-        return getServer(type, version, hostname, port, null);
+    public TlsInstance getTlsServer(TlsImplementationType type, String version, String hostname, int port) {
+        return getTlsServer(type, version, hostname, port, null);
     }
 
-    public TlsInstance getServer(TlsImplementationType type, String version, int port, String additionalParams) {
-        return getServer(type, version, null, port, additionalParams);
+    public TlsInstance getTlsServer(TlsImplementationType type, String version, int port, String additionalParams) {
+        return getTlsServer(type, version, null, port, additionalParams);
     }
 
-    public TlsInstance getServer(TlsImplementationType type, String version, String hostname, int port, String additionalParams) {
-        HostInfo hostInfo = new HostInfo(hostname, port);
+    public TlsInstance getTlsServer(TlsImplementationType type, String version, String hostname, int port, String additionalParams) {
+        HostInfo hostInfo = new HostInfo(hostname, port, TransportType.TCP);
+        return getInstance(ConnectionRole.SERVER, type, version, hostInfo, additionalParams);
+    }
+
+    public TlsInstance getDtlsClient(TlsImplementationType type, String version, String ip) {
+        return DockerTlsManagerFactory.this.getTlsClient(type, version, ip, null);
+    }
+
+    public TlsInstance getDtlsClient(TlsImplementationType type, String version, String ip, String hostname) {
+        return DockerTlsManagerFactory.this.getTlsClient(type, version, ip, hostname, DEFAULT_PORT);
+    }
+
+    public TlsInstance getDtlsClient(TlsImplementationType type, String version, String ip, int port) {
+        return DockerTlsManagerFactory.this.getTlsClient(type, version, ip, null, port);
+    }
+
+    public TlsInstance getDtlsClient(TlsImplementationType type, String version, String ip, String hostname, int port) {
+        return getTlsClient(type, version, ip, hostname, port, null);
+    }
+
+    public TlsInstance getDtlsClient(TlsImplementationType type, String version, String ip, int port, String additionalParams) {
+        return getTlsClient(type, version, ip, null, port, additionalParams);
+    }
+
+    public TlsInstance getDtlsClient(TlsImplementationType type, String version, String ip, String hostname, int port, String additionalParams) {
+        HostInfo hostInfo = new HostInfo(ip, hostname, port, TransportType.UDP);
+        return getInstance(ConnectionRole.CLIENT, type, version, hostInfo, additionalParams);
+    }
+
+    public TlsInstance getDtlsServer(TlsImplementationType type, String version) {
+        return getDtlsServer(type, version, DEFAULT_PORT);
+    }
+
+    public TlsInstance getDtlsServer(TlsImplementationType type, String version, String hostname) {
+        return getDtlsServer(type, version, hostname, DEFAULT_PORT);
+    }
+
+    public TlsInstance getDtlsServer(TlsImplementationType type, String version, int port) {
+        return getDtlsServer(type, version, null, port);
+    }
+
+    public TlsInstance getDtlsServer(TlsImplementationType type, String version, String hostname, int port) {
+        return getDtlsServer(type, version, hostname, port, null);
+    }
+
+    public TlsInstance getDtlsServer(TlsImplementationType type, String version, int port, String additionalParams) {
+        return getDtlsServer(type, version, null, port, additionalParams);
+    }
+
+    public TlsInstance getDtlsServer(TlsImplementationType type, String version, String hostname, int port, String additionalParams) {
+        HostInfo hostInfo = new HostInfo(hostname, port, TransportType.UDP);
         return getInstance(ConnectionRole.SERVER, type, version, hostInfo, additionalParams);
     }
 
     private TlsInstance getInstance(ConnectionRole role, TlsImplementationType type, String version, HostInfo hostInfo, String additionalParams) {
-        ParameterProfile profile = parameterManager.getProfile(type, version, role);
-        if (profile == null) {
-            throw new DefaultProfileNotFoundException("Could not find a Profile for " + role.name() + ": " + type.name() + ":" + version);
+        ParameterProfile profile = retrieveParameterProfile(type, version, role);
+        ImageProperties properties = retrieveImageProperties(role, type, version);
+        if (hostInfo.getPort() == null) {
+            hostInfo.updatePort(properties.getInternalPort());
         }
+        return instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
+    }
+
+    private ImageProperties retrieveImageProperties(ConnectionRole role, TlsImplementationType type, String version) throws PropertyNotFoundException {
         ImageProperties properties = propertyManager.getProperties(role, type);
         if (properties == null) {
             throw new PropertyNotFoundException("Could not find a Property for " + role.name() + ": " + type.name() + ":" + version);
         }
-        TlsInstance instance = null;
-        switch (role) {
-            case CLIENT:
-                instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
-                break;
-            case SERVER:
-                hostInfo.updatePort(properties.getInternalPort());
-                instance = instanceManager.getTlsInstance(role, properties, profile, version, hostInfo, additionalParams);
-                waitUntilServerIsOnline(hostInfo.getHostname(), instance.getPort(), instance);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+        return properties;
+    }
+
+    private ParameterProfile retrieveParameterProfile(TlsImplementationType type, String version, ConnectionRole role) throws DefaultProfileNotFoundException {
+        ParameterProfile profile = parameterManager.getProfile(type, version, role);
+        if (profile == null) {
+            throw new DefaultProfileNotFoundException("Could not find a Profile for " + role.name() + ": " + type.name() + ":" + version);
         }
-        return instance;
+        return profile;
     }
 
     public void waitUntilServerIsOnline(String host, int port, TlsInstance instance) {
         long startTime = System.currentTimeMillis();
         while (!isServerOnline(host, port)) {
             if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS < System.currentTimeMillis()) {
-                LOGGER.error("Could not start:\n\n" + instance.getLogs());
-                throw new ImplementationDidNotStartException("Timeout");
+                throw new ImplementationDidNotStartException("Could not start Server: Timeout");
             }
             try {
                 Thread.sleep(SERVER_POLL_INTERVAL_MILLISECONDS);
             } catch (InterruptedException ex) {
-                LOGGER.error("Could not start:\n\n" + instance.getLogs());
                 throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
             }
         }
@@ -143,15 +191,12 @@ public class DockerTlsManagerFactory {
             Socket ss = new Socket(address, port);
             if (ss.isConnected()) {
                 ss.close();
-
                 return true;
             } else {
                 return false;
             }
         } catch (IOException e) {
-            //e.printStackTrace();
-            LOGGER.debug("Server is not online yet");
-            LOGGER.trace(e);
+            LOGGER.debug("Server is not online yet", e);
             return false;
         }
     }
@@ -159,10 +204,10 @@ public class DockerTlsManagerFactory {
     public List<String> getAvailableVersions(ConnectionRole role, TlsImplementationType type) {
         List<String> versionList = new LinkedList<>();
         try {
-            List<Image> serverImageList = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(instanceManager.getInstanceLabel(role), type.name().toLowerCase()));
+            List<Image> serverImageList = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(ConnectionRole.getInstanceLabel(role), type.name().toLowerCase()));
             for (Image image : serverImageList) {
                 if (image.labels() != null) {
-                    String version = image.labels().get(instanceManager.getInstanceVersionLabel(role));
+                    String version = image.labels().get(ConnectionRole.getInstanceVersionLabel(role));
                     if (version != null) {
                         versionList.add(version);
                     }
@@ -170,7 +215,7 @@ public class DockerTlsManagerFactory {
             }
             return versionList;
         } catch (DockerException | InterruptedException ex) {
-            throw new RuntimeException("Could not retrieve available " + role.name() + " Versions!");
+            throw new RuntimeException("Could not retrieve available " + role.name() + " Versions!", ex);
         }
     }
 }
