@@ -4,7 +4,7 @@
 ### First steps
 1. Create `key.pem` and `cert.pem`
     ```bash
-    cd cert
+    cd certs
     ./setup.sh
     ```
 1. Run `build-everything.py` script (requires `python >=3.7`)
