@@ -2,18 +2,18 @@
 
 ## Build Docker images
 ### First steps
-1. Create `key.pem` and `cert.pem`
+1. Setup the environment
     ```bash
-    cd certs
     ./setup.sh
     ```
-1. Run `build-everything.py` script (requires `python >=3.7`)
-    ```bash
-    cd images
-    python3 build-everything.py
-    ```
-   
-To build only specific TLS Libraries, execute the `build.sh` in of the subfolders.
+1. Build the docker images
+    * To build every available docker image, or every docker image of a specific TLS Libraries, use the `build-everything.py` script (requires `python >=3.7`)
+        ```bash
+        # use --help to see the available options
+        images/build-everything.py
+        ```
+    * To build only specific TLS Libraries, use the `build.sh` scripts inside the subfolders of `images/`.
+
 ### Inspect container content
 ```bash
 docker build --squash -t <image name> . 
