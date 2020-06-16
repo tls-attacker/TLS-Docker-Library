@@ -14,6 +14,7 @@ COPY ./autoconfig.js /opt/firefox/defaults/pref/
 COPY ./ca.pem /opt/firefox/defaults/pref/
 COPY ./mozilla.cfg /opt/firefox/
 RUN ln -sf /opt/firefox/firefox /bin/firefox
-LABEL "client_type"="firefox"
-LABEL "client_version"="${VERSION}"
+LABEL "tls_library"="firefox"
+LABEL "tls_library_version"="${VERSION}"
+LABEL "tls_library_mode"="client"
 ENTRYPOINT ["firefox"]

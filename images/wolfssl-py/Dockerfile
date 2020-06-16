@@ -11,8 +11,9 @@ RUN python setup.py build && python setup.py install
 
 FROM python:2.7-alpine
 ARG VERSION
-LABEL "server_type"="wolfssl-py-${VERSION}"
-LABEL "server_version"="${VERSION}"
+LABEL "tls_library"="wolfssl-py"
+LABEL "tls_library_version"="${VERSION}"
+LABEL "tls_library_mode"="server"
 COPY --from=wolfssl-py /src/wolfssl-py/certs/* /src/
 COPY --from=wolfssl-py /src/wolfssl-py/examples/server.py /src/
 COPY --from=wolfssl-py /usr/lib/python2.7/site-packages/*.egg /usr/local/lib/python2.7/site-packages/

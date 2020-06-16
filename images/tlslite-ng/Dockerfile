@@ -8,8 +8,9 @@ RUN python setup.py build && python setup.py install
 
 FROM python:2.7-alpine
 ARG VERSION
-LABEL "server_type"="tlslite-ng-${VERSION}"
-LABEL "server_version"="${VERSION}"
+LABEL "tls_library"="tlslite-ng"
+LABEL "tls_library_version"="${VERSION}"
+LABEL "tls_library_mode"="server"
 
 COPY --from=tlslite-ng /src/tlslite-ng/tests/* /src/tlslite-ng/scripts/* /src/
 COPY --from=tlslite-ng /usr/lib/python2.7/site-packages/tlslite/ /usr/local/lib/python2.7/site-packages/tlslite/

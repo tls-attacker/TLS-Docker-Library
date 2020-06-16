@@ -12,11 +12,13 @@ COPY --from=libressl /lib/ld-musl-x86_64.so.* \
 COPY --from=libressl /build/usr/local/bin/openssl /bin/
 
 FROM libressl-base as libressl-server
-LABEL "server_type"="libressl"
-LABEL "server_version"="2.6.1"
+LABEL "tls_library"="libressl"
+LABEL "tls_library_version"="2.6.1"
+LABEL "tls_library_mode"="server"
 ENTRYPOINT ["openssl", "s_server"]
 
 FROM libressl-base as libressl-client
-LABEL "client_type"="libressl"
-LABEL "client_version"="2.6.1"
+LABEL "tls_library"="libressl"
+LABEL "tls_library_version"="2.6.1"
+LABEL "tls_library_mode"="client"
 ENTRYPOINT ["openssl", "s_client"]

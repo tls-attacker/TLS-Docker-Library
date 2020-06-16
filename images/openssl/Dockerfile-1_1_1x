@@ -16,12 +16,14 @@ COPY --from=openssl-base1 /build/bin/openssl /bin/
 
 FROM openssl-base2 as openssl-server
 ARG VERSION
-LABEL "server_type"="openssl"
-LABEL "server_version"="1.1.1${VERSION}"
+LABEL "tls_library"="openssl"
+LABEL "tls_library_version"="1.1.1${VERSION}"
+LABEL "tls_library_mode"="server"
 ENTRYPOINT ["openssl", "s_server"]
 
 FROM openssl-base2 as openssl-client
 ARG VERSION
-LABEL "client_type"="openssl"
-LABEL "client_version"="1.1.1${VERSION}"
+LABEL "tls_library"="openssl"
+LABEL "tls_library_version"="1.1.1${VERSION}"
+LABEL "tls_library_mode"="client"
 ENTRYPOINT ["openssl", "s_client"]

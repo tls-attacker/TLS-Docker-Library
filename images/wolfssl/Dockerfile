@@ -20,13 +20,15 @@ COPY --from=wolfssl-base1 /src/wolfssl/src/.libs/libwolfssl.so.12 /src/wolfssl/s
 COPY --from=wolfssl-base1 /src/wolfssl/certs /certs/
 
 FROM wolfssl-base2 as wolfssl-server
-LABEL "server_type"="wolfssl"
-LABEL "server_version"="3.12.0"
+LABEL "tls_library"="wolfssl"
+LABEL "tls_library_version"="3.12.0"
+LABEL "tls_library_mode"="server"
 COPY --from=wolfssl-base1 /src/wolfssl/examples/server/.libs/lt-server /bin/
 ENTRYPOINT ["lt-server"]
 
 FROM wolfssl-base2 as wolfssl-client
-LABEL "client_type"="wolfssl"
-LABEL "client_version"="3.12.0"
+LABEL "tls_library"="wolfssl"
+LABEL "tls_library_version"="3.12.0"
+LABEL "tls_library_mode"="client"
 COPY --from=wolfssl-base1 /src/wolfssl/examples/client/.libs/lt-client /bin/
 ENTRYPOINT ["lt-client"]

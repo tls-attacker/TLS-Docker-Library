@@ -12,11 +12,13 @@ COPY --from=boringssl-base1 /build/tool/bssl \
   /build/ssl/test/bssl_shim /bin/
 
 FROM boringssl-base2 as boringssl-server
-LABEL "server_type"="boringssl"
-LABEL "server_version"="latest"
+LABEL "tls_library"="boringssl"
+LABEL "tls_library_version"="latest"
+LABEL "tls_library_mode"="server"
 ENTRYPOINT ["bssl", "s_server"]
 
 FROM boringssl-base2 as boringssl-client
-LABEL "client_type"="boringssl"
-LABEL "client_version"="latest"
+LABEL "tls_library"="boringssl"
+LABEL "tls_library_version"="latest"
+LABEL "tls_library_mode"="client"
 ENTRYPOINT ["bssl", "s_client"]

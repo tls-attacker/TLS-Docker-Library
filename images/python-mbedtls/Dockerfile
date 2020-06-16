@@ -10,8 +10,9 @@ RUN python setup.py build && python setup.py install
 
 FROM python:2.7-alpine
 ARG VERSION
-LABEL "server_type"="python-mbedtls-${VERSION}"
-LABEL "server_version"="${VERSION}"
+LABEL "tls_library"="python-mbedtls"
+LABEL "tls_library_version"="${VERSION}"
+LABEL "tls_library_mode"="server"
 COPY --from=python-mbedtls /src/python-mbedtls/tests /src/
 COPY tls_server.py /src/
 

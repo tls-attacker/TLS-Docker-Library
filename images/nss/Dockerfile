@@ -7,8 +7,9 @@ WORKDIR /src/nss
 RUN make nss_build_all install
 
 FROM scratch
-LABEL "server_type"="nss"
-LABEL "server_version"="3.32"
+LABEL "tls_library"="nss"
+LABEL "tls_library_version"="3.32"
+LABEL "tls_library_mode"="server"
 COPY --from=nss /lib/ld-musl-x86_64.so.* \
   /lib/libz.so.* \
   /usr/lib/libstdc++.so.* \

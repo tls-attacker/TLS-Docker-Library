@@ -204,10 +204,13 @@ public class DockerTlsManagerFactory {
     public List<String> getAvailableVersions(ConnectionRole role, TlsImplementationType type) {
         List<String> versionList = new LinkedList<>();
         try {
-            List<Image> serverImageList = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(ConnectionRole.getInstanceLabel(role), type.name().toLowerCase()));
+            List<Image> serverImageList = DOCKER.listImages(
+                    DockerClient.ListImagesParam.withLabel("tls_library", type.name().toLowerCase()),
+                    DockerClient.ListImagesParam.withLabel("tls_library_mode", role.toString().toLowerCase())
+            );
             for (Image image : serverImageList) {
                 if (image.labels() != null) {
-                    String version = image.labels().get(ConnectionRole.getInstanceVersionLabel(role));
+                    String version = image.labels().get("tls_library_version");
                     if (version != null) {
                         versionList.add(version);
                     }

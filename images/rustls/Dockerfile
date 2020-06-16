@@ -5,8 +5,9 @@ WORKDIR rustls
 RUN cargo build --release --example tlsserver
 
 FROM scratch
-LABEL "server_type"="rustls"
-LABEL "server_version"="latest"
+LABEL "tls_library"="rustls"
+LABEL "tls_library_version"="latest"
+LABEL "tls_library_mode"="server"
 COPY --from=rustls /lib/x86_64-linux-gnu/libdl.so.2 \
   /lib/x86_64-linux-gnu/librt.so.1 \
   /lib/x86_64-linux-gnu/libpthread.so.0 \

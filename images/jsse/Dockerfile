@@ -11,8 +11,9 @@ RUN mvn clean install -Dbc.version=1.${BC_VERSION}
 FROM $JRE_VERSION
 ARG BC_VERSION
 ARG JRE_VERSION
-LABEL "server_type"="jsse"
-LABEL "server_version"="${JRE_VERSION}-bc-1-${BC_VERSION}"
+LABEL "tls_library"="jsse"
+LABEL "tls_library_version"="${JRE_VERSION}-bc-1-${BC_VERSION}"
+LABEL "tls_library_mode"="server"
 COPY --from=maven /src/JsseTLS/target/JsseTlsServer-1.${BC_VERSION}-1.0.jar /apps/JsseTlsServer.jar
 COPY --from=maven /src/JsseTLS/target/lib /apps/lib
 WORKDIR /apps

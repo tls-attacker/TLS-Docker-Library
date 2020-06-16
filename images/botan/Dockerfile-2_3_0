@@ -15,11 +15,13 @@ COPY --from=botan-base1 /build/bin/botan /bin/
 ADD https://raw.githubusercontent.com/randombit/botan/master/src/tests/data/tls-policy/compat.txt /compat.txt
 
 FROM botan-base2 as botan-server
-LABEL "server_type"="botan"
-LABEL "server_version"="2.3.0"
+LABEL "tls_library"="botan"
+LABEL "tls_library_version"="2.3.0"
+LABEL "tls_library_mode"="server"
 ENTRYPOINT ["botan", "tls_server"]
 
 FROM botan-base2 as botan-client
-LABEL "client_type"="botan"
-LABEL "client_version"="2.3.0"
+LABEL "tls_library"="botan"
+LABEL "tls_library_version"="2.3.0"
+LABEL "tls_library_mode"="client"
 ENTRYPOINT ["botan", "tls_client"]

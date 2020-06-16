@@ -60,7 +60,12 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
         }
         try {
             String protocol = hostInfo.getType() == TransportType.TCP ? "/tcp" : "/udp";
-            Image image = DOCKER.listImages(DockerClient.ListImagesParam.withLabel(ConnectionRole.getInstanceLabel(role), profile.getType().name().toLowerCase()), DockerClient.ListImagesParam.withLabel(ConnectionRole.getInstanceVersionLabel(role), version)).stream()
+            Image image = DOCKER.listImages(
+                    DockerClient.ListImagesParam.withLabel("tls_library", profile.getType().name().toLowerCase()),
+                    DockerClient.ListImagesParam.withLabel("tls_library_version", version),
+                    DockerClient.ListImagesParam.withLabel("tls_library_mode", role.toString().toLowerCase())
+            )
+                    .stream()
                     .findFirst()
                     .orElseThrow(() -> new TlsVersionNotFoundException());
             String id = DOCKER.createContainer(

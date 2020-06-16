@@ -20,12 +20,14 @@ COPY --from=botan-base1 /build/bin/botan /bin/
 
 FROM botan-base2 as botan-server
 ARG VERSION
-LABEL "server_type"="botan"
-LABEL "server_version"="1.11.${VERSION}"
+LABEL "tls_library"="botan"
+LABEL "tls_library_version"="1.11.${VERSION}"
+LABEL "tls_library_mode"="server"
 ENTRYPOINT ["botan", "tls_server"]
 
 FROM botan-base2 as botan-client
 ARG VERSION
-LABEL "client_type"="botan"
-LABEL "client_version"="1.11.${VERSION}"
+LABEL "tls_library"="botan"
+LABEL "tls_library_version"="1.11.${VERSION}"
+LABEL "tls_library_mode"="client"
 ENTRYPOINT ["botan", "tls_client"]
