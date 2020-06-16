@@ -8,7 +8,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Feld $i: python-mbedtls-${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t python-mbedtls-${array[$i]}-server -f Dockerfile .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}python_mbedtls-server:${array[$i]} -f Dockerfile .
 	i=i+1
 done
 

@@ -8,7 +8,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Feld $i: wolfssl-py-${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t wolfssl-py-${array[$i]}-server -f Dockerfile .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl_py-server:${array[$i]} -f Dockerfile .
 	i=i+1
 done
 

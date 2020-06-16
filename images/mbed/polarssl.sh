@@ -7,8 +7,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: polarssl ${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t polarssl-${array[$i]}-server -f Dockerfile-polarssl_under_1.2 --target mbed-server .
-	_docker build --build-arg VERSION=${array[$i]} -t polarssl-${array[$i]}-client -f Dockerfile-polarssl_under_1.2 --target mbed-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}polarssl-server:${array[$i]} -f Dockerfile-polarssl_under_1.2 --target mbed-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}polarssl-client:${array[$i]} -f Dockerfile-polarssl_under_1.2 --target mbed-client .
 	i=i+1
 done
 
@@ -17,8 +17,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: polarssl ${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t polarssl-${array[$i]}-server -f Dockerfile-polarssl_x --target mbed-server .
-	_docker build --build-arg VERSION=${array[$i]} -t polarssl-${array[$i]}-client -f Dockerfile-polarssl_x --target mbed-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}polarssl-server:${array[$i]} -f Dockerfile-polarssl_x --target mbed-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}polarssl-client:${array[$i]} -f Dockerfile-polarssl_x --target mbed-client .
 	i=i+1
 done
 

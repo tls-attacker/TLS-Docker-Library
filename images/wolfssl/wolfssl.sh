@@ -7,8 +7,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: WolfSSL 3.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t wolfssl_3.${array[$i]}-server -f Dockerfile-3_x --target wolfssl-server .
-	_docker build --build-arg VERSION=${array[$i]} -t wolfssl_3.${array[$i]}-client -f Dockerfile-3_x --target wolfssl-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:3.${array[$i]} -f Dockerfile-3_x --target wolfssl-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:3.${array[$i]} -f Dockerfile-3_x --target wolfssl-client .
 	i=i+1
 done
 
@@ -17,8 +17,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: WolfSSL 3.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t wolfssl_3.${array[$i]}-server -f Dockerfile-3_3_2 --target wolfssl-server .
-	_docker build --build-arg VERSION=${array[$i]} -t wolfssl_3.${array[$i]}-client -f Dockerfile-3_3_2 --target wolfssl-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:3.${array[$i]} -f Dockerfile-3_3_2 --target wolfssl-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:3.${array[$i]} -f Dockerfile-3_3_2 --target wolfssl-client .
 	i=i+1
 done
 

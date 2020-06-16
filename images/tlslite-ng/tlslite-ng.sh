@@ -8,7 +8,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Feld $i: tlslite-ng-${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t tlslite-ng-${array[$i]}-server -f Dockerfile .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}tlslite_ng-server:${array[$i]} -f Dockerfile .
 	i=i+1
 done
 

@@ -10,7 +10,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Firefox ${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t firefox-${array[$i]}-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}firefox-client:${array[$i]} .
 	i=i+1
 done
 
@@ -20,7 +20,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Firefox ${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t firefox-${array[$i]}-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}firefox-client:${array[$i]} .
 	i=i+1
 done
 

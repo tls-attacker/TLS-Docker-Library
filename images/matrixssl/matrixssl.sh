@@ -7,8 +7,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Matrixssl 3-${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t matrixssl-3-${array[$i]}-server -f Dockerfile-3_x --target matrixssl-server .
-	_docker build --build-arg VERSION=${array[$i]} -t matrixssl-3-${array[$i]}-client -f Dockerfile-3_x --target matrixssl-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}matrixssl-server:3_${array[$i]} -f Dockerfile-3_x --target matrixssl-server .
+	_docker build --build-arg VERSION=${array[$i]}-t ${DOCKER_REPOSITORY}matrixssl-client:3_${array[$i]} -f Dockerfile-3_x --target matrixssl-client .
 	i=i+1
 done
 
@@ -17,8 +17,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Matrixssl 3-${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t matrixssl-3-${array[$i]}-server -f Dockerfile-3_7_2_and_3_4_0 --target matrixssl-server .
-	_docker build --build-arg VERSION=${array[$i]} -t matrixssl-3-${array[$i]}-client -f Dockerfile-3_7_2_and_3_4_0 --target matrixssl-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}matrixssl-server:3_${array[$i]} -f Dockerfile-3_7_2_and_3_4_0 --target matrixssl-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}matrixssl-client:3_${array[$i]} -f Dockerfile-3_7_2_and_3_4_0 --target matrixssl-client .
 	i=i+1
 done
 
