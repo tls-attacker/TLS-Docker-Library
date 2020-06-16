@@ -6,8 +6,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.6.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3_6_${array[$i]} -f Dockerfile-3_6_x --target gnutls-server .
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3_6_${array[$i]} -f Dockerfile-3_6_x --target gnutls-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.6.${array[$i]} -f Dockerfile-3_6_x --target gnutls-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.6.${array[$i]} -f Dockerfile-3_6_x --target gnutls-client .
 	i=i+1
 done
 
@@ -17,8 +17,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.5.${array[$i]}"
-	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3_5_${array[$i]} -f Dockerfile-3_5_0-7 --target gnutls-server .
-	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3_5_${array[$i]} -f Dockerfile-3_5_0-7 --target gnutls-client .
+	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.5.${array[$i]} -f Dockerfile-3_5_0-7 --target gnutls-server .
+	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.5.${array[$i]} -f Dockerfile-3_5_0-7 --target gnutls-client .
 	i=i+1
 done
 
@@ -27,8 +27,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.5.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3_5_${array[$i]} -f Dockerfile-3_5_8-16 --target gnutls-server .
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3_5_${array[$i]} -f Dockerfile-3_5_8-16 --target gnutls-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.5.${array[$i]} -f Dockerfile-3_5_8-16 --target gnutls-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.5.${array[$i]} -f Dockerfile-3_5_8-16 --target gnutls-client .
 	i=i+1
 done
 
@@ -38,8 +38,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.4.${array[$i]}"
-	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3_4_${array[$i]} -f Dockerfile-3_4_x --target gnutls-server .
-	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3_4_${array[$i]} -f Dockerfile-3_4_x --target gnutls-client .
+	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.4.${array[$i]} -f Dockerfile-3_4_x --target gnutls-server .
+	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.4.${array[$i]} -f Dockerfile-3_4_x --target gnutls-client .
 	i=i+1
 done
 
@@ -49,8 +49,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.3.${array[$i]}"
-	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3_3_${array[$i]} -f Dockerfile-3_3_0-15 --target gnutls-server .
-	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3_3_${array[$i]} -f Dockerfile-3_3_0-15 --target gnutls-client .
+	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.3.${array[$i]} -f Dockerfile-3_3_0-15 --target gnutls-server .
+	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.3.${array[$i]} -f Dockerfile-3_3_0-15 --target gnutls-client .
 	i=i+1
 done
 
@@ -60,8 +60,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.3.${array[$i]}"
-	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3_3_${array[$i]} -f Dockerfile-3_3_x --target gnutls-server .
-	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3_3_${array[$i]} -f Dockerfile-3_3_x --target gnutls-client .
+	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.3.${array[$i]} -f Dockerfile-3_3_x --target gnutls-server .
+	#_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.3.${array[$i]} -f Dockerfile-3_3_x --target gnutls-client .
 	i=i+1
 done
 

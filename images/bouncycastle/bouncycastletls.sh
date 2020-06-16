@@ -7,7 +7,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: BouncyCastleTLS 1.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}bouncycastletls-server:1_${array[$i]} -f Dockerfile-1_x .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}bouncycastletls-server:1.${array[$i]} -f Dockerfile-1_x .
 	i=i+1
 done
 

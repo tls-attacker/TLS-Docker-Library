@@ -7,7 +7,7 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Feld $i: Botan 2.${array[$i]}.0"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-server:2_${array[$i]}_0 -f Dockerfile-2_X_0 .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-server:2.${array[$i]}_0 -f Dockerfile-2_X_0 .
 	i=i+1
 done
 
