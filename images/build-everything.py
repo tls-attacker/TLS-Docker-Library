@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from subprocess import STDOUT, PIPE
 import math
 
-if sys.version_info.major < 3 and sys.version_info.minor < 7:
+if sys.version_info.major <= 3 and sys.version_info.minor < 7:
     print("Requires at least Python 3.7")
     sys.exit(1)
 
