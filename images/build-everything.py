@@ -6,6 +6,7 @@ import threading
 import os
 import subprocess
 import sys
+import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from subprocess import STDOUT, PIPE
 import math
@@ -18,7 +19,7 @@ FOLDER = os.path.abspath(os.path.dirname(__file__))
 LOG_SUCCEED = open(os.path.join(FOLDER, "build_succeeded.log"), "w")
 LOG_FAILED = open(os.path.join(FOLDER, "build_failed.log"), "w")
 ARGS = None
-
+os.environ["DOCKER_BUILDKIT"] = "1"
 
 # Print iterations progress
 def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█', printEnd="\r"):
@@ -54,6 +55,30 @@ def success(log):
 def info(log):
     print("{}\033[1;34m [i] {}\033[0m".format(datetime.datetime.now().isoformat(timespec='seconds'), log))
 
+
+def get_tag_from_cmd(cmd):
+    # parse the docker build command to get
+    # the tag of the docker image, set with docker build -t [TAG]
+    tag = ""
+    flags = ["-t", "--tag"]
+    for i in flags:
+        if i in cmd:
+            tag = cmd[cmd.index(i) + 1]
+            break
+
+    return tag
+
+
+def get_image_version(cmd):
+    tag = get_tag_from_cmd(cmd)
+
+    version = tag.split(":")
+    if len(version) <= 1:
+        version = "latest"
+    else:
+        version = version[1]
+
+    return version
 
 
 LOG_WRITE_LOCK = threading.Lock()
@@ -96,6 +121,7 @@ def main():
                                                 "The value is matched against the subfolder names inside the images folder. " +
                                                 "Can be specified multiple times.", default=[], action="append")
     parser.add_argument("-f", "--force_rebuild", help="Build docker containers, even if they already exist.", default=False, action="store_true")
+    parser.add_argument("-v", "--versions", help="Only build specific versions, this is a regex that is matched against the version. Dots are escaped.")
 
     ARGS = parser.parse_args()
 
@@ -113,8 +139,8 @@ def main():
         def script_belongs_to_library(script):
             ret = False
             library_name = os.path.relpath(script, FOLDER).split('/')[0]
-            for i in ARGS.library:
-                ret = ret or (i.lower() == library_name.lower())
+            for lib in ARGS.library:
+                ret = ret or (lib.lower() == library_name.lower())
             return ret
 
         build_scripts = list(filter(script_belongs_to_library, build_scripts))
@@ -181,15 +207,20 @@ def main():
             # second line contains the docker build command
             build_cmd = list(map(lambda x: x.strip(), cmds[i+1].split(" ")))
 
+            version = get_image_version(build_cmd)
+            if ARGS.versions and not re.search(ARGS.versions.replace(".", "\\."), version):
+                continue
+
             # execute the docker build command with the executor
             futures.append(executor.submit(execute_docker, build_cmd, cwd))
 
+        info("Building {} images...".format(len(futures)))
+        digits = str(math.ceil(math.log10(len(futures))))
         for future in as_completed(futures):
             # is executed, when an executor is finished
             completed += 1
             returnCode, tag = future.result()
 
-            digits = str(math.ceil(math.log10(len(futures))))
             if returnCode > 0:
                 error(("{:" + digits + "d}/{}, build failed: {} ").format(completed, len(futures), tag))
             elif returnCode == 0:
