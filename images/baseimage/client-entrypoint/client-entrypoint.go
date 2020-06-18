@@ -28,7 +28,12 @@ func executeArgs() {
 
 	var out bytes.Buffer
 	cmd.Stdout = &out
-	_ = cmd.Run()
+	cmd.Stderr = &out
+	if err := cmd.Run(); err != nil {
+		fmt.Println(err.Error())
+		fmt.Println(out.String())
+		return
+	}
 	fmt.Print(out.String())
 }
 
@@ -37,11 +42,19 @@ func trigger(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "done")
 }
 
+func shutdown(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprintf(w, "shutdown...")
+	fmt.Println("shutdown...")
+
+	go os.Exit(0)
+}
+
 
 func main() {
 	go executeArgs()
 
 	http.HandleFunc("/trigger", trigger)
+	http.HandleFunc("/shutdown", shutdown)
 	fmt.Println("Listening on :8090...")
 	_ = http.ListenAndServe(":8090", nil)
 }

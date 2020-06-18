@@ -5,5 +5,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build
 
 
 FROM scratch
-COPY --from=build /build/client-entrypoint /
-ENTRYPOINT [ "/client-entrypoint" ]
+COPY --from=build /build/client-entrypoint /bin/
+ENTRYPOINT [ "client-entrypoint" ]

@@ -4,6 +4,8 @@ source ../helper-functions.sh
 
 # https://wiki.alpinelinux.org/wiki/Alpine_Linux:Releases
 _docker build --build-arg VERSION=3.12 -t alpine-build .
+docker tag alpine-build alpine-build:3.12
+
 _docker build --build-arg VERSION=3.11 -t alpine-build:3.11 .
 _docker build --build-arg VERSION=3.10 -t alpine-build:3.10 .
 _docker build --build-arg VERSION=3.9 -t alpine-build:3.9 .

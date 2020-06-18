@@ -46,4 +46,4 @@ LABEL "tls_library"="gnutls"
 LABEL "tls_library_version"="3.6.${VERSION}"
 LABEL "tls_library_mode"="client"
 COPY --from=gnutls-gnutls /build/bin/gnutls-cli /bin/
-ENTRYPOINT ["/client-entrypoint", "gnutls-cli"]
+ENTRYPOINT ["client-entrypoint", "gnutls-cli"]
