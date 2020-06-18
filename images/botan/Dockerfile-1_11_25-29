@@ -1,4 +1,4 @@
-FROM alpine-build as botan-base1
+FROM alpine-build:3.6 as botan-base1
 ARG VERSION
 RUN apk add boost-dev
 RUN wget -O botan.tar.gz https://botan.randombit.net/releases/old/Botan-1.11.${VERSION}.tgz
@@ -10,7 +10,7 @@ RUN ./configure.py --prefix=/build/ &&\
   make install 
 RUN mv /build/lib/libbotan-1.11.so.${VERSION}.${VERSION} /build/lib/libbotan-1.11.so.${VERSION}
 
-FROM scratch as botan-base2
+FROM entrypoint as botan-base2
 ARG VERSION
 COPY --from=botan-base1 /lib/ld-musl-x86_64.so.1 \
   /usr/lib/libstdc++.so.6 \
@@ -30,4 +30,4 @@ ARG VERSION
 LABEL "tls_library"="botan"
 LABEL "tls_library_version"="1.11.${VERSION}"
 LABEL "tls_library_mode"="client"
-ENTRYPOINT ["botan", "tls_client"]
+ENTRYPOINT ["client-entrypoint", "botan", "tls_client"]
