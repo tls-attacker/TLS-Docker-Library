@@ -4,6 +4,5 @@ source ../helper-functions.sh
 exit_on_error
 
 track_error ./build-base-image.sh
-track_error ./build-base-image-ubuntu.sh
 
 exit "$EXITCODE"
