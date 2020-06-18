@@ -13,4 +13,7 @@ _docker build --build-arg VERSION=3.6 -t alpine-build:3.6 .
 _docker build --build-arg VERSION=3.5 -t alpine-build:3.5 .
 _docker build --build-arg VERSION=3.4 -t alpine-build:3.4 .
 
+
+_docker build -t entrypoint -f Dockerfile_entrypoint .
+
 exit "$EXITCODE"

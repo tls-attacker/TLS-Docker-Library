@@ -1,0 +1,9 @@
+FROM golang:1.14 AS build
+COPY client-entrypoint/ /build/
+WORKDIR /build
+RUN CGO_ENABLED=0 GOOS=linux go build
+
+
+FROM scratch
+COPY --from=build /build/client-entrypoint /
+ENTRYPOINT [ "/client-entrypoint" ]
