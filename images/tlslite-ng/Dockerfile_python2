@@ -1,0 +1,23 @@
+FROM python:2.7-alpine as tlslite-ng
+ARG VERSION
+RUN apk update && apk add git make
+RUN git clone --depth=1 --branch=v${VERSION} https://github.com/tomato42/tlslite-ng || git clone --depth=1 --branch=${VERSION} https://github.com/tomato42/tlslite-ng
+WORKDIR tlslite-ng
+RUN python setup.py build && python setup.py install
+
+FROM entrypoint as entrypoint
+
+FROM tlslite-ng as tlslite-ng-server
+ARG VERSION
+LABEL "tls_library"="tlslite-ng"
+LABEL "tls_library_version"="${VERSION}"
+LABEL "tls_library_mode"="server"
+ENTRYPOINT ["tls.py", "server"]
+
+FROM tlslite-ng as tlslite-ng-client
+ARG VERSION
+LABEL "tls_library"="tlslite-ng"
+LABEL "tls_library_version"="${VERSION}"
+LABEL "tls_library_mode"="server"
+COPY --from=entrypoint /bin/client-entrypoint /usr/local/bin/
+ENTRYPOINT ["client-entrypoint", "tls.py", "client"]
