@@ -1,4 +1,4 @@
-FROM alpine-build as wolfssl-base1
+FROM alpine-build:3.6 as wolfssl-base1
 ARG VERSION
 RUN git clone --depth=1 --branch=v3.${VERSION} https://github.com/wolfSSL/wolfssl
 WORKDIR wolfssl
@@ -15,7 +15,7 @@ WORKDIR /src/wolfssl/examples/server
 RUN /src/wolfssl/examples/server/server -h
 RUN /src/wolfssl/examples/client/client -h
 
-FROM scratch as wolfssl-base2
+FROM entrypoint as wolfssl-base2
 COPY --from=wolfssl-base1 /lib/ld-musl-x86_64.so.1 /lib/
 COPY --from=wolfssl-base1 /src/wolfssl/src/.libs/libcyassl.so.* /src/wolfssl/src/.libs/
 COPY --from=wolfssl-base1 /src/wolfssl/certs /certs/
@@ -34,4 +34,4 @@ LABEL "tls_library"="wolfssl"
 LABEL "tls_library_version"="3.${VERSION}"
 LABEL "tls_library_mode"="client"
 COPY --from=wolfssl-base1 /src/wolfssl/examples/client/.libs/lt-client /bin/
-ENTRYPOINT ["lt-client"]
+ENTRYPOINT ["client-entrypoint", "lt-client"]
