@@ -121,7 +121,7 @@ def main():
                                                 "The value is matched against the subfolder names inside the images folder. " +
                                                 "Can be specified multiple times.", default=[], action="append")
     parser.add_argument("-f", "--force_rebuild", help="Build docker containers, even if they already exist.", default=False, action="store_true")
-    parser.add_argument("-v", "--versions", help="Only build specific versions, this is a regex that is matched against the version. Dots are escaped.")
+    parser.add_argument("-v", "--version", help="Only build specific versions, this is a regex that is matched against the version. Dots are escaped.", default=[], action="append")
 
     ARGS = parser.parse_args()
 
@@ -208,11 +208,22 @@ def main():
             build_cmd = list(map(lambda x: x.strip(), cmds[i+1].split(" ")))
 
             version = get_image_version(build_cmd)
-            if ARGS.versions and not re.search(ARGS.versions.replace(".", "\\."), version):
-                continue
+            if len(ARGS.version) > 0:
+                found = False
+                for v in ARGS.version:
+                    if re.search(v.replace(".", "\\."), version):
+                        found = True
+                        break
+
+                if not found:
+                    continue
 
             # execute the docker build command with the executor
             futures.append(executor.submit(execute_docker, build_cmd, cwd))
+
+        if len(futures) == 0:
+            error("No images found that match your request...")
+            sys.exit(1)
 
         info("Building {} images...".format(len(futures)))
         digits = str(math.ceil(math.log10(len(futures))))
