@@ -2,7 +2,7 @@ FROM rust as rustls-base1
 ARG VERSION
 WORKDIR /src/
 RUN git clone --branch=v/${VERSION} --depth=1 https://github.com/ctz/rustls
-WORKDIR rustls
+WORKDIR rustls/rustls-mio
 RUN cargo build --release --example tlsserver
 RUN cargo build --release --example tlsclient
 
@@ -14,7 +14,7 @@ ARG VERSION
 LABEL "tls_library"="rustls"
 LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="server"
-COPY --from=rustls-base1 /src/rustls/target/release/examples/tlsserver /usr/local/bin/
+COPY --from=rustls-base1 /src/rustls/rustls-mio/target/release/examples/tlsserver /usr/local/bin/
 ENTRYPOINT ["tlsserver"]
 
 FROM rustls-base2 as rustls-client
@@ -22,6 +22,6 @@ ARG VERSION
 LABEL "tls_library"="rustls"
 LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="client"
-COPY --from=rustls-base1 /src/rustls/target/release/examples/tlsclient /usr/local/bin/
+COPY --from=rustls-base1 /src/rustls/rustls-mio/target/release/examples/tlsclient /usr/local/bin/
 COPY --from=entrypoint /bin/client-entrypoint /usr/local/bin
 ENTRYPOINT ["client-entrypoint", "tlsclient"]
