@@ -4,7 +4,7 @@ WORKDIR /src/openssl
 RUN ./config --prefix=/build/ --openssldir=/build/ no-async
 RUN make && make test && make install
 
-FROM scratch as openssl-base2
+FROM entrypoint as openssl-base2
 COPY --from=openssl-base1 /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* \
@@ -21,4 +21,4 @@ FROM openssl-base2 as openssl-client
 LABEL "tls_library"="openssl"
 LABEL "tls_library_version"="1.0.2l"
 LABEL "tls_library_mode"="client"
-ENTRYPOINT ["openssl", "s_client"]
+ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]

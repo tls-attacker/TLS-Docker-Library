@@ -7,7 +7,7 @@ RUN patch crypto/ui/ui_openssl.c < openssl-004-musl-termios.patch
 RUN ./config --prefix=/build/ --openssldir=/build/ no-async
 RUN make && make test && make install
 
-FROM scratch as openssl-base1
+FROM entrypoint as openssl-base1
 COPY --from=openssl-base1 /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* \
@@ -24,4 +24,4 @@ FROM openssl-base2 as openssl-client
 LABEL "tls_library"="openssl"
 LABEL "tls_library_version"="1.0.2"
 LABEL "tls_library_mode"="client"
-ENTRYPOINT ["openssl", "s_client"]
+ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]

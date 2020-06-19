@@ -11,7 +11,7 @@ RUN ./config --prefix=/build/ --openssldir=/build/ no-async no-asm -fPIC
 RUN make -s && make install_sw -s
 # install_sw for not creating manpages, a lot openssl versions (<0.9.8zc) do not compile with make install + it is faster
 
-FROM scratch as openssl-base2
+FROM entrypoint as openssl-base2
 COPY --from=openssl-base1 /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* \
@@ -30,4 +30,4 @@ ARG VERSION
 LABEL "tls_library"="openssl"
 LABEL "tls_library_version"="0.9.${VERSION}"
 LABEL "tls_library_mode"="client"
-ENTRYPOINT ["openssl", "s_client"]
+ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]
