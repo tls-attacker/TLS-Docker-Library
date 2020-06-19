@@ -2,11 +2,11 @@
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
-_docker build --build-arg VERSION=latest -t ${DOCKER_REPOSITORY}s2n-server:latest --target s2n-server .
-_docker build --build-arg VERSION=latest -t ${DOCKER_REPOSITORY}s2n-client:latest --target s2n-client .
 
-_docker build --build-arg VERSION=fips -t ${DOCKER_REPOSITORY}s2n-server:fips -f Dockerfile_fips --target s2n-server .
-_docker build --build-arg VERSION=fips -t ${DOCKER_REPOSITORY}s2n-client:fips -f Dockerfile_fips --target s2n-client .
-
+versions=(0.10.5 0.10.4 0.10.3 0.10.2 0.10.1 0.10.0 0.9.0)
+for i in "${versions[@]}"; do
+    _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}s2n-server:${i} --target s2n-server .
+    _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}s2n-client:${i} --target s2n-client .
+done
 
 exit "$EXITCODE"
