@@ -11,7 +11,9 @@ do
 	i=i+1
 done
 
-array=(3 4 5 6 7 8 9 10 11 12 13 14)
+# 3.6.6 and 3.6.5 does not compile due to strange errors
+# "Nettle lacks the required rsa_sec_decrypt function"
+array=(3 4 7 8 9 10 11 12 13 14)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
@@ -21,7 +23,7 @@ do
 	i=i+1
 done
 
-# FIXME: Build error in test with v7 -> check that
+
 array=(0 1 2 4 5 6 7)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -42,7 +44,7 @@ do
 	i=i+1
 done
 
-# FIXME: Build error in test with v17 -> check that
+
 array=(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -53,8 +55,9 @@ do
 	i=i+1
 done
 
-# FIXME: Build error in test with v15 -> check that
-array=(0 1 2 3 4 5 6 8 9 10 11 12 13 14 15)
+
+# 3.3.1 does not compile due to strange errors
+array=(0 2 3 4 5 6 8 9 10 11 12 13 14 15)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
@@ -64,7 +67,7 @@ do
 	i=i+1
 done
 
-# FIXME: Build error in test with v28 -> check that
+
 array=(16 17 18 19 20 21 22 23 24 25 26 27 28 29 30)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
