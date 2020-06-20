@@ -1,4 +1,4 @@
-FROM alpine-build as python-mbedtls
+FROM alpine-build:3.12 as python-mbedtls
 ARG VERSION
 RUN apk add --no-cache mbedtls-dev py-setuptools python-dev
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py

@@ -1,4 +1,4 @@
-FROM alpine-build as nss
+FROM alpine-build:3.12 as nss
 ENV BUILD_OPT="1"
 ENV USE_64="1"
 RUN hg clone -r NSS_3_32_RTM https://hg.mozilla.org/projects/nss

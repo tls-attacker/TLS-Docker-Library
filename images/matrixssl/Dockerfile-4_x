@@ -1,4 +1,4 @@
-FROM alpine-build as matrixssl-base1
+FROM alpine-build:3.12 as matrixssl-base1
 ARG VERSION
 RUN git clone --depth=1 --branch=4-$(echo ${VERSION} | tr '.' '-')-open https://github.com/matrixssl/matrixssl
 WORKDIR matrixssl

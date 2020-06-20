@@ -1,4 +1,4 @@
-FROM alpine-build as openssl-base1
+FROM alpine-build:3.12 as openssl-base1
 RUN wget https://www.openssl.org/source/old/0.9.x/openssl-0.9.8zh.tar.gz
 RUN tar -xzf openssl-0.9.8zh.tar.gz
 WORKDIR /src/openssl-0.9.8zh

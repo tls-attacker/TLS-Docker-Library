@@ -1,4 +1,4 @@
-FROM alpine-build as boringssl-base1
+FROM alpine-build:3.12 as boringssl-base1
 ARG VERSION
 RUN git clone --depth=1 -b ${VERSION} https://boringssl.googlesource.com/boringssl
 #remove the errorflags in CMakeLists.txt otherwise boringssl will not compile (workaround)

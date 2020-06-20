@@ -1,4 +1,4 @@
-FROM alpine-build as openssl-base1
+FROM alpine-build:3.12 as openssl-base1
 RUN git clone https://github.com/openssl/openssl
 WORKDIR /src/openssl
 RUN git checkout 0299f3f790437d124d15f60489c774407325f82b
