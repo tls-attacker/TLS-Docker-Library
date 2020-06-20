@@ -21,7 +21,10 @@ RUN apk update &&\
     wget \
     rsync \
     bash \
-    coreutils
+    coreutils \
+    build-base \
+    bsd-compat-headers
+
 
 COPY ./ca.pem /etc/ssl/certs/
 WORKDIR /src/
