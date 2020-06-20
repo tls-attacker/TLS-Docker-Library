@@ -14,7 +14,7 @@ do
 	i=i+1
 done
 
-array=(2490 2564 2623 2661 3239)
+array=(2490 2564 2623 2661)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
