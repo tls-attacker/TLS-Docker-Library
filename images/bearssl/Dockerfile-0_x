@@ -1,23 +1,23 @@
 FROM alpine-build as bearssl-base1
 ARG VERSION
-RUN git clone --depth=1 --branch=v0.${VERSION} https://www.bearssl.org/git/BearSSL
+RUN git clone --depth=1 --branch=v${VERSION} https://www.bearssl.org/git/BearSSL
 WORKDIR BearSSL
 RUN make
 
-FROM scratch as bearssl-base2
+FROM entrypoint as bearssl-base2
 COPY --from=bearssl-base1 /lib/ld-musl-x86_64.so.1 /lib/
 COPY --from=bearssl-base1 /src/BearSSL/build/brssl /bin/
 
 FROM bearssl-base2 as bearssl-server
 ARG VERSION
 LABEL "tls_library"="bearssl"
-LABEL "tls_library_version"="0.${VERSION}"
+LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="server"
 ENTRYPOINT ["brssl", "server"]
 
 FROM bearssl-base2 as bearssl-client
 ARG VERSION
 LABEL "tls_library"="bearssl"
-LABEL "tls_library_version"="0.${VERSION}"
+LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="client"
-ENTRYPOINT ["brssl", "client"]
+ENTRYPOINT ["client-entrypoint", "brssl", "client"]
