@@ -6,7 +6,7 @@ RUN make
 WORKDIR apps/
 RUN make
 
-FROM scratch as matrixssl-base2
+FROM entrypoint as matrixssl-base2
 COPY --from=matrixssl-base1 /lib/ld-musl-x86_64.so.* /lib/
 
 FROM matrixssl-base2 as matrixssl-server
@@ -23,4 +23,4 @@ LABEL "tls_library"="matrixssl"
 LABEL "tls_library_version"="3.${VERSION}"
 LABEL "tls_library_mode"="client"
 COPY --from=matrixssl-base1 /src/matrixssl/apps/client /bin/
-ENTRYPOINT ["client"]
+ENTRYPOINT ["client-entrypoint", "client"]
