@@ -5,7 +5,7 @@ WORKDIR /build/
 RUN cmake -DCMAKE_BUILD_TYPE=Release /src/boringssl/ &&\
   make
 
-FROM scratch as boringssl-base2
+FROM entrypoint as boringssl-base2
 COPY --from=boringssl-base1 /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* /lib/
@@ -24,4 +24,4 @@ ARG VERSION
 LABEL "tls_library"="boringssl"
 LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="client"
-ENTRYPOINT ["bssl", "s_client"]
+ENTRYPOINT ["client-entrypoint", "bssl", "s_client"]
