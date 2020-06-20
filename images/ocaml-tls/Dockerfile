@@ -7,7 +7,7 @@ RUN eval `opam config env` &&\
 RUN eval `opam config env` &&\
   ocaml pkg/pkg.ml build --with-lwt true
 
-FROM scratch as ocamltls-base2
+FROM entrypoint as ocamltls-base2
 COPY --from=ocamltls-base1 /lib/x86_64-linux-gnu/libdl.so.2 \
   /lib/x86_64-linux-gnu/librt.so.1 \
   /lib/x86_64-linux-gnu/libpthread.so.0 \
@@ -29,4 +29,4 @@ LABEL "tls_library"="ocamltls"
 LABEL "tls_library_version"="0.8.0"
 LABEL "tls_library_mode"="client"
 COPY --from=ocamltls-base1 /home/opam/ocaml-tls/_build/lwt/examples/test_client.native /bin/
-ENTRYPOINT ["test_client.native"]
+ENTRYPOINT ["client-entrypoint", "test_client.native"]
