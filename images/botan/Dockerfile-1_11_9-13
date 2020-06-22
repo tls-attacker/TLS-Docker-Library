@@ -19,6 +19,7 @@ COPY --from=botan-base1 /lib/ld-musl-x86_64.so.1 \
   /usr/lib/libboost_filesystem.so.1.62.0 \
   /usr/lib/libboost_system.so.1.62.0 /lib/
 COPY --from=botan-base1 /build/bin/botan /bin/
+COPY --from=botan-base1 /usr/share/ca-certificates/ /usr/share/ca-certificates/
 
 FROM botan-base2 as botan-server
 ARG VERSION

@@ -1,26 +1,17 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
-# Script for building botan version 1.11.X docker images
-# 0, 1, 2, 7 and 18 not supported
-array=(3 4 5 6)
-typeset -i i=0 max=${#array[*]}
-while (( i < max ))
-do
-	echo "Building: Botan 1.11.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]} -f Dockerfile-1_11_3-6 --target botan-server .
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]} -f Dockerfile-1_11_3-6 --target botan-client .
-	i=i+1
-done
 
-#Build error in test with v8 -> check that
-array=(8 9 10 11 12 13)
+# below 1.11.8 no executables are built
+# 1.11.8
+#   error during execution: Exception: Certificate_Store_In_Memory: FS access disabled
+array=(9 10 11 12 13)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: Botan 1.11.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]} -f Dockerfile-1_11_8-13 --target botan-server .
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]} -f Dockerfile-1_11_8-13 --target botan-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]} -f Dockerfile-1_11_9-13 --target botan-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]} -f Dockerfile-1_11_9-13 --target botan-client .
 	i=i+1
 done
 
