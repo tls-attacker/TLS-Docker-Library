@@ -5,7 +5,7 @@
     <type>GNUTLS</type>
     <role>CLIENT</role>
     <Parameter>
-        <cmdParameter>[host]:[port]</cmdParameter>
+        <cmdParameter>-p [port] [host]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
     <Parameter>

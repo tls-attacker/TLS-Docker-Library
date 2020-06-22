@@ -30,6 +30,7 @@ COPY --from=gnutls-gnutls /lib/ld-musl-x86_64.so.* \
   /build/lib/libgnutls.so.* \
   /build/lib/libnettle.so.* \
   /build/lib/libhogweed.so.* \
+  /usr/local/lib/libopts.so.* \
   /lib/libz.so.* /lib/
 
 FROM gnutls-base as gnutls-server
