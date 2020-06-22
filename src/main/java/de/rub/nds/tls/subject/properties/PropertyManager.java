@@ -34,6 +34,7 @@ public class PropertyManager {
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OPENSSL, "1.1.0f", null, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.S2N, "latest", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.WOLFSSL, "3.12.2-stable", Const.CA_CERT, false));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.RUSTLS, "0.17.0", Const.CA_CERT, false));
 
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BEARSSL, "0.5", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BORINGSSL, "master", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));

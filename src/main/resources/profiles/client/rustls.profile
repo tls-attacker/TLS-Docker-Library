@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <parameterProfile>
     <name>rustls_default</name>
-    <description>Default Profile for rustls</description>
+    <description>Default Profile for RusTLS</description>
     <type>RUSTLS</type>
-    <role>SERVER</role>
+    <role>CLIENT</role>
     <Parameter>
-        <cmdParameter>--certs [cert] --key [key]</cmdParameter>
-        <type>CERTIFICATE_KEY</type>
+        <cmdParameter>--cafile [cert]</cmdParameter>
+        <type>CA_CERTIFICATE</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>-p [port]</cmdParameter>
+        <cmdParameter>-p [port] [host]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
 </parameterProfile>
