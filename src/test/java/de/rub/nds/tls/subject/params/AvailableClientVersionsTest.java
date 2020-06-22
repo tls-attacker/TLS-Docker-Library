@@ -67,7 +67,7 @@ public class AvailableClientVersionsTest {
         }
         ContainerReport.write(new File("client_report.xml"), report);
         try {
-            testServer.stop(IP, PORT);
+            testServer.stop("localhost", PORT);
         } catch (IOException ex) {
             Logger.getLogger(AvailableClientVersionsTest.class.getName()).log(Level.SEVERE, null, ex);
         }
