@@ -4,12 +4,14 @@
     <description>Default Profile for Botan</description>
     <type>BOTAN</type>
     <role>SERVER</role>
+    <Version>1.11.1[3-9]</Version>
+    <Version>1.11.2[0-5]</Version>
     <Parameter>
         <cmdParameter>[cert] [key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>--port=[port]</cmdParameter>
+        <cmdParameter>[port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
 </parameterProfile>
