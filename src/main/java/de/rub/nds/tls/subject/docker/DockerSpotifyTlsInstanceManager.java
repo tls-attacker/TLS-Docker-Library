@@ -104,8 +104,10 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             DOCKER.startContainer(tlsInstance.getId());
         } catch (ContainerNotFoundException e) {
             LOGGER.error(e);
+            throw new RuntimeException(e);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -116,8 +118,10 @@ public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
             DOCKER.stopContainer(tlsInstance.getId(), 2);
         } catch (ContainerNotFoundException e) {
             LOGGER.error(e);
+            throw new RuntimeException(e);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error(e);
+            throw new RuntimeException(e);
         }
     }
 
