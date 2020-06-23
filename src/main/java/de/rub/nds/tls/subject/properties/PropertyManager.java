@@ -44,7 +44,7 @@ public class PropertyManager {
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.GNUTLS, "3.5.16", 5556, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.JSSE, "openjdk:8u162-jre-slim-bc-1-59", 4433, "/cert/keys.jks", "/cert/keys.jks"));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.LIBRESSL, "2.6.3", 4433, Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
-        //imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MATRIXSSL, ...
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MATRIXSSL, "4.2.2", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MBED, "2.6.0", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.NSS, "", 4430, "/cert/db/", "cert"));
         //imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.OCAMLTLS, ...
