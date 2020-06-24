@@ -12,7 +12,9 @@ do
 	i=i+1
 done
 
-array=(9.5 9.3 9.1 9.0 8.7b 8.7a 8.7 8.6 8.4 8.3)
+# 3.8.3 needs certificates in a specific place
+#   if this version is needed, create a specific dockerfile for it
+array=(9.5 9.3 9.1 9.0 8.7b 8.7a 8.7 8.6 8.4)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
