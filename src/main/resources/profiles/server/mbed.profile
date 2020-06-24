@@ -8,4 +8,8 @@
         <cmdParameter>crt_file=[cert] key_file=[key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
+    <Parameter>
+        <cmdParameter>server_port=[port]</cmdParameter>
+        <type>HOST_PORT</type>
+    </Parameter>
 </parameterProfile>
