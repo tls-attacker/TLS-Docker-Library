@@ -25,6 +25,6 @@ COPY --from=python-mbedtls /usr/lib/python2.7/site-packages/certifi/ /usr/local/
 COPY --from=python-mbedtls /usr/lib/python2.7/site-packages/ipaddress.pyc /usr/local/lib/python2.7/site-packages/
 
 WORKDIR /src
-ENTRYPOINT ["python","tls_server.py"]
+ENTRYPOINT ["server-entrypoint", "python","tls_server.py"]
 
 

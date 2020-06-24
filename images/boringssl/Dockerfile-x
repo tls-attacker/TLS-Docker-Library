@@ -17,7 +17,7 @@ ARG VERSION
 LABEL "tls_library"="boringssl"
 LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="server"
-ENTRYPOINT ["bssl", "s_server"]
+ENTRYPOINT ["server-entrypoint", "bssl", "s_server"]
 
 FROM boringssl-base2 as boringssl-client
 ARG VERSION

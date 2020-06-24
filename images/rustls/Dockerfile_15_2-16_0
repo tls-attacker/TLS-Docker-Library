@@ -15,7 +15,7 @@ LABEL "tls_library"="rustls"
 LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="server"
 COPY --from=rustls-base1 /src/rustls/rustls-mio/target/release/examples/tlsserver /usr/local/bin/
-ENTRYPOINT ["tlsserver"]
+ENTRYPOINT ["server-entrypoint", "tlsserver"]
 
 FROM rustls-base2 as rustls-client
 ARG VERSION

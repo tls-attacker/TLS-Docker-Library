@@ -23,7 +23,7 @@ ARG VERSION
 LABEL "tls_library"="botan"
 LABEL "tls_library_version"="1.11.${VERSION}"
 LABEL "tls_library_mode"="server"
-ENTRYPOINT ["botan", "tls_server"]
+ENTRYPOINT ["server-entrypoint", "botan", "tls_server"]
 
 FROM botan-base2 as botan-client
 ARG VERSION

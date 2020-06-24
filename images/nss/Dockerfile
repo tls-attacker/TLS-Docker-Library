@@ -17,4 +17,4 @@ COPY --from=nss /lib/ld-musl-x86_64.so.* \
   /src/dist/Linux*/lib/lib*.so /lib/
 COPY --from=nss /src/dist/Linux*/bin/selfserv \
   /src/dist/Linux*/bin/nss_bogo_shim /bin/
-ENTRYPOINT ["/bin/selfserv"]
+ENTRYPOINT ["server-entrypoint", "/bin/selfserv"]

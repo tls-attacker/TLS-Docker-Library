@@ -21,4 +21,4 @@ COPY --from=wolfssl-py /usr/lib/python2.7/site-packages/_cffi_backend.so /usr/lo
 COPY --from=wolfssl-py /usr/lib/python2.7/site-packages/cffi/ /usr/local/lib/python2.7/site-packages/cffi/
 COPY --from=wolfssl-py /usr/lib/libffi* /usr/local/lib/
 WORKDIR /src
-ENTRYPOINT ["python","server.py","-c","server-cert.pem","-k","server-key.pem","-p","4433","-A","ca-digicert-ev.pem","-v","3","-b"]
+ENTRYPOINT ["server-entrypoint", "python","server.py","-c","server-cert.pem","-k","server-key.pem","-p","4433","-A","ca-digicert-ev.pem","-v","3","-b"]

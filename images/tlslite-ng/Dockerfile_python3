@@ -14,7 +14,7 @@ ARG VERSION
 LABEL "tls_library"="tlslite-ng"
 LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="server"
-ENTRYPOINT ["tls.py", "server"]
+ENTRYPOINT ["server-entrypoint", "tls.py", "server"]
 
 FROM tlslite-ng as tlslite-ng-client
 ARG VERSION

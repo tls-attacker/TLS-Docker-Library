@@ -19,7 +19,7 @@ LABEL "tls_library"="s2n"
 LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="server"
 COPY --from=s2n-base1 /src/s2n/bin/s2nd /usr/local/bin/
-ENTRYPOINT ["s2nd"]
+ENTRYPOINT ["server-entrypoint", "s2nd"]
 
 FROM s2n-base2 as s2n-client
 ARG VERSION

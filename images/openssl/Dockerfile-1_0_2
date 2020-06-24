@@ -18,7 +18,7 @@ FROM openssl-base2 as openssl-server
 LABEL "tls_library"="openssl"
 LABEL "tls_library_version"="1.0.2"
 LABEL "tls_library_mode"="server"
-ENTRYPOINT ["openssl", "s_server"]
+ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]
 
 FROM openssl-base2 as openssl-client
 LABEL "tls_library"="openssl"

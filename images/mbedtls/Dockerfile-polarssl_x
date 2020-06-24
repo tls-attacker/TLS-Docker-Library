@@ -16,7 +16,7 @@ LABEL "tls_library"="mbed"
 LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="server"
 COPY --from=mbed-base1 /build/programs/ssl/ssl_server2 /bin/
-ENTRYPOINT ["ssl_server2"]
+ENTRYPOINT ["server-entrypoint", "ssl_server2"]
 
 FROM mbed-base2 as mbed-client
 ARG VERSION

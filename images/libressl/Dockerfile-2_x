@@ -18,7 +18,7 @@ ARG VERSION
 LABEL "tls_library"="libressl"
 LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="server"
-ENTRYPOINT ["openssl", "s_server"]
+ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]
 
 FROM libressl-base as libressl-client
 ARG VERSION

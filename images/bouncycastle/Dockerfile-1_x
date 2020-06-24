@@ -14,5 +14,5 @@ LABEL "tls_library_mode"="server"
 COPY --from=maven /src/BouncyCastleTLS/target/BouncyCastleTLS-1.${VERSION}-1.0.jar /apps/BouncyCastleTLS.jar
 COPY --from=maven /src/BouncyCastleTLS/target/lib /apps/lib
 WORKDIR /apps
-ENTRYPOINT ["java", "-jar", "BouncyCastleTLS.jar"]
+ENTRYPOINT ["server-entrypoint", "java", "-jar", "BouncyCastleTLS.jar"]
 CMD ["rsa2048.jks", "password", "1", "4433"]

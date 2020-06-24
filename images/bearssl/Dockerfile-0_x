@@ -13,7 +13,7 @@ ARG VERSION
 LABEL "tls_library"="bearssl"
 LABEL "tls_library_version"="${VERSION}"
 LABEL "tls_library_mode"="server"
-ENTRYPOINT ["brssl", "server"]
+ENTRYPOINT ["server-entrypoint", "brssl", "server"]
 
 FROM bearssl-base2 as bearssl-client
 ARG VERSION

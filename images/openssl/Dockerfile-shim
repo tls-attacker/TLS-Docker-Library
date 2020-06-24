@@ -10,7 +10,7 @@ COPY --from=openssl /lib/ld-musl-x86_64.so.* /usr/lib/libstdc++.so.* /usr/lib/li
 COPY --from=openssl /build/bin/openssl /src/openssl/test/ossl_shim/ossl_shim /bin/
 
 FROM openssl-base2 as openssl-shim-server
-ENTRYPOINT ["openssl", "s_server"]
+ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]
 
 FROM openssl-base2 as openssl-shim-client
 ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]

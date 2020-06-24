@@ -19,6 +19,6 @@ COPY --from=py-openssl /usr/lib/python2.7/site-packages/easy-install.pth /usr/lo
 COPY --from=py-openssl /usr/lib/libffi.so.6 /usr/lib/libssl.so.1.0.0 /usr/lib/libcrypto.so.1.0.0 /usr/local/lib/
 COPY server.py /src/simple/
 WORKDIR src/simple
-ENTRYPOINT ["python","server.py"]
+ENTRYPOINT ["server-entrypoint", "python","server.py"]
 
 

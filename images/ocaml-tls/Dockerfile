@@ -22,7 +22,7 @@ LABEL "tls_library"="ocamltls"
 LABEL "tls_library_version"="0.8.0"
 LABEL "tls_library_mode"="server"
 COPY --from=ocamltls-base1 /home/opam/ocaml-tls/_build/lwt/examples/test_server.native /bin/
-ENTRYPOINT ["test_server.native"]
+ENTRYPOINT ["server-entrypoint", "test_server.native"]
 
 FROM ocamltls-base2 as ocamltls-client
 LABEL "tls_library"="ocamltls"

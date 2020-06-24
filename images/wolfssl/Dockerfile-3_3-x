@@ -31,7 +31,7 @@ LABEL "tls_library"="wolfssl"
 LABEL "tls_library_version"="3.${VERSION}"
 LABEL "tls_library_mode"="server"
 COPY --from=wolfssl-base1 /src/wolfssl/examples/server/.libs/lt-server /bin/
-ENTRYPOINT ["lt-server"]
+ENTRYPOINT ["server-entrypoint", "lt-server"]
 
 FROM wolfssl-base2 as wolfssl-client
 ARG VERSION
