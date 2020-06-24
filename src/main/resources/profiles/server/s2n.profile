@@ -5,6 +5,10 @@
     <type>S2N</type>
     <role>SERVER</role>
     <Parameter>
+        <cmdParameter>--cert [cert] --key [key]</cmdParameter>
+        <type>CERTIFICATE_KEY</type>
+    </Parameter>
+    <Parameter>
         <cmdParameter>[host] [port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
