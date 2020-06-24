@@ -6,7 +6,7 @@ array=(0.0-stable 1.0-stable 2.0-stable 2.0c 3.0-stable 4.0-stable)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
-	echo "Building: WolfSSL 3.${array[$i]}"
+	echo "Building: WolfSSL 4.${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:4.${array[$i]} -f Dockerfile-4_x --target wolfssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:4.${array[$i]} -f Dockerfile-4_x --target wolfssl-client .
 	i=i+1
