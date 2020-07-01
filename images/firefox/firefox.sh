@@ -15,7 +15,7 @@ do
 done
 
 #ESR Versions
-array=(60.1.0esr 52.9.0esr 45.9.0esr 38.8.0esr 31.8.0esr 24.8.1esr 17.0.11esr 10.0.12esr)
+array=(78.0esr 68.9.0esr 60.9.0esr 52.9.0esr 45.9.0esr 38.8.0esr 31.8.0esr 24.8.1esr 17.0.11esr 10.0.12esr)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
