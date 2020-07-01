@@ -2,7 +2,7 @@ FROM rust as rustls-base1
 ARG VERSION
 WORKDIR /src/
 RUN git clone --branch=v/${VERSION} --depth=1 https://github.com/ctz/rustls
-WORKDIR rustls/rustls-mio
+WORKDIR rustls
 RUN cargo build --release --example tlsserver --features "dangerous_configuration"
 RUN cargo build --release --example tlsclient --features "dangerous_configuration"
 
