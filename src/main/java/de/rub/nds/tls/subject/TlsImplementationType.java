@@ -22,7 +22,18 @@ public enum TlsImplementationType {
     S2N,
     SCHANNEL,
     SECURE_TRANSPORT,
+    TLSLITE_NG,
     WOLFSSL,
-    ERLANG,
+    ERLANG;
+
+
+    public static TlsImplementationType fromString(String type) {
+        for (TlsImplementationType i : TlsImplementationType.values()) {
+            if (i.name().toLowerCase().equals(type.toLowerCase())) {
+                return i;
+            }
+        }
+        return null;
+    }
 
 }

@@ -113,27 +113,20 @@ public class ParameterProfileManager {
     }
 
     public ParameterProfile getDefaultProfile(TlsImplementationType type, ConnectionRole role) {
-        if (null == role) {
-            throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+        List<ParameterProfile> profileList;
+        if (role == ConnectionRole.CLIENT) {
+            profileList = defaultClientProfileList;
+        } else if (role == ConnectionRole.SERVER) {
+            profileList = defaultServerProfileList;
         } else {
-            switch (role) {
-                case CLIENT:
-                    for (ParameterProfile profile : defaultClientProfileList) {
-                        if (profile.getType() == type) {
-                            return profile;
-                        }
-                    }
-                    return null;
-                case SERVER:
-                    for (ParameterProfile profile : defaultServerProfileList) {
-                        if (profile.getType() == type) {
-                            return profile;
-                        }
-                    }
-                    return null;
-                default:
-                    throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+            throw new IllegalArgumentException("Unknown ConnectionRole: " + role);
+        }
+
+        for (ParameterProfile profile : profileList) {
+            if (profile.getType() == type) {
+                return profile;
             }
         }
+        return null;
     }
 }

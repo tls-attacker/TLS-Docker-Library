@@ -10,6 +10,8 @@ public class HostInfo {
     private final TransportType type;
 
     public HostInfo(String ip, String hostname, int port, TransportType type) {
+        // called for TLS Clients
+        // specifies where the client connects to
         this.ip = ip;
         this.hostname = hostname;
         this.port = port;
@@ -17,17 +19,17 @@ public class HostInfo {
     }
 
     public HostInfo(String hostname, int port, TransportType transportType) {
+        // called for TLS Servers
+        // specifies where the server is available
         this.port = port;
         if (hostname == null) {
             this.hostname = "127.0.0.42";
-        } else {
-            this.hostname = hostname;
-        }
-        if (hostname == null) {
             this.ip = "127.0.0.42";
         } else {
+            this.hostname = hostname;
             this.ip = hostname;
         }
+
         this.type = transportType;
     }
 

@@ -8,12 +8,14 @@ public class ImageProperties {
     private final ConnectionRole role;
     private final TlsImplementationType type;
     private final String defaultVersion;
-    private final Integer internalPort;
-    private final String defaultKeyPath;
-    private final String defaultCertPath;
-    private final boolean useIP;
+
+    private Integer internalPort;
+    private String defaultKeyPath;
+    private String defaultCertPath;
+    private boolean useIP;
 
     public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, String defaultCertPath, boolean useIP) {
+        // Called for TLS client images
         this.role = role;
         this.type = type;
         this.defaultVersion = defaultVersion;
@@ -24,6 +26,7 @@ public class ImageProperties {
     }
 
     public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, Integer internalPort, String defaultKeyPath, String defaultCertPath) {
+        // Called for TLS server images
         this.role = role;
         this.type = type;
         this.defaultVersion = defaultVersion;
@@ -59,5 +62,21 @@ public class ImageProperties {
 
     public boolean isUseIP() {
         return useIP;
+    }
+
+    public void setInternalPort(Integer internalPort) {
+        this.internalPort = internalPort;
+    }
+
+    public void setDefaultKeyPath(String defaultKeyPath) {
+        this.defaultKeyPath = defaultKeyPath;
+    }
+
+    public void setDefaultCertPath(String defaultCertPath) {
+        this.defaultCertPath = defaultCertPath;
+    }
+
+    public void setUseIP(boolean useIP) {
+        this.useIP = useIP;
     }
 }
