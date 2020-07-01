@@ -1,14 +1,13 @@
-FROM alpine-build:3.12 as nss
+FROM alpine-build:3.6 as nss
 ARG NSS_VERSION
 ARG NSPR_VERSION
 RUN hg clone -r NSS_${NSS_VERSION} https://hg.mozilla.org/projects/nss
 RUN hg clone -r NSPR_${NSPR_VERSION} https://hg.mozilla.org/projects/nspr
-RUN apk add py3-pip && \
+RUN apk add py-pip && \
     apk add ninja && \
-    ln -s /usr/bin/python3 /usr/bin/python && \
     pip install setuptools && \
     git clone https://chromium.googlesource.com/external/gyp && \
-    cd gyp && python3 ./setup.py install
+    cd gyp && ./setup.py install
 WORKDIR /src/nss
 RUN ./build.sh
 

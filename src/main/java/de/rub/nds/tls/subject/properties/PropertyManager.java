@@ -30,10 +30,12 @@ public class PropertyManager {
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.LIBRESSL, "3.2.0", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MATRIXSSL, "4.2.2", null, true));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MBED, "2.16.6", Const.CA_CERT, false));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.NSS, "3.54", Const.CA_CERT, false));
         //imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OCAMLTLS, "0.8.0", null, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OPENSSL, "1.1.1g", null, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.RUSTLS, "0.17.0", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.S2N, "0.10.5", Const.CA_CERT, false));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.TLSLITE_NG, "0.8.0-alpha38", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.WOLFSSL, "4.4.0-stable", Const.CA_CERT, false));
 
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BEARSSL, "0.6", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
@@ -46,11 +48,12 @@ public class PropertyManager {
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.LIBRESSL, "3.2.0", 4433, Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MATRIXSSL, "4.2.2", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MBED, "2.16.6", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
-        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.NSS, "", 4430, "/cert/db/", "cert"));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.NSS, "3.54", 4430, "/cert/db/", "cert"));
         //imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.OCAMLTLS, ...
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.OPENSSL, "1.1.1g", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.RUSTLS, "0.17.0", 443, Const.RUST_TEST_CA_KEY, Const.RUST_TEST_CA_FULLCHAIN));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.S2N, "0.10.5", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.TLSLITE_NG, "0.8.0-alpha38", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.WOLFSSL, "4.4.0-stable", 11111, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM));
     }
 
