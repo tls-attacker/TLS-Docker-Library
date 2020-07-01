@@ -11,7 +11,7 @@
         <type>HOST_PORT</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>crt_file=[cert]</cmdParameter>
-        <type>CA_CERTIFICATE</type>
+        <cmdParameter></cmdParameter>
+        <type>INSECURE</type>
     </Parameter>
 </parameterProfile>

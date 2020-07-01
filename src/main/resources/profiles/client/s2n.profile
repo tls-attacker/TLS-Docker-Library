@@ -5,11 +5,15 @@
     <type>S2N</type>
     <role>CLIENT</role>
     <Parameter>
-        <cmdParameter>[host] [port]</cmdParameter>
-        <type>HOST_PORT</type>
-    </Parameter>
-    <Parameter>
         <cmdParameter>-f [cert]</cmdParameter>
         <type>CA_CERTIFICATE</type>
+    </Parameter>
+    <Parameter>
+        <cmdParameter>-i</cmdParameter>
+        <type>INSECURE</type>
+    </Parameter>
+    <Parameter>
+        <cmdParameter>[host] [port]</cmdParameter>
+        <type>HOST_PORT</type>
     </Parameter>
 </parameterProfile>

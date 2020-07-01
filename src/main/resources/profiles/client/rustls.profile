@@ -9,6 +9,10 @@
         <type>CA_CERTIFICATE</type>
     </Parameter>
     <Parameter>
+        <cmdParameter>--insecure</cmdParameter>
+        <type>INSECURE</type>
+    </Parameter>
+    <Parameter>
         <cmdParameter>-p [port] [host]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
