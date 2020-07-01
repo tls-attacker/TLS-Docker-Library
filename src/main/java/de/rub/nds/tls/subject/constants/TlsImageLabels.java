@@ -1,9 +1,9 @@
 package de.rub.nds.tls.subject.constants;
 
 public enum TlsImageLabels {
-    LIBRARY("tls_library"),
-    VERSION("tls_library_version"),
-    MODE("tls_library_mode");
+    IMPLEMENTATION("tls_implementation"),
+    VERSION("tls_implementation_version"),
+    CONNECTION_ROLE("tls_implementation_connectionRole");
 
     private String labelName;
 

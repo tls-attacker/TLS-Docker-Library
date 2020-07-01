@@ -12,16 +12,16 @@ COPY --from=mbed-base1 /lib/ld-musl-x86_64.so.* /lib/
 
 FROM mbed-base2 as mbed-server
 ARG VERSION
-LABEL "tls_library"="mbed"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="mbed"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 COPY --from=mbed-base1 /build/programs/ssl/ssl_server /bin/
 ENTRYPOINT ["server-entrypoint", "ssl_server"]
 
 FROM mbed-base2 as mbed-client
 ARG VERSION
-LABEL "tls_library"="mbed"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="mbed"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
 COPY --from=mbed-base1 /build/programs/ssl/ssl_client2 /bin/
 ENTRYPOINT ["client-entrypoint", "ssl_client2"]

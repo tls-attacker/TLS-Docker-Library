@@ -9,9 +9,9 @@ RUN python mk_simple_certs.py
 
 FROM python:2.7-alpine
 ARG VERSION
-LABEL "tls_library"="py-openssl"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="py-openssl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 COPY --from=py-openssl /src/pyopenssl/examples/* /src/
 COPY --from=py-openssl /src/pyopenssl/examples/simple/* /src/simple/
 COPY --from=py-openssl /usr/lib/python2.7/site-packages/*.egg /usr/local/lib/python2.7/site-packages/

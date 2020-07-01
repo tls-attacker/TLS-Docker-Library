@@ -18,15 +18,15 @@ COPY --from=ocamltls-base1 /lib/x86_64-linux-gnu/libdl.so.2 \
 COPY --from=ocamltls-base1 /lib64/ld-linux-x86-64.so.2 /lib64/
 
 FROM ocamltls-base2 as ocamltls-server
-LABEL "tls_library"="ocamltls"
-LABEL "tls_library_version"="0.8.0"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="ocamltls"
+LABEL "tls_implementation_version"="0.8.0"
+LABEL "tls_implementation_connectionRole"="server"
 COPY --from=ocamltls-base1 /home/opam/ocaml-tls/_build/lwt/examples/test_server.native /bin/
 ENTRYPOINT ["server-entrypoint", "test_server.native"]
 
 FROM ocamltls-base2 as ocamltls-client
-LABEL "tls_library"="ocamltls"
-LABEL "tls_library_version"="0.8.0"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="ocamltls"
+LABEL "tls_implementation_version"="0.8.0"
+LABEL "tls_implementation_connectionRole"="client"
 COPY --from=ocamltls-base1 /home/opam/ocaml-tls/_build/lwt/examples/test_client.native /bin/
 ENTRYPOINT ["client-entrypoint", "test_client.native"]

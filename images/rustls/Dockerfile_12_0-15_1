@@ -11,17 +11,17 @@ FROM entrypoint as entrypoint
 
 FROM rustls-base2 as rustls-server
 ARG VERSION
-LABEL "tls_library"="rustls"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="rustls"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 COPY --from=rustls-base1 /src/rustls/target/release/examples/tlsserver /usr/local/bin/
 ENTRYPOINT ["server-entrypoint", "tlsserver"]
 
 FROM rustls-base2 as rustls-client
 ARG VERSION
-LABEL "tls_library"="rustls"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="rustls"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
 COPY --from=rustls-base1 /src/rustls/target/release/examples/tlsclient /usr/local/bin/
 COPY --from=entrypoint /bin/client-entrypoint /usr/local/bin
 ENTRYPOINT ["client-entrypoint", "tlsclient"]

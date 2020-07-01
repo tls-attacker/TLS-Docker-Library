@@ -14,14 +14,14 @@ COPY --from=boringssl-base1 /build/tool/bssl \
 
 FROM boringssl-base2 as boringssl-server
 ARG VERSION
-LABEL "tls_library"="boringssl"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="boringssl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 ENTRYPOINT ["server-entrypoint", "bssl", "s_server"]
 
 FROM boringssl-base2 as boringssl-client
 ARG VERSION
-LABEL "tls_library"="boringssl"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="boringssl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
 ENTRYPOINT ["client-entrypoint", "bssl", "s_client"]

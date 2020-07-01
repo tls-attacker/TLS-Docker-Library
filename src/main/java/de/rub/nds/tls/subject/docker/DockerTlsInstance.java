@@ -65,9 +65,9 @@ public class DockerTlsInstance implements TlsInstance {
 
         try {
             setImage(DOCKER.listImages(
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.LIBRARY.getLabelName(), profile.getType().name().toLowerCase()),
+                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.IMPLEMENTATION.getLabelName(), profile.getType().name().toLowerCase()),
                     DockerClient.ListImagesParam.withLabel(TlsImageLabels.VERSION.getLabelName(), version),
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.MODE.getLabelName(), role.toString().toLowerCase())
+                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.CONNECTION_ROLE.getLabelName(), role.toString().toLowerCase())
             )
                     .stream()
                     .findFirst()

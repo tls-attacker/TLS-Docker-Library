@@ -35,16 +35,16 @@ COPY --from=gnutls-gnutls /lib/ld-musl-x86_64.so.* \
 
 FROM gnutls-base as gnutls-server
 ARG VERSION
-LABEL "tls_library"="gnutls"
-LABEL "tls_library_version"="3.3.${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="gnutls"
+LABEL "tls_implementation_version"="3.3.${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 COPY --from=gnutls-gnutls /build/bin/gnutls-serv /bin/
 ENTRYPOINT ["server-entrypoint", "gnutls-serv"]
 
 FROM gnutls-base as gnutls-client
 ARG VERSION
-LABEL "tls_library"="gnutls"
-LABEL "tls_library_version"="3.3.${VERSION}"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="gnutls"
+LABEL "tls_implementation_version"="3.3.${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
 COPY --from=gnutls-gnutls /build/bin/gnutls-cli /bin/
 ENTRYPOINT ["client-entrypoint", "gnutls-cli"]

@@ -214,8 +214,8 @@ public class DockerTlsManagerFactory {
         List<String> versionList = new LinkedList<>();
         try {
             List<Image> serverImageList = DOCKER.listImages(
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.LIBRARY.getLabelName(), type.name().toLowerCase()),
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.MODE.getLabelName(), role.toString().toLowerCase())
+                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.IMPLEMENTATION.getLabelName(), type.name().toLowerCase()),
+                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.CONNECTION_ROLE.getLabelName(), role.toString().toLowerCase())
             );
             for (Image image : serverImageList) {
                 if (image.labels() != null) {
@@ -234,7 +234,7 @@ public class DockerTlsManagerFactory {
     public List<Image> getAllImages() {
         try {
             return DOCKER.listImages(
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.LIBRARY.getLabelName()),
+                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.IMPLEMENTATION.getLabelName()),
                     DockerClient.ListImagesParam.danglingImages(false)
             );
         } catch (Exception e) {

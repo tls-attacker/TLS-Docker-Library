@@ -15,17 +15,17 @@ FROM entrypoint as entrypoint
 
 FROM s2n-base2 as s2n-server
 ARG VERSION
-LABEL "tls_library"="s2n"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="s2n"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 COPY --from=s2n-base1 /src/s2n/bin/s2nd /usr/local/bin/
 ENTRYPOINT ["server-entrypoint", "s2nd"]
 
 FROM s2n-base2 as s2n-client
 ARG VERSION
-LABEL "tls_library"="s2n"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="s2n"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
 ENV S2N_ENABLE_CLIENT_MODE=1
 COPY --from=s2n-base1 /src/s2n/bin/s2nc /usr/local/bin/
 COPY --from=entrypoint /bin/client-entrypoint /usr/local/bin/

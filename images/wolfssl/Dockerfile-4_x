@@ -27,16 +27,16 @@ COPY --from=wolfssl-base1 /src/wolfssl/certs /certs/
 
 FROM wolfssl-base2 as wolfssl-server
 ARG VERSION
-LABEL "tls_library"="wolfssl"
-LABEL "tls_library_version"="4.${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="wolfssl"
+LABEL "tls_implementation_version"="4.${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 COPY --from=wolfssl-base1 /src/wolfssl/examples/server/.libs/lt-server /bin/
 ENTRYPOINT ["server-entrypoint", "lt-server"]
 
 FROM wolfssl-base2 as wolfssl-client
 ARG VERSION
-LABEL "tls_library"="wolfssl"
-LABEL "tls_library_version"="4.${VERSION}"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="wolfssl"
+LABEL "tls_implementation_version"="4.${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
 COPY --from=wolfssl-base1 /src/wolfssl/examples/client/.libs/lt-client /bin/
 ENTRYPOINT ["client-entrypoint", "lt-client"]

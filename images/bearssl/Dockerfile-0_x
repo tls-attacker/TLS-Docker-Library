@@ -10,14 +10,14 @@ COPY --from=bearssl-base1 /src/BearSSL/build/brssl /bin/
 
 FROM bearssl-base2 as bearssl-server
 ARG VERSION
-LABEL "tls_library"="bearssl"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="bearssl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 ENTRYPOINT ["server-entrypoint", "brssl", "server"]
 
 FROM bearssl-base2 as bearssl-client
 ARG VERSION
-LABEL "tls_library"="bearssl"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="bearssl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
 ENTRYPOINT ["client-entrypoint", "brssl", "client"]

@@ -12,17 +12,17 @@ COPY --from=matrixssl-base1 /lib/ld-musl-x86_64.so.* /lib/
 
 FROM matrixssl-base2 as matrixssl-server
 ARG VERSION
-LABEL "tls_library"="matrixssl"
-LABEL "tls_library_version"="3.${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="matrixssl"
+LABEL "tls_implementation_version"="3.${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 COPY --from=matrixssl-base1 /src/matrixssl/apps/ssl/server /bin/
 COPY --from=matrixssl-base1 /src/matrixssl/testkeys /testkeys
 ENTRYPOINT ["server-entrypoint", "server"]
 
 FROM matrixssl-base2 as matrixssl-client
 ARG VERSION
-LABEL "tls_library"="matrixssl"
-LABEL "tls_library_version"="3.${VERSION}"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="matrixssl"
+LABEL "tls_implementation_version"="3.${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
 COPY --from=matrixssl-base1 /src/matrixssl/apps/ssl/client /bin/
 ENTRYPOINT ["client-entrypoint", "client"]

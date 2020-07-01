@@ -15,14 +15,14 @@ COPY --from=libressl /build/usr/local/bin/openssl /bin/
 
 FROM libressl-base as libressl-server
 ARG VERSION
-LABEL "tls_library"="libressl"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="libressl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]
 
 FROM libressl-base as libressl-client
 ARG VERSION
-LABEL "tls_library"="libressl"
-LABEL "tls_library_version"="${VERSION}"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="libressl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
 ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]

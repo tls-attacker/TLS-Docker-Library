@@ -13,13 +13,13 @@ COPY --from=openssl-base1 /lib/ld-musl-x86_64.so.* \
 COPY --from=openssl-base1 /build/bin/openssl /bin/
 
 FROM openssl-base2 as openssl-server
-LABEL "tls_library"="openssl"
-LABEL "tls_library_version"="0.9.8zh"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="openssl"
+LABEL "tls_implementation_version"="0.9.8zh"
+LABEL "tls_implementation_connectionRole"="server"
 ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]
 
 FROM openssl-base2 as openssl-client
-LABEL "tls_library"="openssl"
-LABEL "tls_library_version"="0.9.8zh"
-LABEL "tls_library_mode"="client"
+LABEL "tls_implementation"="openssl"
+LABEL "tls_implementation_version"="0.9.8zh"
+LABEL "tls_implementation_connectionRole"="client"
 ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]

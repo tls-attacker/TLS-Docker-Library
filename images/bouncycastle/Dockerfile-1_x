@@ -8,9 +8,9 @@ RUN mvn clean install -Dbc.version=1.${VERSION}
 
 FROM openjdk:jre-slim
 ARG VERSION
-LABEL "tls_library"="bouncycastle"
-LABEL "tls_library_version"="1.${VERSION}"
-LABEL "tls_library_mode"="server"
+LABEL "tls_implementation"="bouncycastle"
+LABEL "tls_implementation_version"="1.${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
 COPY --from=maven /src/BouncyCastleTLS/target/BouncyCastleTLS-1.${VERSION}-1.0.jar /apps/BouncyCastleTLS.jar
 COPY --from=maven /src/BouncyCastleTLS/target/lib /apps/lib
 WORKDIR /apps
