@@ -4,16 +4,29 @@ import (
 	"entrypoints/lib"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 )
 
 func infinite() {
+	failed := 0
 	for {
+		fmt.Println("Start Server!")
 		start := time.Now()
-		lib.ExecuteArgs()
+		exitCode := lib.ExecuteArgs()
 		elapsed := time.Since(start)
-		if elapsed < 50 * time.Millisecond {
-			time.Sleep(500 * time.Millisecond)
+
+		fmt.Println("Server terminated! (" + strconv.Itoa(int(elapsed.Milliseconds())) + "ms)")
+		if elapsed < 100 * time.Millisecond || exitCode > 0 || exitCode == -1 {
+			time.Sleep(50 * time.Millisecond)
+			failed = failed + 1
+		} else {
+			failed = 0
+		}
+
+		if failed > 5 {
+			os.Exit(99)
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,7 +9,7 @@ import (
 
 var args = os.Args[1:]
 
-func ExecuteArgs() {
+func ExecuteArgs() int {
 	var cmd *exec.Cmd
 	if len(args) > 1 {
 		program := args[0]
@@ -23,18 +22,20 @@ func ExecuteArgs() {
 		cmd = exec.Command(program)
 	} else {
 		fmt.Println("Nothing to do, no args specified")
-		return
+		return -1
 	}
 
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &out
-	err := cmd.Run()
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	// keep stdin open
+	_, err := cmd.StdinPipe()
 
-	fmt.Print(out.String())
+	err = cmd.Run()
+
 	if err != nil {
 		fmt.Println(err)
 	}
+	return cmd.ProcessState.ExitCode()
 }
 
 func Shutdown(w http.ResponseWriter, req *http.Request) {
