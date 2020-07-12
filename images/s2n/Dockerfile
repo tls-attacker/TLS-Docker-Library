@@ -19,6 +19,7 @@ LABEL "tls_implementation"="s2n"
 LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
 COPY --from=s2n-base1 /src/s2n/bin/s2nd /usr/local/bin/
+COPY --from=entrypoint /bin/server-entrypoint /usr/local/bin/
 ENTRYPOINT ["server-entrypoint", "s2nd"]
 
 FROM s2n-base2 as s2n-client

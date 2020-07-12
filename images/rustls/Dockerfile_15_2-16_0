@@ -15,6 +15,7 @@ LABEL "tls_implementation"="rustls"
 LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
 COPY --from=rustls-base1 /src/rustls/rustls-mio/target/release/examples/tlsserver /usr/local/bin/
+COPY --from=entrypoint /bin/server-entrypoint /usr/local/bin/
 ENTRYPOINT ["server-entrypoint", "tlsserver"]
 
 FROM rustls-base2 as rustls-client
@@ -23,5 +24,5 @@ LABEL "tls_implementation"="rustls"
 LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="client"
 COPY --from=rustls-base1 /src/rustls/rustls-mio/target/release/examples/tlsclient /usr/local/bin/
-COPY --from=entrypoint /bin/client-entrypoint /usr/local/bin
+COPY --from=entrypoint /bin/client-entrypoint /usr/local/bin/
 ENTRYPOINT ["client-entrypoint", "tlsclient"]

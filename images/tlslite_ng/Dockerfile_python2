@@ -12,6 +12,7 @@ ARG VERSION
 LABEL "tls_implementation"="tlslite_ng"
 LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
+COPY --from=entrypoint /bin/server-entrypoint /usr/local/bin/
 ENTRYPOINT ["server-entrypoint", "tls.py", "server"]
 
 FROM tlslite-ng as tlslite-ng-client

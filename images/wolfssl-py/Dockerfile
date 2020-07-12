@@ -8,6 +8,7 @@ RUN python get-pip.py
 RUN pip install pip==9.0.3
 RUN python setup.py build && python setup.py install
 
+FROM entrypoint as entrypoint
 
 FROM python:2.7-alpine
 ARG VERSION
@@ -20,5 +21,6 @@ COPY --from=wolfssl-py /usr/lib/python2.7/site-packages/*.egg /usr/local/lib/pyt
 COPY --from=wolfssl-py /usr/lib/python2.7/site-packages/_cffi_backend.so /usr/local/lib/python2.7/site-packages/
 COPY --from=wolfssl-py /usr/lib/python2.7/site-packages/cffi/ /usr/local/lib/python2.7/site-packages/cffi/
 COPY --from=wolfssl-py /usr/lib/libffi* /usr/local/lib/
+COPY --from=entrypoint /bin/server-entrypoint /usr/local/bin/
 WORKDIR /src
 ENTRYPOINT ["server-entrypoint", "python","server.py","-c","server-cert.pem","-k","server-key.pem","-p","4433","-A","ca-digicert-ev.pem","-v","3","-b"]

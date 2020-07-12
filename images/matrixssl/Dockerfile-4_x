@@ -2,6 +2,7 @@ FROM alpine-build:3.12 as matrixssl-base1
 ARG VERSION
 RUN git clone --depth=1 --branch=4-$(echo ${VERSION} | tr '.' '-')-open https://github.com/matrixssl/matrixssl
 WORKDIR matrixssl
+RUN sed -i 's/define ALLOW_ANON_CONNECTIONS  0/define ALLOW_ANON_CONNECTIONS  1/g' apps/ssl/client.c
 RUN make
 
 FROM entrypoint as matrixssl-base2
