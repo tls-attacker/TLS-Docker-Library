@@ -8,5 +8,5 @@
         <cmdParameter>-connect [host]:[port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
-    <Version>^2</Version>
+    <Version>^2.*</Version>
 </parameterProfile>

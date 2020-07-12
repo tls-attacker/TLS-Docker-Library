@@ -4,8 +4,8 @@
     <description>Profile for Openssl pre 1.1.0</description>
     <type>OPENSSL</type>
     <role>SERVER</role>
-    <Version>^1.0</Version>
-    <Version>^0.9</Version>
+    <Version>^1.0.*</Version>
+    <Version>^0.9.*</Version>
     <Parameter>
         <cmdParameter>-accept [port]</cmdParameter>
         <type>HOST_PORT</type>

@@ -13,7 +13,8 @@
         <type>INSECURE</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>-p [port] [host]</cmdParameter>
+        <cmdParameter>--http -p [port] [host]</cmdParameter>
         <type>HOST_PORT</type>
+        <description>[host] must be a hostname resolvable by DNS. IP addresses are not supported.</description>
     </Parameter>
 </parameterProfile>

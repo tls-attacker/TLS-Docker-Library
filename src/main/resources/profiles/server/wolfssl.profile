@@ -12,4 +12,8 @@
         <cmdParameter>-d -b</cmdParameter>
         <type>NONE</type>
     </Parameter>
+    <Parameter>
+        <cmdParameter>-p [port]</cmdParameter>
+        <type>HOST_PORT</type>
+    </Parameter>
 </parameterProfile>

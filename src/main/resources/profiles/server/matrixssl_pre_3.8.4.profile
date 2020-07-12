@@ -4,5 +4,5 @@
     <description>MATRIXSSL pre 3.8.4</description>
     <type>MATRIXSSL</type>
     <role>SERVER</role>
-    <Version>^3.[0-7]</Version>
+    <Version>^3.[0-7].*</Version>
 </parameterProfile>
