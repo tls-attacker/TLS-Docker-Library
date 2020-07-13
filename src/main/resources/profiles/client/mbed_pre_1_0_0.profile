@@ -2,7 +2,7 @@
 <parameterProfile>
     <name>mbed_before_1.0.0</name>
     <description>Profile for MbedTLS versions before 1.0.0</description>
-    <type>MBED</type>
+    <type>MBEDTLS</type>
     <role>CLIENT</role>
     <Version>0.14.3</Version>
     <Version>0.14.2</Version>

@@ -11,7 +11,7 @@ FROM entrypoint as entrypoint
 
 FROM python:2.7-alpine
 ARG VERSION
-LABEL "tls_implementation"="py-openssl"
+LABEL "tls_implementation"="pyopenssl"
 LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
 COPY --from=py-openssl /src/pyopenssl/examples/* /src/

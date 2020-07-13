@@ -14,7 +14,7 @@ public enum TlsImplementationType {
     GO,
     LIBRESSL,
     MATRIXSSL,
-    MBED,
+    MBEDTLS,
     NSS,
     OCAMLTLS,
     OPENSSL,

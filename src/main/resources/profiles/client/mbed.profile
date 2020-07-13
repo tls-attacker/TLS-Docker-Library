@@ -2,7 +2,7 @@
 <parameterProfile>
     <name>mbed_default</name>
     <description>Default Profile for MbedTLS</description>
-    <type>MBED</type>
+    <type>MBEDTLS</type>
     <role>CLIENT</role>
     <Parameter>
         <cmdParameter>server_name=[host] server_port=[port]</cmdParameter>

@@ -12,7 +12,7 @@ FROM entrypoint as entrypoint
 
 FROM python:2.7-alpine
 ARG VERSION
-LABEL "tls_implementation"="wolfssl-py"
+LABEL "tls_implementation"="wolfssl_py"
 LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
 COPY --from=wolfssl-py /src/wolfssl-py/certs/* /src/

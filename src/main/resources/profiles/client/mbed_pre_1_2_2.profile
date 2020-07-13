@@ -2,7 +2,7 @@
 <parameterProfile>
     <name>mbed_default_pre_1_2_2</name>
     <description>Default Profile for MbedTLS before version 1.2.2</description>
-    <type>MBED</type>
+    <type>MBEDTLS</type>
     <role>CLIENT</role>
     <Version>^1.0.*</Version>
     <Version>^1.1.*</Version>

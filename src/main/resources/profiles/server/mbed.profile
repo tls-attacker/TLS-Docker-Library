@@ -2,7 +2,7 @@
 <parameterProfile>
     <name>mbed_default</name>
     <description>Default Profile for MbedTLS</description>
-    <type>MBED</type>
+    <type>MBEDTLS</type>
     <role>SERVER</role>
     <Parameter>
         <cmdParameter>crt_file=[cert] key_file=[key]</cmdParameter>
