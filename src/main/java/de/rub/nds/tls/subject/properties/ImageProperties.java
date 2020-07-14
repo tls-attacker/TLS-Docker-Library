@@ -12,6 +12,7 @@ public class ImageProperties {
     private Integer internalPort;
     private String defaultKeyPath;
     private String defaultCertPath;
+    private String defaultCertKeyCombinedPath;
     private boolean useIP;
 
     public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, String defaultCertPath, boolean useIP) {
@@ -25,7 +26,7 @@ public class ImageProperties {
         this.useIP = useIP;
     }
 
-    public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, Integer internalPort, String defaultKeyPath, String defaultCertPath) {
+    public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, Integer internalPort, String defaultKeyPath, String defaultCertPath, String defaultCertKeyCombindPath) {
         // Called for TLS server images
         this.role = role;
         this.type = type;
@@ -33,6 +34,7 @@ public class ImageProperties {
         this.internalPort = internalPort;
         this.defaultKeyPath = defaultKeyPath;
         this.defaultCertPath = defaultCertPath;
+        this.defaultCertKeyCombinedPath = defaultCertKeyCombindPath;
         this.useIP = true;
     }
 
@@ -78,5 +80,9 @@ public class ImageProperties {
 
     public void setUseIP(boolean useIP) {
         this.useIP = useIP;
+    }
+
+    public String getDefaultCertKeyCombinedPath() {
+        return defaultCertKeyCombinedPath;
     }
 }

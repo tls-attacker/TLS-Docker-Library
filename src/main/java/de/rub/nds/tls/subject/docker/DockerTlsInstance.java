@@ -52,7 +52,8 @@ public class DockerTlsInstance implements TlsInstance {
     private ContainerConfig containerConfig;
     private long exitCode;
 
-    private boolean insecureConnection;
+    private boolean insecureConnection = false;
+    private boolean parallelize = false;
 
     public DockerTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, HostInfo hostInfo, String additionalParameters, DockerSpotifyTlsInstanceManager instance) {
         this.role = role;
@@ -173,9 +174,13 @@ public class DockerTlsInstance implements TlsInstance {
         return String.format("%s: %s:%d (%s)", getConnectionRole().name(), host, port, getName());
     }
 
-    public void createContainer() {
+    public String createContainer() {
+        if (insecureConnection && !parameterProfile.supportsInsecure() && role == ConnectionRole.CLIENT) {
+            throw new RuntimeException(this.getName() + " does not support insecure connection");
+        }
+
         if (this.containerId != null)
-            return;
+            return this.containerId;
         if (this.image == null)
             throw new RuntimeException("Container could not be created, image is missing");
 
@@ -184,19 +189,20 @@ public class DockerTlsInstance implements TlsInstance {
                 containerConfig = generateContainerConfig();
 
             this.containerId = DOCKER.createContainer(containerConfig, this.name).id();
+            return this.containerId;
         } catch (Exception e) {
             throw new RuntimeException("Container could not be created", e);
         }
     }
 
     public void start() {
-        if (insecureConnection && !parameterProfile.supportsInsecure() && role == ConnectionRole.CLIENT) {
-            LOGGER.warn(this.getName() + " does not support insecure connection");
-            return;
-        }
-        createContainer();
+        String id = createContainer();
         tlsInstanceManager.startInstance(this);
-        updateInstancePort();
+        if (containerConfig.hostConfig() != null
+                && containerConfig.hostConfig().portBindings() != null
+                && containerConfig.hostConfig().portBindings().size() > 0) {
+            updateInstancePort();
+        }
     }
 
     public void stop() {
@@ -228,7 +234,7 @@ public class DockerTlsInstance implements TlsInstance {
         this.containerConfig = containerConfig;
     }
 
-    public ContainerConfig generateContainerConfig() {
+    private ContainerConfig generateContainerConfig() {
         String protocol = hostInfo.getType() == TransportType.TCP ? "/tcp" : "/udp";
 
         Integer targetPort = imageProperties.getInternalPort();
@@ -337,6 +343,8 @@ public class DockerTlsInstance implements TlsInstance {
             } else if (parameterProfile.supportsInsecure()){
                 if (param.getType() == ParameterType.INSECURE) continue;
             }
+            if (!parallelize && param.getType() == ParameterType.PARALLELIZE)
+                continue;
             finalParams.append(param.getCmdParameter());
             finalParams.append(" ");
         }
@@ -357,8 +365,19 @@ public class DockerTlsInstance implements TlsInstance {
         if (imageProperties.getDefaultKeyPath() != null) {
             afterReplace = afterReplace.replace("[key]", imageProperties.getDefaultKeyPath());
         }
+        if (imageProperties.getDefaultCertKeyCombinedPath() != null) {
+            afterReplace = afterReplace.replace("[combined]", imageProperties.getDefaultCertKeyCombinedPath());
+        }
         afterReplace = afterReplace.trim();
         LOGGER.debug("Final parameters: " + (afterReplace));
         return afterReplace.split(" ");
+    }
+
+    public boolean isParallelize() {
+        return parallelize;
+    }
+
+    public void setParallelize(boolean parallelize) {
+        this.parallelize = parallelize;
     }
 }

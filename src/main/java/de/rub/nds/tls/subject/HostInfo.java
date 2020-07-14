@@ -3,11 +3,10 @@ package de.rub.nds.tls.subject;
 import de.rub.nds.tls.subject.constants.TransportType;
 
 public class HostInfo {
-
-    private final String ip;
-    private final String hostname;
+    private String ip;
+    private String hostname;
     private Integer port;
-    private final TransportType type;
+    private TransportType type;
 
     public HostInfo(String ip, String hostname, int port, TransportType type) {
         // called for TLS Clients
@@ -51,5 +50,21 @@ public class HostInfo {
 
     public Integer getPort() {
         return port;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public void setType(TransportType type) {
+        this.type = type;
     }
 }
