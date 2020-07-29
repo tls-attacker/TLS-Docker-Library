@@ -13,7 +13,7 @@
         <type>INSECURE</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>[host] [port]</cmdParameter>
+        <cmdParameter>-e [host] [port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
 </parameterProfile>
