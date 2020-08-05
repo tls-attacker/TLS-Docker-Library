@@ -176,7 +176,7 @@ public class DockerTlsInstance implements TlsInstance {
 
     public String createContainer() {
         if (insecureConnection && !parameterProfile.supportsInsecure() && role == ConnectionRole.CLIENT) {
-            throw new RuntimeException(this.getName() + " does not support insecure connection");
+            LOGGER.warn(this.getName() + " does not support insecure connection");
         }
 
         if (this.containerId != null)
