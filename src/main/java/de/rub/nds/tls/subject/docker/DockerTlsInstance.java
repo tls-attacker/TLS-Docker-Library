@@ -219,8 +219,11 @@ public class DockerTlsInstance implements TlsInstance {
 
     public void setImage(Image image) {
         ImmutableList<String> tags = image.repoTags();
-        if (tags != null && tags.size() > 0)
-            this.name = tags.get(0);
+        if (tags != null && tags.size() > 0) {
+            this.name = tags.get(0).replace(":", "");
+        } else {
+            this.name = String.format("%s_%s", imageProperties.getType().name(), imageProperties.getRole().name());
+        }
         this.image = image;
     }
 
