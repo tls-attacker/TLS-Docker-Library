@@ -4,7 +4,7 @@
     <description>Profile for BoringSSL 2987 and 3029</description>
     <type>BORINGSSL</type>
     <role>SERVER</role>
-    <Version>2978</Version>
+    <Version>2987</Version>
     <Version>3029</Version>
     <Parameter>
         <cmdParameter>-accept [port]</cmdParameter>
