@@ -32,7 +32,7 @@ import java.util.Arrays;
  * The representation of a TLS-Instance used for a Test
  */
 public class DockerTlsInstance implements TlsInstance {
-    private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
+    private static final DockerClient DOCKER = DockerClientManager.getDockerClient();
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final DockerSpotifyTlsInstanceManager tlsInstanceManager;

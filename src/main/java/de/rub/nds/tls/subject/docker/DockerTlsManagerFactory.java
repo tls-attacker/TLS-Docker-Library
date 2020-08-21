@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class DockerTlsManagerFactory {
 
-    private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
+    private static final DockerClient DOCKER = DockerClientManager.getDockerClient();
     private static final Logger LOGGER = LogManager.getLogger(DockerTlsManagerFactory.class);
 
     private static final int DEFAULT_PORT = 4433;

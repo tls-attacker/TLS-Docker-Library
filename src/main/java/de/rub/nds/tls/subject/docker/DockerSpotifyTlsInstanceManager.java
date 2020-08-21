@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class DockerSpotifyTlsInstanceManager implements TlsInstanceManager {
 
-    private static final DockerClient DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
+    private static final DockerClient DOCKER = DockerClientManager.getDockerClient();
     private static final Logger LOGGER = LogManager.getLogger(DockerSpotifyTlsInstanceManager.class);
 
     private final Map<String, Integer> logReadOffset;
