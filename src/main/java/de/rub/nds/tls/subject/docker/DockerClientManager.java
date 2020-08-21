@@ -22,4 +22,8 @@ public class DockerClientManager {
         }
         return DOCKER;
     }
+
+    private DockerClientManager() {
+        throw new IllegalStateException("Utility class");
+    }
 }
