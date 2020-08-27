@@ -8,6 +8,7 @@ RUN ./config --prefix=/build/ --openssldir=/build/ #pre1 and pre2 do not support
 RUN make -s && make install_sw -s
 
 FROM entrypoint as openssl-base2
+COPY --from=openssl-base1 /build/ /artifacts/ssllib/
 COPY --from=openssl-base1 /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* \

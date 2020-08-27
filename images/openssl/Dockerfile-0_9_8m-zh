@@ -11,6 +11,7 @@ RUN make -s && make install_sw -s
 # install_sw for not creating manpages, a lot openssl versions (<8zc) do not compile with make install + it is faster
 
 FROM entrypoint as openssl-base2
+COPY --from=openssl-base1 /build/ /artifacts/ssllib/
 COPY --from=openssl-base1 /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* \

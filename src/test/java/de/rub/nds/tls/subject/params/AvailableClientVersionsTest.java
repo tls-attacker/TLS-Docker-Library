@@ -24,6 +24,9 @@ import org.junit.Test;
 public class AvailableClientVersionsTest {
 
     private static final String HOSTNAME = "nds.tls-docker-library-test.de";
+    // when running the tests on another os than linux you might need to change the
+    // ip use `docker run --rm -it alpine-build:3.12 ping -c1 host.docker.internal`
+    // to find the correct IP
     private static final String IP = "172.17.0.1";
     private static final int PORT = 8000;
     private static final int CONNECTION_TIMEOUT = 10;

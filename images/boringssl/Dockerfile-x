@@ -2,13 +2,17 @@ FROM alpine-build:3.12 as boringssl-base1
 ARG VERSION
 RUN git clone --depth=1 -b ${VERSION} https://boringssl.googlesource.com/boringssl
 WORKDIR /build/
-RUN cmake -DCMAKE_BUILD_TYPE=Release /src/boringssl/ &&\
+RUN cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 /src/boringssl/ &&\
   make
 
 FROM entrypoint as boringssl-base2
+COPY --from=boringssl-base1 /src/boringssl/include/ /artifacts/ssllib/include/
+COPY --from=boringssl-base1 /build/ssl/libssl.so /build/crypto/libcrypto.so /artifacts/ssllib/lib/
 COPY --from=boringssl-base1 /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
-  /usr/lib/libgcc_s.so.* /lib/
+  /usr/lib/libgcc_s.so.* \
+  /build/ssl/libssl.so /build/crypto/libcrypto.so \
+  /lib/
 COPY --from=boringssl-base1 /build/tool/bssl \
   /build/ssl/test/bssl_shim /bin/
 

@@ -38,6 +38,7 @@ public class PropertyManager {
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.S2N, "0.10.5", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.TLSLITE_NG, "0.8.0-alpha38", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.WOLFSSL, "4.4.0-stable", Const.CA_CERT, false));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.CURL, "7.72.0--openssl-client:1.1.1g", Const.CA_CERT, false));
 
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BEARSSL, "0.6", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM, null));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BORINGSSL, "master", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM, Const.CERT_COMBINED_PEM));
