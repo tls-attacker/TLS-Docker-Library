@@ -9,7 +9,7 @@
         <type>HOST_PORT</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>-cacert [cert]</cmdParameter>
+        <cmdParameter>--cacert [cert]</cmdParameter>
         <type>CA_CERTIFICATE</type>
     </Parameter>
     <Parameter>
