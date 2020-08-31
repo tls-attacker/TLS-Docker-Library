@@ -1,5 +1,9 @@
 package de.rub.nds.tls.subject.docker;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
@@ -13,7 +17,7 @@ public class DockerClientManager {
 
     public static DockerClient getDockerClient() {
         if (DOCKER == null) {
-            DOCKER = getNewDockerClient();
+            DOCKER = (DockerClient) Proxy.newProxyInstance(DockerClient.class.getClassLoader(), new Class[] { DockerClient.class }, new ThreadLocalDockerClient());
         }
         return DOCKER;
     }
@@ -29,5 +33,22 @@ public class DockerClientManager {
 
     private DockerClientManager() {
         throw new IllegalStateException("Utility class");
+    }
+
+    private static class ThreadLocalDockerClient implements InvocationHandler {
+        @SuppressWarnings("squid:S5164") // sonarlint: "ThreadLocal" variables should be cleaned up when no longer used
+        // This might be a bit of a memory leak, but we have no idea when a thread does
+        // not need the docker client anymore, thus we cannot call remove :S
+        private static ThreadLocal<DockerClient> LDOCKER = new ThreadLocal<>();
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            if (LDOCKER.get() == null) {
+                LDOCKER.set(getNewDockerClient());
+            }
+            DockerClient docker = LDOCKER.get();
+            return method.invoke(docker, args);
+        }
+
     }
 }
