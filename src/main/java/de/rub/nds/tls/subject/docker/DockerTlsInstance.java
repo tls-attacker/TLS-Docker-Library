@@ -1,386 +1,248 @@
 package de.rub.nds.tls.subject.docker;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.spotify.docker.client.DefaultDockerClient;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.DockerClient.LogsParam;
+import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ContainerInfo;
+import com.spotify.docker.client.messages.ContainerCreation;
+import com.spotify.docker.client.messages.ContainerState;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.Image;
-import com.spotify.docker.client.messages.NetworkSettings;
-import com.spotify.docker.client.messages.PortBinding;
 import com.spotify.docker.client.messages.Volume;
-import de.rub.nds.tls.subject.ConnectionRole;
-import de.rub.nds.tls.subject.HostInfo;
-import de.rub.nds.tls.subject.TlsInstance;
-import de.rub.nds.tls.subject.constants.TlsImageLabels;
-import de.rub.nds.tls.subject.constants.TransportType;
-import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
-import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
-import de.rub.nds.tls.subject.params.Parameter;
-import de.rub.nds.tls.subject.params.ParameterProfile;
-import de.rub.nds.tls.subject.params.ParameterType;
-import de.rub.nds.tls.subject.properties.ImageProperties;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
+import de.rub.nds.tls.subject.ConnectionRole;
+import de.rub.nds.tls.subject.constants.TlsImageLabels;
+import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
+import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
+import de.rub.nds.tls.subject.instance.TlsInstance;
+import de.rub.nds.tls.subject.params.ParameterProfile;
+import de.rub.nds.tls.subject.properties.ImageProperties;
 
-/**
- * The representation of a TLS-Instance used for a Test
- */
-public class DockerTlsInstance implements TlsInstance {
-    private static final DockerClient DOCKER = DockerClientManager.getDockerClient();
+public abstract class DockerTlsInstance implements TlsInstance {
+    protected static final DockerClient DOCKER = DockerClientManager.getDockerClient();
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final DockerSpotifyTlsInstanceManager tlsInstanceManager;
-
-    private final ConnectionRole role;
-    private String host;
-    private Integer port;
-    private final HostInfo hostInfo;
-
-    private Image image;
-    private String additionalParameters;
-    private ImageProperties imageProperties;
-
-    private ParameterProfile parameterProfile;
     private String containerId;
-    private String name;
+    protected final Image image;
     private ContainerConfig containerConfig;
-    private long exitCode;
+    private Optional<Long> exitCode = Optional.empty();
+    private boolean autoRemove;
+    private int logReadOffset = 0;
+    protected final ParameterProfile parameterProfile;
+    protected final ImageProperties imageProperties;
+    protected List<DockerExecInstance> childExecs = new LinkedList<>();
 
-    private boolean insecureConnection = false;
-    private boolean parallelize = false;
-
-    public DockerTlsInstance(ConnectionRole role, ImageProperties properties, ParameterProfile profile, String version, HostInfo hostInfo, String additionalParameters, DockerSpotifyTlsInstanceManager instance) {
-        this.role = role;
-        this.hostInfo = hostInfo;
-        this.imageProperties = properties;
+    public DockerTlsInstance(ParameterProfile profile, ImageProperties imageProperties, String version, ConnectionRole role, boolean autoRemove) throws DockerException, InterruptedException {
+        if (profile == null) {
+            throw new NullPointerException("profile may not be null");
+        }
+        if (imageProperties == null) {
+            throw new NullPointerException("imageProperties may not be null");
+        }
+        this.autoRemove = autoRemove;
         this.parameterProfile = profile;
-        this.tlsInstanceManager = instance;
-        this.additionalParameters = additionalParameters;
-        this.port = hostInfo.getPort();
-
-        try {
-            setImage(DOCKER.listImages(
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.IMPLEMENTATION.getLabelName(), profile.getType().name().toLowerCase()),
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.VERSION.getLabelName(), version),
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.CONNECTION_ROLE.getLabelName(), role.toString().toLowerCase())
-            )
-                    .stream()
-                    .findFirst()
-                    .orElseThrow(TlsVersionNotFoundException::new));
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public HostInfo getHostInfo() {
-        return hostInfo;
-    }
-
-    public String getId() {
-        if (containerId == null) {
-            createContainer();
-        }
-        return containerId;
-    }
-
-    public ConnectionRole getConnectionRole() {
-        return role;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getLogs() {
-        return tlsInstanceManager.getLogsFromTlsInstance(this);
-    }
-
-    public long getExitCode() {
-        return exitCode;
-    }
-
-    public String getExitInfo() {
-        return "exitCode: " + exitCode;
-    }
-
-    public void setExitCode(long exitCode) {
-        this.exitCode = exitCode;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isInsecureConnection() {
-        return insecureConnection;
-    }
-
-    public void setInsecureConnection(boolean insecureConnection) {
-        this.insecureConnection = insecureConnection;
-    }
-
-
-    public String getAdditionalParameters() {
-        return additionalParameters;
-    }
-
-    public void setAdditionalParameters(String additionalParameters) {
-        this.additionalParameters = additionalParameters;
-    }
-
-    public ImageProperties getImageProperties() {
-        return imageProperties;
-    }
-
-    public void setImageProperties(ImageProperties imageProperties) {
         this.imageProperties = imageProperties;
+        this.image = DOCKER.listImages(
+                DockerClient.ListImagesParam.withLabel(TlsImageLabels.IMPLEMENTATION.getLabelName(), profile.getType().name().toLowerCase()),
+                DockerClient.ListImagesParam.withLabel(TlsImageLabels.VERSION.getLabelName(), version),
+                DockerClient.ListImagesParam.withLabel(TlsImageLabels.CONNECTION_ROLE.getLabelName(),
+                        role.toString().toLowerCase()))
+                .stream().findFirst()
+                .orElseThrow(TlsVersionNotFoundException::new);
     }
 
-    public ParameterProfile getParameterProfile() {
-        return parameterProfile;
+    protected HostConfig.Builder createHostConfig(HostConfig.Builder builder) throws DockerException, InterruptedException {
+        Volume volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
+                .findFirst()
+                .orElseThrow(CertVolumeNotFoundException::new);
+
+        return builder
+                .appendBinds(HostConfig.Bind.from(volume)
+                        .to("/cert/")
+                        .readOnly(true)
+                        .noCopy(true)
+                        .build());
     }
 
-    public void setParameterProfile(ParameterProfile parameterProfile) {
-        this.parameterProfile = parameterProfile;
-    }
-
-    public void kill() {
-        tlsInstanceManager.killTlsInstance(this);
-    }
-
-    public void restart() {
-        tlsInstanceManager.restartInstance(this);
-    }
-
-
-
-    @Override
-    public String toString() {
-        return String.format("%s: %s:%d (%s)", getConnectionRole().name(), host, port, getName());
-    }
-
-    public String createContainer() {
-        if (insecureConnection && !parameterProfile.supportsInsecure() && role == ConnectionRole.CLIENT) {
-            LOGGER.warn(this.getName() + " does not support insecure connection");
-        }
-
-        if (this.containerId != null)
-            return this.containerId;
-        if (this.image == null)
-            throw new RuntimeException("Container could not be created, image is missing");
-
-        try {
-            if (containerConfig == null)
-                containerConfig = generateContainerConfig();
-
-            this.containerId = DOCKER.createContainer(containerConfig, this.name).id();
-            return this.containerId;
-        } catch (Exception e) {
-            throw new RuntimeException("Container could not be created", e);
-        }
-    }
-
-    public void start() {
-        String id = createContainer();
-        tlsInstanceManager.startInstance(this);
-        if (containerConfig.hostConfig() != null
-                && containerConfig.hostConfig().portBindings() != null
-                && containerConfig.hostConfig().portBindings().size() > 0) {
-            updateInstancePort();
-        }
-    }
-
-    public void stop() {
-        tlsInstanceManager.stopInstance(this);
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        ImmutableList<String> tags = image.repoTags();
-        if (tags != null && tags.size() > 0) {
-            this.name = tags.get(0).replace(":", "");
-        } else {
-            this.name = String.format("%s_%s", imageProperties.getType().name(), imageProperties.getRole().name());
-        }
-        this.image = image;
-    }
-
-    public ContainerConfig getContainerConfig() {
-        if (containerConfig == null)
-            containerConfig = generateContainerConfig();
-        return containerConfig;
-    }
-
-    public void setContainerConfig(ContainerConfig containerConfig) {
-        this.containerConfig = containerConfig;
-    }
-
-    private ContainerConfig generateContainerConfig() {
-        String protocol = hostInfo.getType() == TransportType.TCP ? "/tcp" : "/udp";
-
-        Integer targetPort = imageProperties.getInternalPort();
-        if (role == ConnectionRole.CLIENT) {
-            targetPort = hostInfo.getPort();
-        }
-
-        if (hostInfo.getHostname() == null || imageProperties.isUseIP()) {
-            host = hostInfo.getIp();
-        } else {
-            host = hostInfo.getHostname();
-        }
-
-        return ContainerConfig.builder()
+    protected ContainerConfig.Builder createContainerConfig(ContainerConfig.Builder builder) throws DockerException, InterruptedException {
+        return builder
                 .image(image.id())
-                .hostConfig(getInstanceHostConfig())
-                .exposedPorts(imageProperties.getInternalPort() + protocol)
                 .attachStderr(true)
                 .attachStdout(true)
                 .attachStdin(true)
                 .tty(true)
                 .stdinOnce(true)
                 .openStdin(true)
-                .cmd(convertProfileToParams(targetPort))
-                //.env("DISPLAY=$DISPLAY"));
-                .build();
+                .hostConfig(createHostConfig(HostConfig.builder()).build());
+        // missing: hostConfig, exposedPorts, cmd
     }
 
-    private HostConfig getInstanceHostConfig() {
-        try {
-            Volume volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
-                    .findFirst()
-                    .orElseThrow(CertVolumeNotFoundException::new);
+    public void ensureContainerConfigExists() throws CertVolumeNotFoundException, DockerException, InterruptedException {
+        if (containerConfig == null) {
+            containerConfig = createContainerConfig(ContainerConfig.builder()).build();
+        }
+    }
 
-            switch (role) {
-                case CLIENT:
-                    String extraHost = "test:127.0.0.27";
-                    if (hostInfo.getHostname() != null) {
-                        extraHost = hostInfo.getHostname() + ":" + hostInfo.getIp();
-                    }
-
-                    return HostConfig.builder()
-                            .extraHosts(extraHost)
-                            .appendBinds(HostConfig.Bind.from(volume)
-                                    .to("/cert/")
-                                    .readOnly(true)
-                                    .noCopy(true)
-                                    .build())
-                            //ToDo: Bind of X11 Settings does not work as expected
-                            .appendBinds(HostConfig.Bind.from("/tmp/.X11-unix")
-                                    .to("/tmp/.X11-unix")
-                                    .build())
-                            .build();
-                case SERVER:
-                    String protocol = hostInfo.getType() == TransportType.TCP ? "/tcp" : "/udp";
-                    return HostConfig.builder()
-                            .portBindings(ImmutableMap.of(imageProperties.getInternalPort() + protocol, Arrays.asList(PortBinding.of("127.0.0.42", "" + hostInfo.getPort()))))
-                            .binds(HostConfig.Bind.builder()
-                                    .from(volume)
-                                    .readOnly(true)
-                                    .noCopy(true)
-                                    .to("/cert/")
-                                    .build())
-                            .readonlyRootfs(true)
-                            .build();
-                default:
-                    throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+    protected String createContainer() throws DockerException, InterruptedException {
+        if (this.image == null) {
+            throw new IllegalStateException("Container could not be created, image is missing");
+        }
+        ensureContainerConfigExists();
+        ContainerCreation container = DOCKER.createContainer(containerConfig);
+        List<String> warnings = container.warnings();
+        if (warnings != null && !warnings.isEmpty() && LOGGER.isWarnEnabled()) {
+            LOGGER.warn("During container creation the following warnings were raised:");
+            for (String warning : warnings) {
+                LOGGER.warn(warning);
             }
-        } catch (Exception e) {
-            LOGGER.error("Could not get host config", e);
-            throw new RuntimeException("Cannot create HostConfig", e);
+        }
+        return container.id();
+    }
+
+    public void ensureContainerExists() throws DockerException, InterruptedException {
+        // TODO check if container already exists
+        if (containerId != null) {
+            // check if still exists
+            // TODO
+        }
+        if (containerId == null) {
+            // create new container
+            containerId = createContainer();
         }
     }
 
-    public void updateInstancePort() {
-        switch (role) {
-            case CLIENT:
-                port = hostInfo.getPort();
-                break;
-            case SERVER:
-                try {
-                    ContainerInfo containerInfo = DOCKER.inspectContainer(containerId);
-                    if (containerInfo == null) {
-                        throw new DockerException("Could not find container with ID:" + containerId);
-                    }
-                    NetworkSettings networkSettings = containerInfo.networkSettings();
-                    if (networkSettings == null) {
-                        throw new DockerException("Cannot retrieve InstacePort, Network not properly configured for container with ID:" + containerId);
-                    }
+    @Override
+    public void start() throws DockerException, InterruptedException {
+        ensureContainerExists();
+        DOCKER.startContainer(getId());
+        // TODO replicate updateInstancePort stuff
+    }
 
-                    port = new Integer(networkSettings.ports().values().asList().get(0).get(0).hostPort());
-                } catch (Exception e) {
-                    LOGGER.error("Could not retrieve instance port", e);
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+    @Override
+    public void remove() throws DockerException, InterruptedException {
+        DOCKER.removeContainer(getId());
+        closeChildren();
+        containerId = null;
+    }
+
+    private void autoRemove() throws DockerException, InterruptedException {
+        if (autoRemove) {
+            remove();
         }
     }
 
-    private String[] convertProfileToParams(Integer targetPort) {
-        StringBuilder finalParams = new StringBuilder();
-        for (Parameter param : parameterProfile.getParameterList()) {
-            if (insecureConnection && parameterProfile.supportsInsecure()) {
-                if (param.getType() == ParameterType.CA_CERTIFICATE) continue;
-            } else if (parameterProfile.supportsInsecure()){
-                if (param.getType() == ParameterType.INSECURE) continue;
+    private void storeExitCode() throws DockerException, InterruptedException {
+        this.exitCode = Optional.of(DOCKER.inspectContainer(getId()).state().exitCode());
+    }
+
+    private void closeChildren() {
+        for (DockerExecInstance exec : childExecs) {
+            try {
+                exec.close();
+            } catch (Exception e) {
+                LOGGER.warn("Error while closing exec instance", e);
             }
-            if (!parallelize && param.getType() == ParameterType.PARALLELIZE)
-                continue;
-            finalParams.append(param.getCmdParameter());
-            finalParams.append(" ");
         }
-        if (additionalParameters != null) {
-            finalParams.append(additionalParameters);
-        }
-        String afterReplace = finalParams.toString();
-
-        if (host != null) {
-            afterReplace = afterReplace.replace("[host]", host);
-        }
-        if (targetPort != null) {
-            afterReplace = afterReplace.replace("[port]", "" + targetPort);
-        }
-        if (imageProperties.getDefaultCertPath() != null) {
-            afterReplace = afterReplace.replace("[cert]", imageProperties.getDefaultCertPath());
-        }
-        if (imageProperties.getDefaultKeyPath() != null) {
-            afterReplace = afterReplace.replace("[key]", imageProperties.getDefaultKeyPath());
-        }
-        if (imageProperties.getDefaultCertKeyCombinedPath() != null) {
-            afterReplace = afterReplace.replace("[combined]", imageProperties.getDefaultCertKeyCombinedPath());
-        }
-        afterReplace = afterReplace.trim();
-        LOGGER.debug("Final parameters: " + (afterReplace));
-        return afterReplace.split(" ");
+        childExecs.clear();
     }
 
-    public boolean isParallelize() {
-        return parallelize;
+    @Override
+    public void stop(int secondsToWaitBeforeKilling) throws DockerException, InterruptedException {
+        DOCKER.stopContainer(getId(), secondsToWaitBeforeKilling);
+        closeChildren();
+        storeExitCode();
+        autoRemove();
     }
 
-    public void setParallelize(boolean parallelize) {
-        this.parallelize = parallelize;
+    @Override
+    public void stop() throws DockerException, InterruptedException {
+        stop(2);
+    }
+
+    @Override
+    public void kill() throws DockerException, InterruptedException {
+        DOCKER.killContainer(getId());
+        closeChildren();
+        storeExitCode();
+        autoRemove();
+    }
+
+    @Override
+    @SuppressWarnings("squid:S2142") // sonarlint: "InterruptedException" should not be ignored
+    // we rethrow the interrupted exception a bit later
+    public void close() {
+        boolean interrupted = false;
+        closeChildren();
+        if (autoRemove) {
+            try {
+                DOCKER.killContainer(getId());
+            } catch (DockerException e) {
+                LOGGER.warn("Failed to kill container on close()");
+            } catch (InterruptedException e) {
+                interrupted = true;
+            }
+            try {
+                remove();
+            } catch (DockerException e) {
+                // we did our best
+                LOGGER.warn("Failed to remove container on close()", e);
+            } catch (InterruptedException e) {
+                interrupted = true;
+            }
+        }
+        if (interrupted) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Override
+    public void restart() throws DockerException, InterruptedException {
+        DOCKER.restartContainer(getId());
+    }
+
+    @Override
+    public String getId() {
+        return containerId;
+    }
+
+    @Override
+    public String getLogs() throws DockerException, InterruptedException {
+        String logs;
+        LogStream logStream = DOCKER.logs(getId(), LogsParam.stderr(), LogsParam.stdout());
+        String[] lines = logStream.readFully().split("\r\n|\r|\n");
+        logs = Arrays.stream(lines)
+                .skip(logReadOffset)
+                .map(s -> s.concat("\n"))
+                .reduce(String::concat)
+                .orElse("-");
+        logReadOffset = lines.length;
+        return logs;
+    }
+
+    @Override
+    @SuppressWarnings("squid:S3655") // sonarlint: Optional value should only be accessed after calling isPresent()
+    // this is fixed as if there is no value we either throw an exception or store a
+    // new value
+    public long getExitCode() throws DockerException, InterruptedException {
+        if (!exitCode.isPresent()) {
+            // check if still running
+            ContainerState state = DOCKER.inspectContainer(getId()).state();
+            if (state.running()) {
+                throw new IllegalStateException("Container is still running");
+            } else {
+                storeExitCode();
+                autoRemove();
+            }
+        }
+        return exitCode.get();
     }
 }

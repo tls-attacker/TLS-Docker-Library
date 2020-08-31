@@ -13,14 +13,18 @@ public class DockerClientManager {
 
     public static DockerClient getDockerClient() {
         if (DOCKER == null) {
-            try {
-                DOCKER = DefaultDockerClient.fromEnv().build();
-            } catch (DockerCertificateException e) {
-                LOGGER.warn("Could not build docker client from env; Falling back to unix socket", e);
-                DOCKER = new DefaultDockerClient("unix:///var/run/docker.sock");
-            }
+            DOCKER = getNewDockerClient();
         }
         return DOCKER;
+    }
+
+    public static DockerClient getNewDockerClient() {
+        try {
+            return DefaultDockerClient.fromEnv().build();
+        } catch (DockerCertificateException e) {
+            LOGGER.warn("Could not build docker client from env; Falling back to unix socket", e);
+            return new DefaultDockerClient("unix:///var/run/docker.sock");
+        }
     }
 
     private DockerClientManager() {

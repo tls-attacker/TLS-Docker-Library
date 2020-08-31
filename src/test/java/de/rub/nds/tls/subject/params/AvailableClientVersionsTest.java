@@ -5,21 +5,30 @@
  */
 package de.rub.nds.tls.subject.params;
 
-import de.rub.nds.tls.subject.ConnectionRole;
-import de.rub.nds.tls.subject.TlsInstance;
-import de.rub.nds.tls.subject.TlsImplementationType;
-import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
-import de.rub.nds.tls.subject.report.ContainerReport;
-import de.rub.nds.tls.subject.report.InstanceContainer;
+import static com.google.common.base.Charsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBException;
+
+import com.spotify.docker.client.exceptions.DockerException;
+
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
+
+import de.rub.nds.tls.subject.ConnectionRole;
+import de.rub.nds.tls.subject.TlsImplementationType;
+import de.rub.nds.tls.subject.docker.DockerExecInstance;
+import de.rub.nds.tls.subject.docker.DockerTlsClientInstance;
+import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
+import de.rub.nds.tls.subject.instance.TlsClientInstance;
+import de.rub.nds.tls.subject.report.ContainerReport;
+import de.rub.nds.tls.subject.report.InstanceContainer;
 
 public class AvailableClientVersionsTest {
 
@@ -36,10 +45,9 @@ public class AvailableClientVersionsTest {
 
     @Test
     public void listAllClients() {
-        DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         System.out.println("Available Clients: ");
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.CLIENT, type);
+            List<String> availableVersions = DockerTlsManagerFactory.getAvailableVersions(ConnectionRole.CLIENT, type);
             System.out.println("Client version: " + type);
             for (String version : availableVersions) {
                 System.out.println(version);
@@ -50,16 +58,15 @@ public class AvailableClientVersionsTest {
     @Test
     public void testAllVersionsFunctional() throws JAXBException, IOException {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
-        DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         System.out.println("Functional Clients: ");
         TlsTestServer testServer = new TlsTestServer(PORT);
         testServer.start();
         ContainerReport report = new ContainerReport();
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.CLIENT, type);
+            List<String> availableVersions = DockerTlsManagerFactory.getAvailableVersions(ConnectionRole.CLIENT, type);
             for (String version : availableVersions) {
                 try {
-                    boolean isFunctional = isFunctional(testServer, factory, type, version);
+                    boolean isFunctional = isFunctional(testServer, type, version);
                     System.out.println(type.name() + ":" + version + " - " + isFunctional);
                     report.addInstanceContainer(new InstanceContainer(ConnectionRole.CLIENT, type, version, isFunctional));
                 } catch (Exception E) {
@@ -76,17 +83,18 @@ public class AvailableClientVersionsTest {
         }
     }
 
-    public boolean isFunctional(TlsTestServer testServer, DockerTlsManagerFactory factory, TlsImplementationType type, String version) {
-        TlsInstance client = null;
+    public boolean isFunctional(TlsTestServer testServer, TlsImplementationType type, String version) {
+        TlsClientInstance client = null;
         testServer.setIsConnectionSuccessful(false);
         try {
-            if (version == null || factory == null || type == null) {
+            if (version == null || type == null) {
                 System.out.println("Null: " + version);
                 return false;
             }
             try {
-                client = factory.getTlsClient(type, version, IP, HOSTNAME, PORT);
+                client = DockerTlsManagerFactory.getTlsClientBuilder(type, version).ip(IP).hostname(HOSTNAME).port(PORT).connectOnStartup(false).build();
                 client.start();
+                client.connect();
                 boolean waiting = true;
                 int timeout = 0;
                 while (waiting && timeout < CONNECTION_TIMEOUT) {
@@ -106,7 +114,7 @@ public class AvailableClientVersionsTest {
             return false;
         } finally {
             if (client != null) {
-                client.kill();
+                client.close();
             }
         }
     }
