@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <parameterProfile>
-    <name>wolfssl_default</name>
-    <description>Default Profile for Wolfssl</description>
+    <name>wolfssl_pre_4_x</name>
+    <description>Profile for Wolfssl pre 4.x</description>
     <type>WOLFSSL</type>
     <role>CLIENT</role>
     <Parameter>
-        <cmdParameter>-h [host] -p [port] -v 4</cmdParameter>
+        <cmdParameter>-h [host] -p [port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
     <Parameter>
@@ -16,4 +16,5 @@
         <cmdParameter>-d</cmdParameter>
         <type>INSECURE</type>
     </Parameter>
+    <Version>[2-3]\..*</Version>
 </parameterProfile>

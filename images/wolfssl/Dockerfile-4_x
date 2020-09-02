@@ -8,7 +8,7 @@ RUN sed -i 's/-days 1000/-days 100000/g' renewcerts.sh && \
  ./renewcerts.sh --override-ntru
 WORKDIR /src/wolfssl
 RUN ./autogen.sh
-RUN ./configure --prefix=/build/
+RUN ./configure --enable-tls13 --prefix=/build/
 # remove error flags: some wolfssl version do not compile because tab warnings are treated like errors
 RUN mv Makefile tmp && sed "s/-Werror//g" tmp > Makefile
 RUN mv Makefile tmp && sed "s/-Wall//g" tmp > Makefile
