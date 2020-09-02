@@ -1,11 +1,13 @@
 package de.rub.nds.tls.subject.docker;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.Image;
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.exception.DockerException;
+import com.github.dockerjava.api.model.Image;
 
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
@@ -31,7 +33,7 @@ public class DockerTlsManagerFactory {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    private static final DockerClient DOCKER = DockerClientManager.getDockerClient();
+    private static final com.github.dockerjava.api.DockerClient DOCKER = DockerClientManager.getDockerClient();
 
     private static final int DEFAULT_PORT = 4433;
 
@@ -177,32 +179,22 @@ public class DockerTlsManagerFactory {
 
     public static List<String> getAvailableVersions(ConnectionRole role, TlsImplementationType type) {
         List<String> versionList = new LinkedList<>();
-        try {
-            List<Image> serverImageList = DOCKER.listImages(
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.IMPLEMENTATION.getLabelName(), type.name().toLowerCase()),
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.CONNECTION_ROLE.getLabelName(), role.toString().toLowerCase()));
-            for (Image image : serverImageList) {
-                if (image.labels() != null) {
-                    String version = image.labels().get(TlsImageLabels.VERSION.getLabelName());
-                    if (version != null) {
-                        versionList.add(version);
-                    }
+        Map<String, String> labels = new HashMap<>();
+        labels.put(TlsImageLabels.IMPLEMENTATION.getLabelName(), type.name().toLowerCase());
+        labels.put(TlsImageLabels.CONNECTION_ROLE.getLabelName(), role.toString().toLowerCase());
+        List<Image> serverImageList = DOCKER.listImagesCmd().withLabelFilter(labels).withDanglingFilter(false).exec();
+        for (Image image : serverImageList) {
+            if (image.getLabels() != null) {
+                String version = image.getLabels().get(TlsImageLabels.VERSION.getLabelName());
+                if (version != null) {
+                    versionList.add(version);
                 }
             }
-            return versionList;
-        } catch (DockerException | InterruptedException ex) {
-            throw new RuntimeException("Could not retrieve available " + role.name() + " Versions!", ex);
         }
+        return versionList;
     }
 
     public static List<Image> getAllImages() {
-        try {
-            return DOCKER.listImages(
-                    DockerClient.ListImagesParam.withLabel(TlsImageLabels.IMPLEMENTATION.getLabelName()),
-                    DockerClient.ListImagesParam.danglingImages(false));
-        } catch (Exception e) {
-            throw new RuntimeException("Could not receive images", e);
-        }
-
+        return DOCKER.listImagesCmd().withLabelFilter(TlsImageLabels.IMPLEMENTATION.getLabelName()).withDanglingFilter(false).exec();
     }
 }

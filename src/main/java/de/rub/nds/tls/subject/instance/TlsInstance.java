@@ -1,27 +1,23 @@
 package de.rub.nds.tls.subject.instance;
 
-import com.spotify.docker.client.exceptions.DockerException;
-
-import de.rub.nds.tls.subject.ConnectionRole;
-
 public interface TlsInstance {
-    void start() throws DockerException, InterruptedException;
+    void start();
 
-    void stop() throws DockerException, InterruptedException;
+    void stop();
 
-    void stop(int secondsToWaitBeforeKilling) throws DockerException, InterruptedException;
+    void stop(int secondsToWaitBeforeKilling);
 
-    void kill() throws DockerException, InterruptedException;
+    void kill();
 
-    void restart() throws DockerException, InterruptedException;
+    void restart();
 
-    void remove() throws DockerException, InterruptedException;
+    void remove();
 
     String getId();
 
-    String getLogs() throws DockerException, InterruptedException;
+    String getLogs() throws InterruptedException;
 
-    long getExitCode() throws DockerException, InterruptedException;
+    long getExitCode();
 
     @Override
     String toString();

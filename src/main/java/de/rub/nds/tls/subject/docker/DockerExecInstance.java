@@ -1,33 +1,38 @@
 package de.rub.nds.tls.subject.docker;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.LogStream;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ExecCreation;
+import java.io.IOException;
+
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 
 import de.rub.nds.tls.subject.instance.ExecInstance;
 
 public class DockerExecInstance implements ExecInstance {
     private final DockerClient DOCKER;
-    protected final ExecCreation execCreation;
-    protected final LogStream logStream;
+    public final ExecCreateCmdResponse execCreation;
+    public final FrameHanlder frameHandler;
 
-    public DockerExecInstance(ExecCreation execCreation) throws DockerException, InterruptedException {
+    public DockerExecInstance(ExecCreateCmdResponse execCreation) {
         // if we are not using detach in execStart we must use our own docker client (as
         // we otherwise block other execStarts)
-        DOCKER = DockerClientManager.getNewDockerClient();
+        DOCKER = DockerClientManager.getDockerClient();
         this.execCreation = execCreation;
-        logStream = DOCKER.execStart(execCreation.id());
+        this.frameHandler = new FrameHanlder();
+        DOCKER.execStartCmd(execCreation.getId()).exec(frameHandler);
     }
 
     @Override
     public void close() {
-        // closing the logstream caused issues...
-        DOCKER.close();
+        try {
+            frameHandler.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public boolean isRunning() throws DockerException, InterruptedException {
-        return DOCKER.execInspect(execCreation.id()).running();
+    public boolean isRunning() {
+        return DOCKER.inspectExecCmd(execCreation.getId()).exec().isRunning();
     }
 }

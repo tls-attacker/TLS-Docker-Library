@@ -1,21 +1,18 @@
 package de.rub.nds.tls.subject.docker;
 
-import java.util.Arrays;
-
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ContainerInfo;
-import com.spotify.docker.client.messages.HostConfig;
-import com.spotify.docker.client.messages.NetworkSettings;
-import com.spotify.docker.client.messages.PortBinding;
+import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.NetworkSettings;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports.Binding;
 
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
-import de.rub.nds.tls.subject.constants.TransportType;
 import de.rub.nds.tls.subject.instance.TlsServerInstance;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
-import jersey.repackaged.com.google.common.collect.ImmutableMap;
 
 public class DockerTlsServerInstance extends DockerTlsInstance implements TlsServerInstance {
 
@@ -26,8 +23,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance implements TlsSer
     private final boolean insecureConnection;
 
     public DockerTlsServerInstance(ParameterProfile profile, ImageProperties imageProperties, String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
-            boolean insecureConnection)
-            throws DockerException, InterruptedException {
+            boolean insecureConnection) {
         super(profile, imageProperties, version, ConnectionRole.SERVER, autoRemove);
         this.port = hostInfo.getPort(); // fill with default port
         this.hostInfo = hostInfo;
@@ -37,32 +33,27 @@ public class DockerTlsServerInstance extends DockerTlsInstance implements TlsSer
     }
 
     @Override
-    protected HostConfig.Builder createHostConfig(HostConfig.Builder builder) throws DockerException, InterruptedException {
-        String protocol = hostInfo.getType() == TransportType.TCP ? "/tcp" : "/udp";
-        return super.createHostConfig(builder)
-                .portBindings(ImmutableMap.of(imageProperties.getInternalPort() + protocol,
-                        Arrays.asList(PortBinding.randomPort(""))))
-                .readonlyRootfs(true);
+    protected HostConfig prepareHostConfig(HostConfig cfg) {
+        return super.prepareHostConfig(cfg)
+                .withPortBindings(new PortBinding(Binding.empty(), new ExposedPort(imageProperties.getInternalPort(), hostInfo.getType().toInternetProtocol())))
+                .withReadonlyRootfs(true);
     }
 
     @Override
-    protected ContainerConfig.Builder createContainerConfig(ContainerConfig.Builder builder) throws DockerException, InterruptedException {
-        String protocol = hostInfo.getType() == TransportType.TCP ? "/tcp" : "/udp";
+    protected CreateContainerCmd prepareCreateContainerCmd(CreateContainerCmd cmd) {
         String host;
         if (hostInfo.getHostname() == null || imageProperties.isUseIP()) {
             host = hostInfo.getIp();
         } else {
             host = hostInfo.getHostname();
         }
-
-        // TODO we might be interested in exposing the server-entrypoint server
-        return super.createContainerConfig(builder)
-                .cmd(parameterProfile.toParameters(host, imageProperties.getInternalPort(), imageProperties, additionalParameters, parallelize, insecureConnection))
-                .exposedPorts(imageProperties.getInternalPort() + protocol);
+        return super.prepareCreateContainerCmd(cmd)
+                .withCmd(parameterProfile.toParameters(host, imageProperties.getInternalPort(), imageProperties, additionalParameters, parallelize, insecureConnection))
+                .withExposedPorts(new ExposedPort(imageProperties.getInternalPort(), hostInfo.getType().toInternetProtocol()));
     }
 
     @Override
-    public void start() throws DockerException, InterruptedException {
+    public void start() {
         super.start();
         updateInstancePort();
     }
@@ -70,17 +61,17 @@ public class DockerTlsServerInstance extends DockerTlsInstance implements TlsSer
     /**
      * Update port to match actually exposed port.
      */
-    protected void updateInstancePort() throws DockerException, InterruptedException {
-        ContainerInfo containerInfo = DOCKER.inspectContainer(getId());
+    protected void updateInstancePort() {
+        InspectContainerResponse containerInfo = DOCKER.inspectContainerCmd(getId()).exec();
         if (containerInfo == null) {
-            throw new DockerException("Could not find container with ID:" + getId());
+            throw new IllegalStateException("Could not find container with ID:" + getId());
         }
-        NetworkSettings networkSettings = containerInfo.networkSettings();
+        NetworkSettings networkSettings = containerInfo.getNetworkSettings();
         if (networkSettings == null) {
-            throw new DockerException("Cannot retrieve InstacePort, Network not properly configured for container with ID:" + getId());
+            throw new IllegalStateException("Cannot retrieve InstacePort, Network not properly configured for container with ID:" + getId());
         }
         // TODO: ignore other exposed ports
-        port = new Integer(networkSettings.ports().values().asList().get(0).get(0).hostPort());
+        port = new Integer(networkSettings.getPorts().getBindings().values().iterator().next()[0].getHostPortSpec());
     }
 
     @Override

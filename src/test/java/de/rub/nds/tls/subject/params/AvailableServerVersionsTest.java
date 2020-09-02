@@ -7,8 +7,6 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import com.spotify.docker.client.exceptions.DockerException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;

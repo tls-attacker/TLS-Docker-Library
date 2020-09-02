@@ -5,8 +5,6 @@
  */
 package de.rub.nds.tls.subject.params;
 
-import static com.google.common.base.Charsets.UTF_8;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -16,16 +14,14 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
-import com.spotify.docker.client.exceptions.DockerException;
-
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
 
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.docker.DockerExecInstance;
-import de.rub.nds.tls.subject.docker.DockerTlsClientInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
+import de.rub.nds.tls.subject.instance.ExecInstance;
 import de.rub.nds.tls.subject.instance.TlsClientInstance;
 import de.rub.nds.tls.subject.report.ContainerReport;
 import de.rub.nds.tls.subject.report.InstanceContainer;
@@ -85,30 +81,34 @@ public class AvailableClientVersionsTest {
 
     public boolean isFunctional(TlsTestServer testServer, TlsImplementationType type, String version) {
         TlsClientInstance client = null;
+        DockerExecInstance ei = null;
         testServer.setIsConnectionSuccessful(false);
         try {
             if (version == null || type == null) {
                 System.out.println("Null: " + version);
                 return false;
             }
-            try {
-                client = DockerTlsManagerFactory.getTlsClientBuilder(type, version).ip(IP).hostname(HOSTNAME).port(PORT).connectOnStartup(false).build();
-                client.start();
-                client.connect();
-                boolean waiting = true;
-                int timeout = 0;
-                while (waiting && timeout < CONNECTION_TIMEOUT) {
-                    if (testServer.isConnectionSuccessful()) {
-                        waiting = false;
-                    }
-                    TimeUnit.SECONDS.sleep(1);
-                    timeout++;
+            client = DockerTlsManagerFactory.getTlsClientBuilder(type, version).ip(IP).hostname(HOSTNAME).port(PORT).connectOnStartup(false).insecureConnection(false).build();
+            client.start();
+            ei = (DockerExecInstance) client.connect();
+            boolean waiting = true;
+            int timeout = 0;
+            while (waiting && timeout < CONNECTION_TIMEOUT) {
+                if (testServer.isConnectionSuccessful()) {
+                    waiting = false;
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                return false;
+                TimeUnit.SECONDS.sleep(1);
+                timeout++;
             }
-            return testServer.isConnectionSuccessful();
+
+            boolean res = testServer.isConnectionSuccessful();
+            if (!res) {
+                System.out.println("-Failed- Log:");
+                for (String ln : ei.frameHandler.getLines()) {
+                    System.out.println(ln);
+                }
+            }
+            return res;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;

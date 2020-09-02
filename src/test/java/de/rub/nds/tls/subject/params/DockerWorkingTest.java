@@ -1,9 +1,8 @@
 package de.rub.nds.tls.subject.params;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
+import com.github.dockerjava.api.DockerClient;
 
 import org.junit.Test;
 
@@ -11,8 +10,9 @@ import de.rub.nds.tls.subject.docker.DockerClientManager;
 
 public class DockerWorkingTest {
     @Test
-    public void isDockerOK() throws DockerException, InterruptedException {
+    public void isDockerOK() {
         DockerClient docker = DockerClientManager.getDockerClient();
-        assertEquals("OK", docker.ping());
+        docker.pingCmd().exec();
+        assertTrue(true); // assert that no exception occured
     }
 }

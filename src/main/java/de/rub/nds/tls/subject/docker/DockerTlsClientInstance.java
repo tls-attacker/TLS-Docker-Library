@@ -1,21 +1,17 @@
 package de.rub.nds.tls.subject.docker;
 
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
 
-import com.spotify.docker.client.DockerClient.ExecCreateParam;
-import com.spotify.docker.client.DockerClient.ExecStartParameter;
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.LogStream;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ExecCreation;
-import com.spotify.docker.client.messages.ExecState;
-import com.spotify.docker.client.messages.HostConfig;
+import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.command.ExecCreateCmdResponse;
+import com.github.dockerjava.api.model.Bind;
+import com.github.dockerjava.api.model.ContainerConfig;
+import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.Volume;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +35,7 @@ public class DockerTlsClientInstance extends DockerTlsInstance implements TlsCli
 
     // TODO move away from HostInfo for client...
     public DockerTlsClientInstance(ParameterProfile profile, ImageProperties imageProperties, String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
-            boolean insecureConnection, boolean connectOnStartup) throws DockerException, InterruptedException {
+            boolean insecureConnection, boolean connectOnStartup) {
         super(profile, imageProperties, version, ConnectionRole.CLIENT, autoRemove);
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;
@@ -49,42 +45,42 @@ public class DockerTlsClientInstance extends DockerTlsInstance implements TlsCli
     }
 
     @Override
-    protected HostConfig.Builder createHostConfig(HostConfig.Builder builder) throws DockerException, InterruptedException {
+    protected HostConfig prepareHostConfig(HostConfig cfg) {
         String extraHost = "test:127.0.0.27";
         if (hostInfo.getHostname() != null) {
             extraHost = hostInfo.getHostname() + ":" + hostInfo.getIp();
         }
-        return super.createHostConfig(builder)
-                .extraHosts(extraHost)
-                // TODO: Bind of X11 Settings does not work as expected
-                .appendBinds(HostConfig.Bind.from("/tmp/.X11-unix")
-                        .to("/tmp/.X11-unix")
-                        .build());
+        cfg = super.prepareHostConfig(cfg)
+                .withExtraHosts(extraHost);
+
+        List<Bind> binds = new ArrayList<>(Arrays.asList(cfg.getBinds()));
+        // TODO: Bind of X11 Settings does not work as expected
+        binds.add(new Bind("/tmp/.X11-unix", new Volume("/tmp/.X11-unix")));
+        cfg = cfg.withBinds(binds);
+
+        return cfg;
     }
 
     @Override
-    protected ContainerConfig.Builder createContainerConfig(ContainerConfig.Builder builder) throws DockerException, InterruptedException {
+    protected CreateContainerCmd prepareCreateContainerCmd(CreateContainerCmd cmd) {
+        cmd = super.prepareCreateContainerCmd(cmd);
+
         String host;
         if (hostInfo.getHostname() == null || imageProperties.isUseIP()) {
             host = hostInfo.getIp();
         } else {
             host = hostInfo.getHostname();
         }
-
-        // no exposed ports
-        // TODO we might be interested in exposing the client-entrypoint server
-
-        builder = super.createContainerConfig(builder);
         if (connectOnStartup) {
-            builder = builder.cmd(parameterProfile.toParameters(host, hostInfo.getPort(), imageProperties, additionalParameters, parallelize, insecureConnection));
+            cmd = cmd.withCmd(parameterProfile.toParameters(host, hostInfo.getPort(), imageProperties, additionalParameters, parallelize, insecureConnection));
         } else {
-            builder = builder.entrypoint("client-entrypoint");
+            cmd = cmd.withEntrypoint("client-entrypoint");
         }
-        return builder;
+        return cmd;
     }
 
     @Override
-    public DockerExecInstance connect() throws DockerException, InterruptedException {
+    public DockerExecInstance connect() {
         String host;
         if (hostInfo.getHostname() == null || imageProperties.isUseIP()) {
             host = hostInfo.getIp();
@@ -95,33 +91,34 @@ public class DockerTlsClientInstance extends DockerTlsInstance implements TlsCli
     }
 
     @Override
-    public DockerExecInstance connect(String host, int targetPort) throws DockerException, InterruptedException {
+    public DockerExecInstance connect(String host, int targetPort) {
         return connect(host, targetPort, additionalParameters, parallelize, insecureConnection);
     }
 
     @Override
-    public DockerExecInstance connect(String host, int targetPort, String additionalParameters, Boolean parallelize, Boolean insecureConnection) throws DockerException, InterruptedException {
-        List<String> cmd_lst = new LinkedList<>(DOCKER.inspectImage(image.id()).config().entrypoint());
+    public DockerExecInstance connect(String host, int targetPort, String additionalParameters, Boolean parallelize, Boolean insecureConnection) {
+        ContainerConfig imageCfg = DOCKER.inspectImageCmd(image.getId()).exec().getConfig();
+        if (imageCfg == null) {
+            throw new IllegalStateException("Could not get config for image " + image.getId());
+        }
+        String[] entrypoint = imageCfg.getEntrypoint();
+        if (entrypoint == null) {
+            throw new IllegalStateException("Could not get entrypoint for image " + image.getId());
+        }
+        List<String> cmd_lst = new LinkedList<String>(Arrays.asList(entrypoint));
         if (cmd_lst.get(0).equals("client-entrypoint")) {
             cmd_lst.remove(0);
         } else {
-            LOGGER.warn("Image {} did not have client-entrypoint as entrypoint", image.id());
+            LOGGER.warn("Image {} did not have client-entrypoint as entrypoint", image.getId());
         }
         String[] params = parameterProfile.toParameters(host, targetPort, imageProperties, additionalParameters, parallelize, insecureConnection);
         cmd_lst.addAll(Arrays.asList(params));
-        ExecCreation exec = DOCKER.execCreate(getId(), cmd_lst.toArray(EMPTY_STR_ARR),
-                ExecCreateParam.detach(true),
-                ExecCreateParam.attachStdin(false),
-                ExecCreateParam.attachStderr(true),
-                ExecCreateParam.attachStdout(true),
-                ExecCreateParam.tty(true));
-        List<String> warnings = exec.warnings();
-        if (warnings != null && !warnings.isEmpty() && LOGGER.isWarnEnabled()) {
-            LOGGER.warn("During exec creation the following warnings were raised:");
-            for (String warning : warnings) {
-                LOGGER.warn(warning);
-            }
-        }
+        ExecCreateCmdResponse exec = DOCKER.execCreateCmd(getId()).withCmd(cmd_lst.toArray(EMPTY_STR_ARR))
+                .withAttachStdin(false)
+                .withAttachStdout(true)
+                .withAttachStderr(true)
+                .withTty(true)
+                .exec();
         DockerExecInstance ret = new DockerExecInstance(exec);
         childExecs.add(ret);
         return ret;
