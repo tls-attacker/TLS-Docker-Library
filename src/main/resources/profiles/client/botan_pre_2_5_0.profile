@@ -9,5 +9,6 @@
         <type>HOST_PORT</type>
     </Parameter>
     <Version>1.11.2[6-9]</Version>
+    <Version>1.11.3[0-4]</Version>
     <Version>^2.[0-4].*</Version>
 </parameterProfile>
