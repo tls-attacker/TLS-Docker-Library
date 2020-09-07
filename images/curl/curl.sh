@@ -15,12 +15,13 @@ curl_versions=$(cat curl_versions.txt)
 
 for CURL_VERSION in $curl_versions
 do
-    for versions_file in lib_*_versions.txt
+    for versions_file in libversions/*.txt
     do
+        # extract lib name (for tagging) from filename
+        LIB_NAME=${versions_file#"libversions/"}
+        LIB_NAME=${LIB_NAME%".txt"}
         # for library files the first line is the base image name
         # the following lines are version names
-        LIB_NAME=${versions_file#"lib_"}
-        LIB_NAME=${LIB_NAME%"_versions.txt"}
         SSL_BASE=$(head -n1 "$versions_file")
         lib_versions=$(tail -n+2 "$versions_file")
         for SSL_VERSION in $lib_versions
