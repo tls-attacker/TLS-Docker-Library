@@ -33,9 +33,9 @@ E
     echo "cd '$(pwd)'" >> "$FOLDER/cmds.sh"
     # see https://stackoverflow.com/a/8723305
     C=''
-    for i in "$@"; do
-        i="${i//\\/\\\\}"
-        C="$C \"${i//\"/\\\"}\""
+    for arg in "$@"; do
+        arg="${arg//\\/\\\\}"
+        C="$C \"${arg//\"/\\\"}\""
     done
     echo docker "$C" >> "$FOLDER/cmds.sh"
   fi
