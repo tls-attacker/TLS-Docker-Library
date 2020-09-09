@@ -43,6 +43,9 @@ public class FrameHanlder extends ResultCallbackTemplate<FrameHanlder, Frame> {
                 }
             }
         }
+        if (current_line.length() > 0) {
+            ret.add(current_line.toString());
+        }
         return ret.toArray(EMPTY_STR_ARR);
     }
 
