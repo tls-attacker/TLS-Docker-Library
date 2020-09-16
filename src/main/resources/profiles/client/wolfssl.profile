@@ -5,7 +5,7 @@
     <type>WOLFSSL</type>
     <role>CLIENT</role>
     <Parameter>
-        <cmdParameter>-h [host] -p [port] -v 4</cmdParameter>
+        <cmdParameter>-h [host] -p [port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
     <Parameter>
