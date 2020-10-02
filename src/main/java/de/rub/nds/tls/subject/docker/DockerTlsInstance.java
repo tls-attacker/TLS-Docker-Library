@@ -23,6 +23,7 @@ import de.rub.nds.tls.subject.params.Parameter;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.params.ParameterType;
 import de.rub.nds.tls.subject.properties.ImageProperties;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -224,6 +225,7 @@ public class DockerTlsInstance implements TlsInstance {
         } else {
             this.name = String.format("%s_%s", imageProperties.getType().name(), imageProperties.getRole().name());
         }
+        this.name += "-" + RandomStringUtils.randomAlphanumeric(5);
         this.image = image;
     }
 
