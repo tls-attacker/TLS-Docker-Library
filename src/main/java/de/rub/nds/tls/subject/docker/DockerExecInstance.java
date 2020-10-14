@@ -35,4 +35,8 @@ public class DockerExecInstance implements ExecInstance {
     public boolean isRunning() {
         return DOCKER.inspectExecCmd(execCreation.getId()).exec().isRunning();
     }
+
+    public long getExitCode() {
+        return DOCKER.inspectExecCmd(execCreation.getId()).exec().getExitCodeLong();
+    }
 }

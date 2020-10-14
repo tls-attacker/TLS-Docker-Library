@@ -1,5 +1,7 @@
 package de.rub.nds.tls.subject.docker;
 
+import java.util.function.UnaryOperator;
+
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
@@ -23,8 +25,9 @@ public class DockerTlsServerInstance extends DockerTlsInstance implements TlsSer
     private final boolean insecureConnection;
 
     public DockerTlsServerInstance(ParameterProfile profile, ImageProperties imageProperties, String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
-            boolean insecureConnection) {
-        super(profile, imageProperties, version, ConnectionRole.SERVER, autoRemove);
+            boolean insecureConnection,
+            UnaryOperator<HostConfig> hostConfigHook) {
+        super(profile, imageProperties, version, ConnectionRole.SERVER, autoRemove, hostConfigHook);
         this.port = hostInfo.getPort(); // fill with default port
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;

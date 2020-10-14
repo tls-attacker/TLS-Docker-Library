@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
@@ -43,8 +44,11 @@ public abstract class DockerTlsInstance implements TlsInstance {
     protected final ParameterProfile parameterProfile;
     protected final ImageProperties imageProperties;
     protected List<DockerExecInstance> childExecs = new LinkedList<>();
+    private final UnaryOperator<HostConfig> hostConfigHook;
 
-    public DockerTlsInstance(ParameterProfile profile, ImageProperties imageProperties, String version, ConnectionRole role, boolean autoRemove) {
+    public DockerTlsInstance(ParameterProfile profile, ImageProperties imageProperties,
+            String version, ConnectionRole role, boolean autoRemove,
+            UnaryOperator<HostConfig> hostConfigHook) {
         if (profile == null) {
             throw new NullPointerException("profile may not be null");
         }
@@ -54,6 +58,7 @@ public abstract class DockerTlsInstance implements TlsInstance {
         this.autoRemove = autoRemove;
         this.parameterProfile = profile;
         this.imageProperties = imageProperties;
+        this.hostConfigHook = hostConfigHook;
         Map<String, String> labels = new HashMap<>();
         labels.put(TlsImageLabels.IMPLEMENTATION.getLabelName(), profile.getType().name().toLowerCase());
         labels.put(TlsImageLabels.VERSION.getLabelName(), version);
@@ -75,10 +80,15 @@ public abstract class DockerTlsInstance implements TlsInstance {
                 .findFirst()
                 .orElseThrow(CertVolumeNotFoundException::new);
 
+        // hook is handled in prepareCreateContainerCmd; this ensures it is called last
         return cfg.withBinds(new Bind(vol.getName(), new Volume("/cert/"), AccessMode.ro, SELContext.DEFAULT, true));
     }
 
     protected CreateContainerCmd prepareCreateContainerCmd(CreateContainerCmd cmd) {
+        HostConfig hcfg = prepareHostConfig(HostConfig.newHostConfig());
+        if (hostConfigHook != null) {
+            hcfg = hostConfigHook.apply(hcfg);
+        }
         return cmd
                 .withAttachStderr(true)
                 .withAttachStdout(true)
@@ -86,7 +96,7 @@ public abstract class DockerTlsInstance implements TlsInstance {
                 .withTty(true)
                 .withStdInOnce(true)
                 .withStdinOpen(true)
-                .withHostConfig(prepareHostConfig(HostConfig.newHostConfig()));
+                .withHostConfig(hcfg);
         // missing: hostConfig, exposedPorts, cmd
     }
 

@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
-import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.exception.DockerException;
+import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Image;
 
 import de.rub.nds.tls.subject.ConnectionRole;
@@ -49,6 +51,7 @@ public class DockerTlsManagerFactory {
         protected String ip = null;
         protected String hostname = null;
         protected int port = DEFAULT_PORT;
+        protected UnaryOperator<HostConfig> hostConfigHook;
         // remaining shared params
         protected String additionalParameters = null;
         protected boolean parallelize = false;
@@ -96,6 +99,11 @@ public class DockerTlsManagerFactory {
             return (T) this;
         }
 
+        public T hostConfigHook(UnaryOperator<HostConfig> value) {
+            hostConfigHook = value;
+            return (T) this;
+        }
+
         public abstract TlsInstance build() throws DockerException, InterruptedException;
     }
 
@@ -110,7 +118,7 @@ public class DockerTlsManagerFactory {
         @Override
         public TlsClientInstance build() throws DockerException, InterruptedException {
             return new DockerTlsClientInstance(profile, imageProperties, version, autoRemove, new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection,
-                    connectOnStartup);
+                    connectOnStartup, hostConfigHook);
         }
 
         public TlsClientInstanceBuilder connectOnStartup(boolean value) {
@@ -128,7 +136,8 @@ public class DockerTlsManagerFactory {
 
         @Override
         public TlsServerInstance build() throws DockerException, InterruptedException {
-            return new DockerTlsServerInstance(profile, imageProperties, version, autoRemove, new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection);
+            return new DockerTlsServerInstance(profile, imageProperties, version, autoRemove, new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection,
+                    hostConfigHook);
         }
 
     }

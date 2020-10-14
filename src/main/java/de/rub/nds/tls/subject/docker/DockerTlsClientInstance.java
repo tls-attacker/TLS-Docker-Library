@@ -2,9 +2,9 @@ package de.rub.nds.tls.subject.docker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
@@ -35,8 +35,9 @@ public class DockerTlsClientInstance extends DockerTlsInstance implements TlsCli
 
     // TODO move away from HostInfo for client...
     public DockerTlsClientInstance(ParameterProfile profile, ImageProperties imageProperties, String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
-            boolean insecureConnection, boolean connectOnStartup) {
-        super(profile, imageProperties, version, ConnectionRole.CLIENT, autoRemove);
+            boolean insecureConnection, boolean connectOnStartup,
+            UnaryOperator<HostConfig> hostConfigHook) {
+        super(profile, imageProperties, version, ConnectionRole.CLIENT, autoRemove, hostConfigHook);
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;
         this.parallelize = parallelize;
