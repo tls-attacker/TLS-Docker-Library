@@ -16,6 +16,7 @@ RUN ls -la /build/*
 
 FROM entrypoint as curl
 ARG VERSION
+ARG VERSION_LABEL
 ARG SSL_BASE
 COPY --from=curl-base /build/ /artifacts/curl/
 COPY --from=curl-base /build/bin/curl /bin/
@@ -29,6 +30,6 @@ COPY --from=curl-base /lib/ld-musl-x86_64.so.* \
     /build/lib/*.so.* /lib/
 COPY --from=curl-base /bin/sh /bin/
 LABEL "tls_implementation"="curl"
-LABEL "tls_implementation_version"="${VERSION}--${SSL_BASE}"
+LABEL "tls_implementation_version"="${VERSION_LABEL}"
 LABEL "tls_implementation_connectionRole"="client"
 ENTRYPOINT [ "client-entrypoint", "curl" ]

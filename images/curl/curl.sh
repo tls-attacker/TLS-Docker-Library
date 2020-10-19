@@ -29,6 +29,7 @@ do
             _docker build \
                 --build-arg SSL_BASE="${DOCKER_REPOSITORY}$SSL_BASE:$SSL_VERSION" \
                 --build-arg VERSION="$CURL_VERSION" \
+                --build-arg VERSION_LABEL="${CURL_VERSION}_${LIB_NAME}_${SSL_VERSION}" \
                 -t "${DOCKER_REPOSITORY}curl:${CURL_VERSION}_${LIB_NAME}_${SSL_VERSION}" \
                 -f Dockerfile \
                 --target curl \
