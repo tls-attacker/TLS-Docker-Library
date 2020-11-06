@@ -139,7 +139,10 @@ public abstract class DockerTlsInstance implements TlsInstance {
 
     @Override
     public void remove() {
-        DOCKER.removeContainerCmd(getId()).exec();
+        String id = getId();
+        if (id != null) {
+            DOCKER.removeContainerCmd(id).exec();
+        }
         closeChildren();
         containerId = null;
     }
@@ -193,7 +196,10 @@ public abstract class DockerTlsInstance implements TlsInstance {
         closeChildren();
         if (autoRemove) {
             try {
-                DOCKER.killContainerCmd(getId()).exec();
+                String id = getId();
+                if (id != null) {
+                    DOCKER.killContainerCmd(id).exec();
+                }
             } catch (DockerException e) {
                 LOGGER.warn("Failed to kill container on close()");
             }
