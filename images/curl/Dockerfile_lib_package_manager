@@ -1,0 +1,32 @@
+ARG BASE_IMG
+FROM ${BASE_IMG} as base-img
+
+# get ssl lib
+ARG PREINSTALLCMD="true"
+ARG INSTALLCMD
+RUN ${PREINSTALLCMD}
+RUN ${INSTALLCMD}
+
+# build curl
+FROM base-img as curl-base
+# make sure our build tools don't interfere with the final env
+ARG INSTALLCMD_BUILDTOOLS
+RUN ${INSTALLCMD_BUILDTOOLS}
+ARG VERSION
+ARG CURL_FLAG
+WORKDIR /src
+RUN wget -O curl.tar.gz https://curl.haxx.se/download/curl-${VERSION}.tar.gz || wget -O curl.tar.gz https://curl.haxx.se/download/archeology/curl-${VERSION}.tar.gz
+RUN mkdir curl && tar -xzf curl.tar.gz -C curl --strip-components 1
+WORKDIR /src/curl
+RUN ./configure --prefix=/build/ ${CURL_FLAG} --disable-shared
+RUN make && make install
+
+FROM base-img as curl
+ARG VERSION_LABEL
+COPY --from=curl-base /build/ /artifacts/curl/
+COPY --from=curl-base /build/bin/curl /bin/
+COPY --from=entrypoint /bin/client-entrypoint /bin/
+LABEL "tls_implementation"="curl"
+LABEL "tls_implementation_version"="${VERSION_LABEL}"
+LABEL "tls_implementation_connectionRole"="client"
+ENTRYPOINT [ "client-entrypoint", "curl" ]

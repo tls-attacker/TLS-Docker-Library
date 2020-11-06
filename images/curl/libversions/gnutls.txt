@@ -1,0 +1,3 @@
+gnutls-client
+--without-ssl --with-gnutls
+3.6.14

@@ -1,3 +1,4 @@
 boringssl-client
+--with-ssl
 master
 chromium-stable

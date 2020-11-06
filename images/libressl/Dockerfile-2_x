@@ -7,10 +7,16 @@ WORKDIR libressl
 RUN ./configure &&\
   make &&\
   DESTDIR=/build/ make install
+# copy all libs we need
+RUN mkdir /libdeps
+RUN cp $(LD_LIBRARY_PATH="/build/usr/local/lib/" ldd /build/usr/local/bin/openssl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
+# .la cause problems when compiling other libs with this
+RUN rm /build/usr/local/lib/*.la
 
 FROM entrypoint as libressl-base
-COPY --from=libressl /lib/ld-musl-x86_64.so.* \
-  /build/usr/local/lib/*.so* /lib/
+COPY --from=libressl /build/usr/local/ /artifacts/ssllib/
+COPY --from=libressl /libdeps/* /artifacts/ssllib/libdeps/
+COPY --from=libressl /libdeps/* /lib/
 COPY --from=libressl /build/usr/local/bin/openssl /bin/
 
 FROM libressl-base as libressl-server

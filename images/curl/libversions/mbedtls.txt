@@ -1,0 +1,3 @@
+mbedtls-client
+--without-ssl --with-mbedtls
+2.24.0

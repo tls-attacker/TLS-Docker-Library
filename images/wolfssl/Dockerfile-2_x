@@ -14,10 +14,16 @@ WORKDIR /src/wolfssl/examples/server
 #we need this to copy is later to the execution container
 RUN /src/wolfssl/examples/server/server -h
 RUN /src/wolfssl/examples/client/client -h
+# copy all libs we need
+RUN mkdir /libdeps
+RUN cp $(LD_LIBRARY_PATH="/src/wolfssl/src/.libs/" ldd /src/wolfssl/examples/server/.libs/lt-server | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
+RUN cp $(LD_LIBRARY_PATH="/src/wolfssl/src/.libs/" ldd /src/wolfssl/examples/client/.libs/lt-client | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
 
 FROM entrypoint as wolfssl-base2
-COPY --from=wolfssl-base1 /lib/ld-musl-x86_64.so.1 /lib/
-COPY --from=wolfssl-base1 /src/wolfssl/src/.libs/libcyassl.so.* /src/wolfssl/src/.libs/
+COPY --from=wolfssl-base1 /build/include/ /artifacts/ssllib/include/
+COPY --from=wolfssl-base1 /build/lib/ /artifacts/ssllib/lib/
+COPY --from=wolfssl-base1 /libdeps/* /artifacts/ssllib/libdeps/
+COPY --from=wolfssl-base1 /libdeps/* /lib/
 COPY --from=wolfssl-base1 /src/wolfssl/certs /certs/
 
 FROM wolfssl-base2 as wolfssl-server
