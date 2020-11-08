@@ -24,13 +24,15 @@ do
         # the following lines are version names
         SSL_BASE=$(head -n1 "$versions_file")
         CURL_FLAG=$(head -n2 "$versions_file" | tail -n1)
-        lib_versions=$(tail -n+3 "$versions_file")
+        ADDITIONAL_SCRIPT=$(head -n3 "$versions_file" | tail -n1)
+        lib_versions=$(tail -n+4 "$versions_file")
         for SSL_VERSION in $lib_versions
         do
             _docker build \
                 --build-arg SSL_BASE="${DOCKER_REPOSITORY}$SSL_BASE:$SSL_VERSION" \
                 --build-arg VERSION="$CURL_VERSION" \
                 --build-arg CURL_FLAG="$CURL_FLAG" \
+                --build-arg ADDITIONAL_SCRIPT="$ADDITIONAL_SCRIPT" \
                 --build-arg VERSION_LABEL="${CURL_VERSION}_${LIB_NAME}_${SSL_VERSION}" \
                 -t "${DOCKER_REPOSITORY}curl:${CURL_VERSION}_${LIB_NAME}_${SSL_VERSION}" \
                 -f Dockerfile \

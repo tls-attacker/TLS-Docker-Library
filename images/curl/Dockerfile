@@ -4,6 +4,7 @@ FROM ${SSL_BASE} as ssl-base
 
 FROM alpine-build:3.12 as curl-base
 ARG VERSION
+ARG ADDITIONAL_SCRIPT="_none.sh"
 ARG CURL_FLAG="--with-ssl"
 RUN wget -O curl.tar.gz https://curl.haxx.se/download/curl-${VERSION}.tar.gz || wget -O curl.tar.gz https://curl.haxx.se/download/archeology/curl-${VERSION}.tar.gz
 RUN mkdir curl && tar -xzf curl.tar.gz -C curl --strip-components 1
@@ -24,7 +25,8 @@ RUN make && make install
 # e.g. nss loads some libs dynamically...
 RUN cp -r /ssllib/libdeps /libdeps
 RUN cp $(ldd /build/bin/curl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
-
+ADD additional_scripts/${ADDITIONAL_SCRIPT} /src/additional_script.sh
+RUN /src/additional_script.sh
 
 FROM entrypoint as curl
 ARG VERSION_LABEL
