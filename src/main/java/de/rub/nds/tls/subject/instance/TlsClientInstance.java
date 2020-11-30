@@ -5,5 +5,8 @@ public interface TlsClientInstance extends TlsInstance {
 
     ExecInstance connect(String host, int targetPort);
 
-    ExecInstance connect(String host, int targetPort, String additionalParameters, Boolean parallelize, Boolean insecureConnection);
+    ExecInstance connect(String host, int targetPort, String additionalParameters);
+
+    ExecInstance connect(String host, int targetPort, String additionalParameters, Boolean parallelize,
+            Boolean insecureConnection);
 }

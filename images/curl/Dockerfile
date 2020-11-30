@@ -10,7 +10,7 @@ RUN wget -O curl.tar.gz https://curl.haxx.se/download/curl-${VERSION}.tar.gz || 
 RUN mkdir curl && tar -xzf curl.tar.gz -C curl --strip-components 1
 WORKDIR /src/curl
 COPY --from=ssl-base /artifacts/ssllib/ /ssllib/
-# ssllib must include following folders: `include`, `lib`
+# ssllib must include following folders: `include`, `lib`, `libdeps`
 # `--disable-shared` as we do not need a shared library, which caused errors anyway.
 ENV LD_LIBRARY_PATH="/ssllib/lib:/ssllib/libdeps"
 RUN CPPFLAGS="-I/ssllib/include" LDFLAGS="-L/ssllib/lib" ./configure --prefix=/build/ ${CURL_FLAG}=/ssllib/ --disable-shared | tee _configure.log

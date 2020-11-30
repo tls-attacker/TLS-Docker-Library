@@ -4,8 +4,8 @@ ARG VERSION_LABEL
 ARG PREINSTALLCMD="true"
 ARG INSTALLCMD
 
-RUN $PREINSTALLCMD
-RUN $INSTALLCMD curl
+RUN ${PREINSTALLCMD}
+RUN ${INSTALLCMD} curl
 
 COPY --from=entrypoint /bin/client-entrypoint /bin/
 LABEL "tls_implementation"="curl"

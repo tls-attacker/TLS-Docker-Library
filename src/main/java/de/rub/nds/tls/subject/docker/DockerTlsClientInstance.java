@@ -34,7 +34,8 @@ public class DockerTlsClientInstance extends DockerTlsInstance implements TlsCli
     private final boolean connectOnStartup;
 
     // TODO move away from HostInfo for client...
-    public DockerTlsClientInstance(ParameterProfile profile, ImageProperties imageProperties, String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
+    public DockerTlsClientInstance(ParameterProfile profile, ImageProperties imageProperties, String version,
+            boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
             boolean insecureConnection, boolean connectOnStartup,
             UnaryOperator<HostConfig> hostConfigHook) {
         super(profile, imageProperties, version, ConnectionRole.CLIENT, autoRemove, hostConfigHook);
@@ -73,7 +74,8 @@ public class DockerTlsClientInstance extends DockerTlsInstance implements TlsCli
             host = hostInfo.getHostname();
         }
         if (connectOnStartup) {
-            cmd = cmd.withCmd(parameterProfile.toParameters(host, hostInfo.getPort(), imageProperties, additionalParameters, parallelize, insecureConnection));
+            cmd = cmd.withCmd(parameterProfile.toParameters(host, hostInfo.getPort(), imageProperties,
+                    additionalParameters, parallelize, insecureConnection));
         } else {
             cmd = cmd.withEntrypoint("client-entrypoint");
         }
@@ -97,7 +99,13 @@ public class DockerTlsClientInstance extends DockerTlsInstance implements TlsCli
     }
 
     @Override
-    public DockerExecInstance connect(String host, int targetPort, String additionalParameters, Boolean parallelize, Boolean insecureConnection) {
+    public DockerExecInstance connect(String host, int targetPort, String additionalParameters) {
+        return connect(host, targetPort, additionalParameters, parallelize, insecureConnection);
+    }
+
+    @Override
+    public DockerExecInstance connect(String host, int targetPort, String additionalParameters, Boolean parallelize,
+            Boolean insecureConnection) {
         ContainerConfig imageCfg = DOCKER.inspectImageCmd(image.getId()).exec().getConfig();
         if (imageCfg == null) {
             throw new IllegalStateException("Could not get config for image " + image.getId());
@@ -112,7 +120,8 @@ public class DockerTlsClientInstance extends DockerTlsInstance implements TlsCli
         } else {
             LOGGER.warn("Image {} did not have client-entrypoint as entrypoint", image.getId());
         }
-        String[] params = parameterProfile.toParameters(host, targetPort, imageProperties, additionalParameters, parallelize, insecureConnection);
+        String[] params = parameterProfile.toParameters(host, targetPort, imageProperties, additionalParameters,
+                parallelize, insecureConnection);
         cmd_lst.addAll(Arrays.asList(params));
         ExecCreateCmdResponse exec = DOCKER.execCreateCmd(getId()).withCmd(cmd_lst.toArray(EMPTY_STR_ARR))
                 .withAttachStdin(false)
