@@ -7,5 +7,5 @@ RUN apt-get update && apt-get install -y \
     curl
 
 WORKDIR /certs
-COPY generateCerts.sh /run/
+COPY generateCerts.sh cert.cfg /run/
 RUN /run/generateCerts.sh
