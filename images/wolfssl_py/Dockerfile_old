@@ -1,0 +1,11 @@
+FROM alpine-build:3.12 as wolfssl-py
+ARG VERSION
+RUN apk add --no-cache py-setuptools python-dev py-pip py-cffi python-dev
+RUN git clone --depth=1 --branch=${VERSION} https://github.com/wolfssl/wolfssl-py
+WORKDIR wolfssl-py
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+RUN python get-pip.py
+RUN pip install pip==9.0.3
+RUN python setup.py build && python setup.py install
+WORKDIR examples
+#RUN python server.py -c ../certs/server-cert.pem -k ../certs/server-key.pem -p 4433 -A ../certs/ca-digicert-ev.pem -v 3 -b

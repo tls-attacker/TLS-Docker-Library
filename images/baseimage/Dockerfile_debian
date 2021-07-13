@@ -1,0 +1,25 @@
+ARG VERSION=latest
+FROM debian:$VERSION
+RUN apt-get update &&\
+  apt-get install -y \
+    git \
+    mercurial \
+    autoconf \
+    automake \
+    autopoint \
+    gettext \
+    libgettextpo-dev \
+    libtool \
+    libgmp-dev \
+    gperf \
+    bison \
+    cmake \
+    strace \
+    unzip \
+    wget \
+    rsync \
+    bash \
+    coreutils
+
+COPY ./ca.pem /etc/ssl/certs/
+WORKDIR /src/

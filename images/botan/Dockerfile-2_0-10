@@ -1,0 +1,30 @@
+FROM alpine-build:3.6 as botan-base1
+ARG VERSION
+RUN wget https://botan.randombit.net/releases/Botan-2.${VERSION}.tgz
+RUN tar -xzf Botan-2.${VERSION}.tgz
+WORKDIR Botan-2.${VERSION}
+RUN ./configure.py --prefix=/build/ &&\
+  make &&\
+  make install
+
+FROM entrypoint as botan-base2
+COPY --from=botan-base1 /lib/ld-musl-x86_64.so.1 \
+  /usr/lib/libstdc++.so.6 \
+  /usr/lib/libgcc_s.so.1 \
+  /build/lib/libbotan* /lib/
+COPY --from=botan-base1 /build/bin/botan /bin/
+ADD https://raw.githubusercontent.com/randombit/botan/master/src/tests/data/tls-policy/compat.txt /compat.txt
+
+FROM botan-base2 as botan-server
+ARG VERSION
+LABEL "tls_implementation"="botan"
+LABEL "tls_implementation_version"="2.${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
+ENTRYPOINT ["server-entrypoint", "botan", "tls_server"]
+
+FROM botan-base2 as botan-client
+ARG VERSION
+LABEL "tls_implementation"="botan"
+LABEL "tls_implementation_version"="2.${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
+ENTRYPOINT ["client-entrypoint", "botan", "tls_client"]

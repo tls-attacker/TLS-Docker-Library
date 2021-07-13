@@ -5,15 +5,11 @@
     <type>BOTAN</type>
     <role>SERVER</role>
     <Parameter>
-        <cmdParameter>[port]</cmdParameter>
-        <type>HOST_PORT</type>
-    </Parameter>
-    <Parameter>
         <cmdParameter>[cert] [key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>--policy=compat.txt</cmdParameter>
-        <type>NONE</type>
+        <cmdParameter>--port=[port]</cmdParameter>
+        <type>HOST_PORT</type>
     </Parameter>
 </parameterProfile>

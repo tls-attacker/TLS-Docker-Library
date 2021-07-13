@@ -1,17 +1,28 @@
-FROM rust as rustls
+FROM rust as rustls-base1
+ARG VERSION
 WORKDIR /src/
-RUN git clone --depth=1 https://github.com/ctz/rustls
-WORKDIR rustls
-RUN cargo build --release --example tlsserver
+RUN git clone --branch=v/${VERSION} --depth=1 https://github.com/ctz/rustls
+WORKDIR rustls/rustls-mio
+RUN cargo build --release --example tlsserver --features "dangerous_configuration"
+RUN cargo build --release --example tlsclient --features "dangerous_configuration"
 
-FROM scratch
-LABEL "server_type"="rustls"
-LABEL "server_version"="latest"
-COPY --from=rustls /lib/x86_64-linux-gnu/libdl.so.2 \
-  /lib/x86_64-linux-gnu/librt.so.1 \
-  /lib/x86_64-linux-gnu/libpthread.so.0 \
-  /lib/x86_64-linux-gnu/libgcc_s.so.1 \
-  /lib/x86_64-linux-gnu/libc.so.6 /lib/
-COPY --from=rustls /lib64/ld-linux-x86-64.so.2 /lib64/
-COPY --from=rustls /src/rustls/target/release/examples/tlsserver /bin/
-ENTRYPOINT ["tlsserver"]
+FROM debian:stable-slim as rustls-base2
+FROM entrypoint as entrypoint
+
+FROM rustls-base2 as rustls-server
+ARG VERSION
+LABEL "tls_implementation"="rustls"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
+COPY --from=rustls-base1 /src/rustls/target/release/examples/tlsserver /usr/local/bin/
+COPY --from=entrypoint /bin/server-entrypoint /usr/local/bin/
+ENTRYPOINT ["server-entrypoint", "tlsserver"]
+
+FROM rustls-base2 as rustls-client
+ARG VERSION
+LABEL "tls_implementation"="rustls"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
+COPY --from=rustls-base1 /src/rustls/target/release/examples/tlsclient /usr/local/bin/
+COPY --from=entrypoint /bin/client-entrypoint /usr/local/bin/
+ENTRYPOINT ["client-entrypoint", "tlsclient"]

@@ -1,6 +1,6 @@
-FROM alpine-build as libressl
+FROM alpine-build:3.6 as libressl
 ARG VERSION
-RUN wget -O libressl.tar.gz https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-2.${VERSION}.tar.gz
+RUN wget -O libressl.tar.gz https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${VERSION}.tar.gz
 RUN mkdir libressl
 RUN tar -xzf libressl.tar.gz -C libressl --strip-components 1
 WORKDIR libressl
@@ -8,19 +8,21 @@ RUN ./configure &&\
   make &&\
   DESTDIR=/build/ make install
 
-FROM scratch as libressl-base
+FROM entrypoint as libressl-base
 COPY --from=libressl /lib/ld-musl-x86_64.so.* \
   /build/usr/local/lib/*.so* /lib/
 COPY --from=libressl /build/usr/local/bin/openssl /bin/
 
 FROM libressl-base as libressl-server
 ARG VERSION
-LABEL "server_type"="libressl"
-LABEL "server_version"="2.${VERSION}"
-ENTRYPOINT ["openssl", "s_server"]
+LABEL "tls_implementation"="libressl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
+ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]
 
 FROM libressl-base as libressl-client
 ARG VERSION
-LABEL "client_type"="libressl"
-LABEL "client_version"="2.${VERSION}"
-ENTRYPOINT ["openssl", "s_client"]
+LABEL "tls_implementation"="libressl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
+ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]

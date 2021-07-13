@@ -8,4 +8,12 @@
         <cmdParameter>[host]:[port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
+    <Parameter>
+        <cmdParameter>-CA [cert]</cmdParameter>
+        <type>CA_CERTIFICATE</type>
+    </Parameter>
+    <Parameter>
+        <cmdParameter></cmdParameter>
+        <type>INSECURE</type>
+    </Parameter>
 </parameterProfile>

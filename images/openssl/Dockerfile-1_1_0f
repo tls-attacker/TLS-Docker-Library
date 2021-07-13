@@ -1,11 +1,11 @@
-FROM alpine-build as openssl-base1
+FROM alpine-build:3.12 as openssl-base1
 RUN wget https://www.openssl.org/source/old/1.1.0/openssl-1.1.0f.tar.gz
 RUN tar -xzf openssl-1.1.0f.tar.gz
 WORKDIR /src/openssl-1.1.0f
 RUN ./config --prefix=/build/ --openssldir=/build/ no-async
 RUN make -s && make install -s
 
-FROM scratch as openssl-base2
+FROM entrypoint as openssl-base2
 COPY --from=openssl-base1 /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* \
@@ -13,11 +13,13 @@ COPY --from=openssl-base1 /lib/ld-musl-x86_64.so.* \
 COPY --from=openssl-base1 /build/bin/openssl /bin/
 
 FROM openssl-base2 as openssl-server
-LABEL "server_type"="openssl"
-LABEL "server_version"="1.1.0f"
-ENTRYPOINT ["openssl", "s_server"]
+LABEL "tls_implementation"="openssl"
+LABEL "tls_implementation_version"="1.1.0f"
+LABEL "tls_implementation_connectionRole"="server"
+ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]
 
 FROM openssl-base2 as openssl-client
-LABEL "client_type"="openssl"
-LABEL "client_version"="1.1.0f"
-ENTRYPOINT ["openssl", "s_client"]
+LABEL "tls_implementation"="openssl"
+LABEL "tls_implementation_version"="1.1.0f"
+LABEL "tls_implementation_connectionRole"="client"
+ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]

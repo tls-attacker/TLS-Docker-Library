@@ -5,11 +5,15 @@
     <type>WOLFSSL</type>
     <role>SERVER</role>
     <Parameter>
-        <cmdParameter>-c [cert] -k [key]</cmdParameter>
+        <cmdParameter>-c [cert] -k [key] -v 4</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>
         <cmdParameter>-d -b</cmdParameter>
         <type>NONE</type>
+    </Parameter>
+    <Parameter>
+        <cmdParameter>-p [port]</cmdParameter>
+        <type>HOST_PORT</type>
     </Parameter>
 </parameterProfile>

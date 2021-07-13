@@ -1,4 +1,5 @@
-FROM alpine
+ARG VERSION=latest
+FROM alpine:$VERSION
 RUN apk update &&\
   apk add git \
     mercurial \
@@ -16,6 +17,14 @@ RUN apk update &&\
     cmake \
     go \
     strace \
-    unzip
+    unzip \
+    wget \
+    rsync \
+    bash \
+    coreutils \
+    build-base \
+    bsd-compat-headers
+
+
 COPY ./ca.pem /etc/ssl/certs/
 WORKDIR /src/

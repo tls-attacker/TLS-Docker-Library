@@ -9,7 +9,7 @@
         <type>HOST_PORT</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>-v</cmdParameter>
+        <cmdParameter>-v -w password</cmdParameter>
         <type>NONE</type>
     </Parameter>
     <Parameter>

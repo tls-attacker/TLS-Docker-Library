@@ -8,4 +8,8 @@
         <cmdParameter>--certs [cert] --key [key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
+    <Parameter>
+        <cmdParameter>-p [port] echo</cmdParameter>
+        <type>HOST_PORT</type>
+    </Parameter>
 </parameterProfile>

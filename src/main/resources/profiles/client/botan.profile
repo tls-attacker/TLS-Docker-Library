@@ -8,4 +8,12 @@
         <cmdParameter>[host] --port=[port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
+    <Parameter>
+        <cmdParameter>--skip-system-cert-store</cmdParameter>
+        <type>INSECURE</type>
+    </Parameter>
+    <Parameter>
+        <cmdParameter>--trusted-cas=[cert]</cmdParameter>
+        <type>CA_CERTIFICATE</type>
+    </Parameter>
 </parameterProfile>

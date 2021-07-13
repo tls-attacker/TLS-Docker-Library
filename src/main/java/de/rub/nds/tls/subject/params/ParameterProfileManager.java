@@ -2,17 +2,22 @@ package de.rub.nds.tls.subject.params;
 
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
-import java.io.BufferedReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ParameterProfileManager {
 
@@ -62,27 +67,9 @@ public class ParameterProfileManager {
     }
 
     private List<String> getResourceFiles(String path) throws IOException {
-        List<String> filenames = new ArrayList<>();
-        try (
-                InputStream in = getResourceAsStream(path);
-                BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-            String resource;
-            while ((resource = br.readLine()) != null) {
-                filenames.add(resource);
-            }
-        }
-
-        return filenames;
-    }
-
-    private InputStream getResourceAsStream(String resource) {
-        InputStream in = getContextClassLoader().getResourceAsStream(resource);
-        return in == null ? getClass().getResourceAsStream(resource) : in;
-    }
-
-    private ClassLoader getContextClassLoader() {
-        return Thread.currentThread().getContextClassLoader();
-
+        Reflections reflections = new Reflections(null, new ResourcesScanner());
+        Set<String> resourceList = reflections.getResources(Pattern.compile(".*\\.profile")).parallelStream().map(x -> new File(x).getName()).collect(Collectors.toSet());
+        return new ArrayList<>(resourceList);
     }
 
     private ParameterProfile tryLoadProfile(ConnectionRole role, String filename) {
@@ -113,27 +100,20 @@ public class ParameterProfileManager {
     }
 
     public ParameterProfile getDefaultProfile(TlsImplementationType type, ConnectionRole role) {
-        if (null == role) {
-            throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+        List<ParameterProfile> profileList;
+        if (role == ConnectionRole.CLIENT) {
+            profileList = defaultClientProfileList;
+        } else if (role == ConnectionRole.SERVER) {
+            profileList = defaultServerProfileList;
         } else {
-            switch (role) {
-                case CLIENT:
-                    for (ParameterProfile profile : defaultClientProfileList) {
-                        if (profile.getType() == type) {
-                            return profile;
-                        }
-                    }
-                    return null;
-                case SERVER:
-                    for (ParameterProfile profile : defaultServerProfileList) {
-                        if (profile.getType() == type) {
-                            return profile;
-                        }
-                    }
-                    return null;
-                default:
-                    throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
+            throw new IllegalArgumentException("Unknown ConnectionRole: " + role);
+        }
+
+        for (ParameterProfile profile : profileList) {
+            if (profile.getType() == type) {
+                return profile;
             }
         }
+        return null;
     }
 }

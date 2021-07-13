@@ -90,6 +90,10 @@ public class ParameterProfile implements Serializable {
         this.parameterList = parameterList;
     }
 
+    public boolean supportsInsecure() {
+        return parameterList.stream().anyMatch(i -> i.getType() == ParameterType.INSECURE);
+    }
+
     @Override
     public String toString() {
         return "ParameterProfile{" + "name=" + name + ", description=" + description + ", type=" + type + ", role=" + role + ", versionList=" + versionList + ", parameterList=" + parameterList + '}';

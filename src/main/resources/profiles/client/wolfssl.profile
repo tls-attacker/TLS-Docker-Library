@@ -12,4 +12,8 @@
         <cmdParameter>-A [cert]</cmdParameter>
         <type>CA_CERTIFICATE</type>
     </Parameter>
+    <Parameter>
+        <cmdParameter>-d</cmdParameter>
+        <type>INSECURE</type>
+    </Parameter>
 </parameterProfile>

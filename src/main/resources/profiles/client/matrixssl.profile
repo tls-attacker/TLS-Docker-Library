@@ -8,4 +8,8 @@
         <cmdParameter>-s [host] -p [port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
+    <Parameter>
+        <cmdParameter>-d</cmdParameter>
+        <type>INSECURE</type>
+    </Parameter>
 </parameterProfile>

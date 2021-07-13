@@ -12,4 +12,8 @@
         <cmdParameter>-CAfile [cert]</cmdParameter>
         <type>CA_CERTIFICATE</type>
     </Parameter>
+    <Parameter>
+        <cmdParameter></cmdParameter>
+        <type>INSECURE</type>
+    </Parameter>
 </parameterProfile>

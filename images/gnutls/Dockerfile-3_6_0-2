@@ -1,0 +1,41 @@
+FROM alpine-build:3.6 as gnutls-libnettle
+RUN git clone --depth=1 --branch nettle_3.3_release_20161001 https://git.lysator.liu.se/nettle/nettle.git
+WORKDIR /src/nettle
+RUN ./.bootstrap && ./configure --disable-documentation --prefix=/build/
+RUN make && make install
+
+FROM alpine-build:3.6 as gnutls-gnutls
+ARG VERSION
+ENV PKG_CONFIG_PATH=/build/lib/pkgconfig/
+RUN git clone --depth=1 --branch gnutls_3_6_${VERSION} https://github.com/gnutls/gnutls
+WORKDIR /src/gnutls/
+RUN git submodule update --init --no-fetch
+COPY --from=gnutls-libnettle /build/ /build/
+RUN make autoreconf
+RUN ./configure --with-included-libtasn1 --with-included-unistring --disable-maintainer-mode --disable-doc --disable-full-test-suite --disable-cxx --disable-padlock --without-p11-kit --without-tpm --prefix=/build/
+RUN make && make install
+
+FROM entrypoint as gnutls-base
+COPY --from=gnutls-gnutls /lib/ld-musl-x86_64.so.* \
+  /usr/lib/libgmp.so.* \
+  /usr/lib/libintl.so.* \
+  /build/lib/libgnutls.so.* \
+  /build/lib/libnettle.so.* \
+  /build/lib/libhogweed.so.* \
+  /lib/libz.so.* /lib/
+
+FROM gnutls-base as gnutls-server
+ARG VERSION
+LABEL "tls_implementation"="gnutls"
+LABEL "tls_implementation_version"="3.6.${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
+COPY --from=gnutls-gnutls /build/bin/gnutls-serv /bin/
+ENTRYPOINT ["server-entrypoint", "gnutls-serv"]
+
+FROM gnutls-base as gnutls-client
+ARG VERSION
+LABEL "tls_implementation"="gnutls"
+LABEL "tls_implementation_version"="3.6.${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
+COPY --from=gnutls-gnutls /build/bin/gnutls-cli /bin/
+ENTRYPOINT ["client-entrypoint", "gnutls-cli"]

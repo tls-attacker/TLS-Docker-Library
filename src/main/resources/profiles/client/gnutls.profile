@@ -5,11 +5,15 @@
     <type>GNUTLS</type>
     <role>CLIENT</role>
     <Parameter>
-        <cmdParameter>[host]:[port]</cmdParameter>
-        <type>HOST_PORT</type>
+        <cmdParameter>--no-ca-verification</cmdParameter>
+        <type>INSECURE</type>
     </Parameter>
     <Parameter>
         <cmdParameter>--x509cafile [cert]</cmdParameter>
         <type>CA_CERTIFICATE</type>
+    </Parameter>
+    <Parameter>
+        <cmdParameter>-p [port] [host]</cmdParameter>
+        <type>HOST_PORT</type>
     </Parameter>
 </parameterProfile>

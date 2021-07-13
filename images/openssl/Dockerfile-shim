@@ -1,16 +1,16 @@
-FROM alpine-build as openssl-base1
+FROM alpine-build:3.12 as openssl-base1
 RUN git clone https://github.com/openssl/openssl
 WORKDIR /src/openssl
 RUN git checkout 0299f3f790437d124d15f60489c774407325f82b
 RUN ./config --prefix=/build/ --openssldir=/build/ no-async enable-external-tests
 RUN make && make install
 
-FROM scratch as openssl-base2
+FROM entrypoint as openssl-base2
 COPY --from=openssl /lib/ld-musl-x86_64.so.* /usr/lib/libstdc++.so.* /usr/lib/libgcc_s.so.* /build/lib/*.so.* /lib/
 COPY --from=openssl /build/bin/openssl /src/openssl/test/ossl_shim/ossl_shim /bin/
 
 FROM openssl-base2 as openssl-shim-server
-ENTRYPOINT ["openssl", "s_server"]
+ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]
 
 FROM openssl-base2 as openssl-shim-client
-ENTRYPOINT ["openssl", "s_client"]
+ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]

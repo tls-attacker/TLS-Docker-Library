@@ -1,4 +1,4 @@
-FROM alpine-build as boringssl-base1
+FROM alpine-build:3.12 as boringssl-base1
 ARG VERSION
 RUN git clone --depth=1 -b ${VERSION} https://boringssl.googlesource.com/boringssl
 #remove the errorflags in CMakeLists.txt otherwise boringssl will not compile (workaround)
@@ -9,7 +9,7 @@ WORKDIR /build/
 RUN cmake -DCMAKE_BUILD_TYPE=Release /src/boringssl/
 RUN make
 
-FROM scratch as boringssl-base2
+FROM entrypoint as boringssl-base2
 COPY --from=boringssl-base1 /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* /lib/
@@ -18,12 +18,14 @@ COPY --from=boringssl-base1 /build/tool/bssl \
 
 FROM boringssl-base2 as boringssl-server
 ARG VERSION
-LABEL "server_type"="boringssl"
-LABEL "server_version"="${VERSION}"
-ENTRYPOINT ["bssl", "s_server"]
+LABEL "tls_implementation"="boringssl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
+ENTRYPOINT ["server-entrypoint", "bssl", "s_server"]
 
 FROM boringssl-base2 as boringssl-client
 ARG VERSION
-LABEL "client_type"="boringssl"
-LABEL "client_version"="${VERSION}"
-ENTRYPOINT ["bssl", "s_client"]
+LABEL "tls_implementation"="boringssl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
+ENTRYPOINT ["client-entrypoint", "bssl", "s_client"]

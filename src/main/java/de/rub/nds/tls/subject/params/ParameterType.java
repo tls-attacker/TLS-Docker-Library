@@ -9,4 +9,6 @@ public enum ParameterType {
     LOOP, //Keeps the Server from closing after a single connection
     NO_CLIENT_AUTHENTICATION, //Some servers/clients have client authentication active by default
     CA_CERTIFICATE, //The ca cert which should be used_//CRT
+    INSECURE, // Disables server certificate validation
+    PARALLELIZE // multi threaded server
 }

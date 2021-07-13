@@ -5,7 +5,17 @@
     <type>S2N</type>
     <role>SERVER</role>
     <Parameter>
-        <cmdParameter>[host] [port]</cmdParameter>
+        <cmdParameter>--cert [cert] --key [key]</cmdParameter>
+        <type>CERTIFICATE_KEY</type>
+    </Parameter>
+    <Parameter>
+        <cmdParameter>--parallelize</cmdParameter>
+        <type>PARALLELIZE</type>
+        <description>Warning: this option is not compatible with TLS Resumption, since each thread gets its own Session cache.</description>
+    </Parameter>
+    <Parameter>
+        <cmdParameter>--self-service-blinding [host] [port]</cmdParameter>
         <type>HOST_PORT</type>
+        <description>--self-service-blinding: Do not introduce 10-30 second delays on TLS Handshake errors.</description>
     </Parameter>
 </parameterProfile>

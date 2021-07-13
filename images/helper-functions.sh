@@ -2,6 +2,7 @@
 set -uo pipefail
 
 FOLDER="$(realpath "$(dirname "$BASH_SOURCE")")"
+DOCKER_REPOSITORY="${DOCKER_REPOSITORY:-}"
 
 # if set to 1, docker commands are recorded and written to cmds.sh
 # required by build-everythin.py

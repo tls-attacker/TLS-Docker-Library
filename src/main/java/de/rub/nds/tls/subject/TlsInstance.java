@@ -1,93 +1,40 @@
 package de.rub.nds.tls.subject;
 
-import de.rub.nds.tls.subject.constants.TransportType;
-
 /**
  * The representation of a TLS-Instance used for a Test
  */
-public class TlsInstance {
+public interface TlsInstance {
 
-    private final String id;
-    private final ConnectionRole role;
-    private final String host;
-    private Integer port;
-    private final String name;
-    private final TlsInstanceManager tlsInstanceManager;
-    private long exitCode;
-    private final HostInfo hostInfo;
+    HostInfo getHostInfo();
 
-    public TlsInstance(String id, ConnectionRole role, String host, Integer port, String name, TlsInstanceManager tlsInstanceManager, HostInfo hostInfo) {
-        this.id = id;
-        this.role = role;
-        this.host = host;
-        this.port = port;
-        this.name = name;
-        this.tlsInstanceManager = tlsInstanceManager;
-        this.hostInfo = hostInfo;
-    }
+    String getId();
 
-    public HostInfo getHostInfo() {
-        return hostInfo;
-    }
+    ConnectionRole getConnectionRole();
 
-    public String getId() {
-        return id;
-    }
+    String getHost();
 
-    public ConnectionRole getConnectionRole() {
-        return role;
-    }
+    Integer getPort();
 
-    public String getHost() {
-        return host;
-    }
+    String getName();
 
-    public Integer getPort() {
-        return port;
-    }
+    String getLogs();
 
-    public String getName() {
-        return name;
-    }
+    long getExitCode();
 
-    public String getLogs() {
-        return tlsInstanceManager.getLogsFromTlsInstance(this);
-    }
+    String getExitInfo();
 
-    public long getExitCode() {
-        return exitCode;
-    }
+    void setExitCode(long exitCode);
 
-    public String getExitInfo() {
-        return "exitCode: " + exitCode;
-    }
+    void kill();
 
-    public void setExitCode(long exitCode) {
-        this.exitCode = exitCode;
-    }
-
-    public void kill() {
-        tlsInstanceManager.killTlsInstance(this);
-    }
-
-    public void restart() {
-        tlsInstanceManager.restartInstance(this);
-    }
+    void restart();
 
     @Override
-    public String toString() {
-        return String.format("%s: %s:%d (%s)", getConnectionRole().name(), host, port, getName());
-    }
+    String toString();
 
-    public void start() {
-        tlsInstanceManager.startInstance(this);
-    }
+    void start();
 
-    public void stop() {
-        tlsInstanceManager.stopInstance(this);
-    }
+    void stop();
 
-    public void setPort(Integer port) {
-        this.port = port;
-    }
+    void setPort(Integer port);
 }
