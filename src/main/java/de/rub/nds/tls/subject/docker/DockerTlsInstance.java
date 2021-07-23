@@ -224,7 +224,7 @@ public abstract class DockerTlsInstance implements TlsInstance {
 
     @Override
     public String getLogs() throws InterruptedException {
-        FrameHanlder fh = new FrameHanlder();
+        FrameHandler fh = new FrameHandler();
         DOCKER.logContainerCmd(getId()).exec(fh);
         fh.awaitCompletion();
         String[] lines = fh.getLines();

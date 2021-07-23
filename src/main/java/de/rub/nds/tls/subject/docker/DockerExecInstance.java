@@ -10,14 +10,14 @@ import de.rub.nds.tls.subject.instance.ExecInstance;
 public class DockerExecInstance implements ExecInstance {
     private final DockerClient DOCKER;
     public final ExecCreateCmdResponse execCreation;
-    public final FrameHanlder frameHandler;
+    public final FrameHandler frameHandler;
 
     public DockerExecInstance(ExecCreateCmdResponse execCreation) {
         // if we are not using detach in execStart we must use our own docker client (as
         // we otherwise block other execStarts)
         DOCKER = DockerClientManager.getDockerClient();
         this.execCreation = execCreation;
-        this.frameHandler = new FrameHanlder();
+        this.frameHandler = new FrameHandler();
         DOCKER.execStartCmd(execCreation.getId()).exec(frameHandler);
     }
 

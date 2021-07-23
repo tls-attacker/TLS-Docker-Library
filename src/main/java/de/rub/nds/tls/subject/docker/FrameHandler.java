@@ -6,12 +6,12 @@ import java.util.LinkedList;
 import com.github.dockerjava.api.async.ResultCallbackTemplate;
 import com.github.dockerjava.api.model.Frame;
 
-public class FrameHanlder extends ResultCallbackTemplate<FrameHanlder, Frame> {
+public class FrameHandler extends ResultCallbackTemplate<FrameHandler, Frame> {
     private static String[] EMPTY_STR_ARR = new String[] {};
 
     private Collection<Frame> frames;
 
-    public FrameHanlder() {
+    public FrameHandler() {
         frames = new LinkedList<>();
     }
 
