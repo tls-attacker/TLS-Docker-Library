@@ -18,11 +18,10 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
-import de.rub.nds.tls.subject.instance.TlsClientInstance;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 
-public class DockerTlsClientInstance extends DockerTlsInstance implements TlsClientInstance {
+public class DockerTlsClientInstance extends DockerTlsInstance {
     private static final String[] EMPTY_STR_ARR = {};
     private static final int EXEC_POLL_INTERVAL_MILLISECONDS = 50;
     private static final Logger LOGGER = LogManager.getLogger();
@@ -82,7 +81,6 @@ public class DockerTlsClientInstance extends DockerTlsInstance implements TlsCli
         return cmd;
     }
 
-    @Override
     public DockerExecInstance connect() {
         String host;
         if (hostInfo.getHostname() == null || imageProperties.isUseIP()) {
@@ -93,17 +91,14 @@ public class DockerTlsClientInstance extends DockerTlsInstance implements TlsCli
         return connect(host, hostInfo.getPort());
     }
 
-    @Override
     public DockerExecInstance connect(String host, int targetPort) {
         return connect(host, targetPort, additionalParameters, parallelize, insecureConnection);
     }
 
-    @Override
     public DockerExecInstance connect(String host, int targetPort, String additionalParameters) {
         return connect(host, targetPort, additionalParameters, parallelize, insecureConnection);
     }
 
-    @Override
     public DockerExecInstance connect(String host, int targetPort, String additionalParameters, Boolean parallelize,
             Boolean insecureConnection) {
         ContainerConfig imageCfg = DOCKER.inspectImageCmd(image.getId()).exec().getConfig();

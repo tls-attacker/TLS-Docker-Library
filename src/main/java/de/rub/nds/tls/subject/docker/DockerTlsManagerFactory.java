@@ -18,9 +18,6 @@ import de.rub.nds.tls.subject.constants.TlsImageLabels;
 import de.rub.nds.tls.subject.constants.TransportType;
 import de.rub.nds.tls.subject.exceptions.DefaultProfileNotFoundException;
 import de.rub.nds.tls.subject.exceptions.PropertyNotFoundException;
-import de.rub.nds.tls.subject.instance.TlsClientInstance;
-import de.rub.nds.tls.subject.instance.TlsInstance;
-import de.rub.nds.tls.subject.instance.TlsServerInstance;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.params.ParameterProfileManager;
 import de.rub.nds.tls.subject.properties.ImageProperties;
@@ -104,7 +101,7 @@ public class DockerTlsManagerFactory {
             return (T) this;
         }
 
-        public abstract TlsInstance build() throws DockerException, InterruptedException;
+        public abstract DockerTlsInstance build() throws DockerException, InterruptedException;
     }
 
     public static class TlsClientInstanceBuilder extends TlsInstanceBuilder<TlsClientInstanceBuilder> {
@@ -116,7 +113,7 @@ public class DockerTlsManagerFactory {
         }
 
         @Override
-        public TlsClientInstance build() throws DockerException, InterruptedException {
+        public DockerTlsClientInstance build() throws DockerException, InterruptedException {
             return new DockerTlsClientInstance(profile, imageProperties, version, autoRemove, new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection,
                     connectOnStartup, hostConfigHook);
         }
@@ -135,7 +132,7 @@ public class DockerTlsManagerFactory {
         }
 
         @Override
-        public TlsServerInstance build() throws DockerException, InterruptedException {
+        public DockerTlsServerInstance build() throws DockerException, InterruptedException {
             return new DockerTlsServerInstance(profile, imageProperties, version, autoRemove, new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection,
                     hostConfigHook);
         }

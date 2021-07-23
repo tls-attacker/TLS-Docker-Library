@@ -28,11 +28,10 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.constants.TlsImageLabels;
 import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
-import de.rub.nds.tls.subject.instance.TlsInstance;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 
-public abstract class DockerTlsInstance implements TlsInstance {
+public abstract class DockerTlsInstance {
     protected static final DockerClient DOCKER = DockerClientManager.getDockerClient();
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -131,13 +130,11 @@ public abstract class DockerTlsInstance implements TlsInstance {
         }
     }
 
-    @Override
     public void start() {
         ensureContainerExists();
         DOCKER.startContainerCmd(getId()).exec();
     }
 
-    @Override
     public void remove() {
         String id = getId();
         if (id != null) {
@@ -168,7 +165,6 @@ public abstract class DockerTlsInstance implements TlsInstance {
         childExecs.clear();
     }
 
-    @Override
     public void stop(int secondsToWaitBeforeKilling) {
         DOCKER.stopContainerCmd(getId()).withTimeout(secondsToWaitBeforeKilling).exec();
         closeChildren();
@@ -176,12 +172,10 @@ public abstract class DockerTlsInstance implements TlsInstance {
         autoRemove();
     }
 
-    @Override
     public void stop() {
         stop(2);
     }
 
-    @Override
     public void kill() {
         DOCKER.killContainerCmd(getId()).exec();
         closeChildren();
@@ -189,7 +183,6 @@ public abstract class DockerTlsInstance implements TlsInstance {
         autoRemove();
     }
 
-    @Override
     @SuppressWarnings("squid:S2142") // sonarlint: "InterruptedException" should not be ignored
     // we rethrow the interrupted exception a bit later
     public void close() {
@@ -212,17 +205,14 @@ public abstract class DockerTlsInstance implements TlsInstance {
         }
     }
 
-    @Override
     public void restart() {
         DOCKER.restartContainerCmd(getId()).exec();
     }
 
-    @Override
     public String getId() {
         return containerId;
     }
 
-    @Override
     public String getLogs() throws InterruptedException {
         FrameHandler fh = new FrameHandler();
         DOCKER.logContainerCmd(getId()).exec(fh);
@@ -238,7 +228,6 @@ public abstract class DockerTlsInstance implements TlsInstance {
         return logs;
     }
 
-    @Override
     @SuppressWarnings("squid:S3655") // sonarlint: Optional value should only be accessed after calling isPresent()
     // this is fixed as if there is no value we either throw an exception or store a
     // new value

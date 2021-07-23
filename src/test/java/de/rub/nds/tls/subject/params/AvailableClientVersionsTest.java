@@ -20,9 +20,8 @@ import org.junit.Test;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.docker.DockerExecInstance;
+import de.rub.nds.tls.subject.docker.DockerTlsClientInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
-import de.rub.nds.tls.subject.instance.ExecInstance;
-import de.rub.nds.tls.subject.instance.TlsClientInstance;
 import de.rub.nds.tls.subject.report.ContainerReport;
 import de.rub.nds.tls.subject.report.InstanceContainer;
 
@@ -80,7 +79,7 @@ public class AvailableClientVersionsTest {
     }
 
     public boolean isFunctional(TlsTestServer testServer, TlsImplementationType type, String version) {
-        TlsClientInstance client = null;
+        DockerTlsClientInstance client = null;
         DockerExecInstance ei = null;
         testServer.setIsConnectionSuccessful(false);
         try {

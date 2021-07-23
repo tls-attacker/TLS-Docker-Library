@@ -12,11 +12,10 @@ import com.github.dockerjava.api.model.Ports.Binding;
 
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
-import de.rub.nds.tls.subject.instance.TlsServerInstance;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 
-public class DockerTlsServerInstance extends DockerTlsInstance implements TlsServerInstance {
+public class DockerTlsServerInstance extends DockerTlsInstance {
 
     private int port;
     private final HostInfo hostInfo;
@@ -77,12 +76,10 @@ public class DockerTlsServerInstance extends DockerTlsInstance implements TlsSer
         port = new Integer(networkSettings.getPorts().getBindings().values().iterator().next()[0].getHostPortSpec());
     }
 
-    @Override
     public int getPort() {
         return port;
     }
 
-    @Override
     public HostInfo getHostInfo() {
         return hostInfo;
     }
