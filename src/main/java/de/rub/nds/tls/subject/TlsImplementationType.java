@@ -24,8 +24,8 @@ public enum TlsImplementationType {
     SECURE_TRANSPORT,
     TLSLITE_NG,
     WOLFSSL,
-    ERLANG;
-
+    ERLANG,
+    CURL;
 
     public static TlsImplementationType fromString(String type) {
         for (TlsImplementationType i : TlsImplementationType.values()) {

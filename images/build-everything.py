@@ -203,14 +203,21 @@ def main():
     futures = []
     completed = 0
     force_rebuild_info = False
+    # Regex from https://stackoverflow.com/a/16710842
+    CMD_SPLIT_RE = re.compile(r'(?:[^\s"]|"(?:\\.|[^"])*")+')
+    def prepare_cmd(s):
+        # remove outer quotes
+        # (todo) we may also need to unescape inner quotes then, i.e. replace \" with "
+        if (s.startswith('"') and s.endswith('"')):
+            s = s[1:-1]
+        return s
     # execute multiple docker build commands in parallel
     with ThreadPoolExecutor(ARGS.parallel_builds) as executor:
-
         for i in range(0, len(cmds), 2):
             # first line contains a 'cd ' bash command to the directory containing Dockerfile(s)
-            cwd = cmds[i][3:].strip()
+            cwd = cmds[i].strip()[4:-1]
             # second line contains the docker build command
-            build_cmd = list(map(lambda x: x.strip(), cmds[i+1].split(" ")))
+            build_cmd = list(map(prepare_cmd,CMD_SPLIT_RE.findall(cmds[i + 1])))
 
             version = get_image_version(build_cmd)
             library = os.path.basename(cwd)

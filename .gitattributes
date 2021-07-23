@@ -1,0 +1,7 @@
+# lf for all files with no file extension and .sh scripts
+# https://stackoverflow.com/questions/44805861/files-without-extensions-in-gitattributes
+* eol=lf
+*.* -eol
+*.sh eol=lf
+# also for files without names
+.* eol=lf

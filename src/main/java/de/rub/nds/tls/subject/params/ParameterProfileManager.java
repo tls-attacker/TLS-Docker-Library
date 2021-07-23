@@ -23,6 +23,15 @@ public class ParameterProfileManager {
 
     static final Logger LOGGER = LogManager.getLogger(ParameterProfileSerializer.class.getName());
 
+    private static ParameterProfileManager instance;
+
+    public static ParameterProfileManager instance() {
+        if (instance == null) {
+            instance = new ParameterProfileManager();
+        }
+        return instance;
+    }
+
     private static final String RESOURCE_PATH = "/profiles/";
 
     private final List<ParameterProfile> defaultClientProfileList;
@@ -31,7 +40,7 @@ public class ParameterProfileManager {
 
     private final List<ParameterProfile> defaultServerProfileList;
 
-    public ParameterProfileManager() {
+    protected ParameterProfileManager() {
         defaultServerProfileList = new LinkedList<>();
         defaultClientProfileList = new LinkedList<>();
         allProfileList = new LinkedList<>();
@@ -51,8 +60,7 @@ public class ParameterProfileManager {
             }
         }
 
-        for (TlsImplementationType type
-                : TlsImplementationType.values()) {
+        for (TlsImplementationType type : TlsImplementationType.values()) {
             ParameterProfile profile = tryLoadProfile(ConnectionRole.SERVER, "" + type.name().toLowerCase() + ".profile");
             if (profile != null) {
                 LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name());

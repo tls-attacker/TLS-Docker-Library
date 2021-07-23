@@ -30,8 +30,14 @@ E
       echo -e "[+]\033[1;32m Successfully built $tag!\033[0m"
     fi
   else
-    echo "cd $(pwd)" >> "$FOLDER/cmds.sh"
-    echo docker "$@" >> "$FOLDER/cmds.sh"
+    echo "cd '$(pwd)'" >> "$FOLDER/cmds.sh"
+    # see https://stackoverflow.com/a/8723305
+    C=''
+    for arg in "$@"; do
+        arg="${arg//\\/\\\\}"
+        C="$C \"${arg//\"/\\\"}\""
+    done
+    echo docker "$C" >> "$FOLDER/cmds.sh"
   fi
 
   return $EXITCODE

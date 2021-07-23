@@ -1,0 +1,14 @@
+ARG BASE_IMG
+FROM ${BASE_IMG} as curl
+ARG VERSION_LABEL
+ARG PREINSTALLCMD="true"
+ARG INSTALLCMD
+
+RUN ${PREINSTALLCMD}
+RUN ${INSTALLCMD} curl
+
+COPY --from=entrypoint /bin/client-entrypoint /bin/
+LABEL "tls_implementation"="curl"
+LABEL "tls_implementation_version"="${VERSION_LABEL}"
+LABEL "tls_implementation_connectionRole"="client"
+ENTRYPOINT [ "client-entrypoint", "curl" ]

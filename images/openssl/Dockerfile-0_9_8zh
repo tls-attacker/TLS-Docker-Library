@@ -4,12 +4,14 @@ RUN tar -xzf openssl-0.9.8zh.tar.gz
 WORKDIR /src/openssl-0.9.8zh
 RUN ./config --prefix=/build/ --openssldir=/build/ no-async
 RUN make -s && make install -s
+# copy all libs we need
+RUN mkdir /libdeps
+RUN cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bin/openssl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
 
 FROM entrypoint as openssl-base2
-COPY --from=openssl-base1 /lib/ld-musl-x86_64.so.* \
-  /usr/lib/libstdc++.so.* \
-  /usr/lib/libgcc_s.so.* \
-  /build/lib/*.so.* /lib/
+COPY --from=openssl-base1 /build/ /artifacts/ssllib/
+COPY --from=openssl-base1 /libdeps/* /artifacts/ssllib/libdeps/
+COPY --from=openssl-base1 /libdeps/* /lib/
 COPY --from=openssl-base1 /build/bin/openssl /bin/
 
 FROM openssl-base2 as openssl-server

@@ -1,0 +1,6 @@
+nss-client
+--without-ssl --with-nss
+nss.sh
+3.58
+3.53.1
+3.44.4

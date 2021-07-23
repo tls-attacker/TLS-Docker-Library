@@ -5,25 +5,32 @@
  */
 package de.rub.nds.tls.subject.params;
 
-import de.rub.nds.tls.subject.ConnectionRole;
-import de.rub.nds.tls.subject.TlsInstance;
-import de.rub.nds.tls.subject.TlsImplementationType;
-import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
-import de.rub.nds.tls.subject.report.ContainerReport;
-import de.rub.nds.tls.subject.report.InstanceContainer;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.bind.JAXBException;
+
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
+
+import de.rub.nds.tls.subject.ConnectionRole;
+import de.rub.nds.tls.subject.TlsImplementationType;
+import de.rub.nds.tls.subject.docker.DockerExecInstance;
+import de.rub.nds.tls.subject.docker.DockerTlsClientInstance;
+import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
+import de.rub.nds.tls.subject.report.ContainerReport;
+import de.rub.nds.tls.subject.report.InstanceContainer;
 
 public class AvailableClientVersionsTest {
 
     private static final String HOSTNAME = "nds.tls-docker-library-test.de";
+    // when running the tests on another os than linux you might need to change the
+    // ip use `docker run --rm -it alpine-build:3.12 ping -c1 host.docker.internal`
+    // to find the correct IP
     private static final String IP = "172.17.0.1";
     private static final int PORT = 8000;
     private static final int CONNECTION_TIMEOUT = 10;
@@ -33,10 +40,9 @@ public class AvailableClientVersionsTest {
 
     @Test
     public void listAllClients() {
-        DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         System.out.println("Available Clients: ");
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.CLIENT, type);
+            List<String> availableVersions = DockerTlsManagerFactory.getAvailableVersions(ConnectionRole.CLIENT, type);
             System.out.println("Client version: " + type);
             for (String version : availableVersions) {
                 System.out.println(version);
@@ -47,16 +53,15 @@ public class AvailableClientVersionsTest {
     @Test
     public void testAllVersionsFunctional() throws JAXBException, IOException {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
-        DockerTlsManagerFactory factory = new DockerTlsManagerFactory();
         System.out.println("Functional Clients: ");
         TlsTestServer testServer = new TlsTestServer(PORT);
         testServer.start();
         ContainerReport report = new ContainerReport();
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = factory.getAvailableVersions(ConnectionRole.CLIENT, type);
+            List<String> availableVersions = DockerTlsManagerFactory.getAvailableVersions(ConnectionRole.CLIENT, type);
             for (String version : availableVersions) {
                 try {
-                    boolean isFunctional = isFunctional(testServer, factory, type, version);
+                    boolean isFunctional = isFunctional(testServer, type, version);
                     System.out.println(type.name() + ":" + version + " - " + isFunctional);
                     report.addInstanceContainer(new InstanceContainer(ConnectionRole.CLIENT, type, version, isFunctional));
                 } catch (Exception E) {
@@ -73,37 +78,42 @@ public class AvailableClientVersionsTest {
         }
     }
 
-    public boolean isFunctional(TlsTestServer testServer, DockerTlsManagerFactory factory, TlsImplementationType type, String version) {
-        TlsInstance client = null;
+    public boolean isFunctional(TlsTestServer testServer, TlsImplementationType type, String version) {
+        DockerTlsClientInstance client = null;
+        DockerExecInstance ei = null;
         testServer.setIsConnectionSuccessful(false);
         try {
-            if (version == null || factory == null || type == null) {
+            if (version == null || type == null) {
                 System.out.println("Null: " + version);
                 return false;
             }
-            try {
-                client = factory.getTlsClient(type, version, IP, HOSTNAME, PORT);
-                client.start();
-                boolean waiting = true;
-                int timeout = 0;
-                while (waiting && timeout < CONNECTION_TIMEOUT) {
-                    if (testServer.isConnectionSuccessful()) {
-                        waiting = false;
-                    }
-                    TimeUnit.SECONDS.sleep(1);
-                    timeout++;
+            client = DockerTlsManagerFactory.getTlsClientBuilder(type, version).ip(IP).hostname(HOSTNAME).port(PORT).connectOnStartup(false).insecureConnection(false).build();
+            client.start();
+            ei = (DockerExecInstance) client.connect();
+            boolean waiting = true;
+            int timeout = 0;
+            while (waiting && timeout < CONNECTION_TIMEOUT) {
+                if (testServer.isConnectionSuccessful()) {
+                    waiting = false;
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                return false;
+                TimeUnit.SECONDS.sleep(1);
+                timeout++;
             }
-            return testServer.isConnectionSuccessful();
+
+            boolean res = testServer.isConnectionSuccessful();
+            if (!res) {
+                System.out.println("-Failed- Log:");
+                for (String ln : ei.frameHandler.getLines()) {
+                    System.out.println(ln);
+                }
+            }
+            return res;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         } finally {
             if (client != null) {
-                client.kill();
+                client.close();
             }
         }
     }

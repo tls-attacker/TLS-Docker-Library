@@ -22,16 +22,15 @@ COPY --from=gnutls-libnettle /build/ /build/
 RUN make autoreconf
 RUN ./configure --with-included-libtasn1 --with-included-unistring --disable-maintainer-mode --disable-doc --disable-full-test-suite --disable-cxx --disable-padlock --without-p11-kit --without-tpm --prefix=/build/
 RUN make && make install
+# copy all libs we need
+RUN mkdir /libdeps
+RUN cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bin/gnutls-serv | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
+RUN cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bin/gnutls-cli | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
 
 FROM entrypoint as gnutls-base
-COPY --from=gnutls-gnutls /lib/ld-musl-x86_64.so.* \
-  /usr/lib/libgmp.so.* \
-  /usr/lib/libintl.so.* \
-  /build/lib/libgnutls.so.* \
-  /build/lib/libnettle.so.* \
-  /build/lib/libhogweed.so.* \
-  /usr/local/lib/libopts.so.* \
-  /lib/libz.so.* /lib/
+COPY --from=gnutls-gnutls /build/ /artifacts/ssllib/
+COPY --from=gnutls-gnutls /libdeps/* /artifacts/ssllib/libdeps/
+COPY --from=gnutls-gnutls /libdeps/* /lib/
 
 FROM gnutls-base as gnutls-server
 ARG VERSION

@@ -8,6 +8,15 @@ import java.util.List;
 
 public class PropertyManager {
 
+    private static PropertyManager instance;
+
+    public static PropertyManager instance() {
+        if (instance == null) {
+            instance = new PropertyManager();
+        }
+        return instance;
+    }
+
     private final List<ImageProperties> imagePropertyList;
 
     private static class Const {
@@ -20,7 +29,7 @@ public class PropertyManager {
         static final String CA_CERT = "/cert/ca.pem";
     }
 
-    public PropertyManager() {
+    protected PropertyManager() {
         imagePropertyList = new LinkedList<>();
 
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.BEARSSL, "0.6", Const.CA_CERT, false));
@@ -32,12 +41,14 @@ public class PropertyManager {
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MATRIXSSL, "4.2.2", Const.CA_CERT, true));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.MBEDTLS, "2.16.6", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.NSS, "3.54", Const.CA_CERT, false));
-        //imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OCAMLTLS, "0.8.0", null, false));
+        // imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT,
+        // TlsImplementationType.OCAMLTLS, "0.8.0", null, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.OPENSSL, "1.1.1g", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.RUSTLS, "0.17.0", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.S2N, "0.10.5", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.TLSLITE_NG, "0.8.0-alpha38", Const.CA_CERT, false));
         imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.WOLFSSL, "4.4.0-stable", Const.CA_CERT, false));
+        imagePropertyList.add(new ImageProperties(ConnectionRole.CLIENT, TlsImplementationType.CURL, "7.72.0--openssl-client:1.1.1g", Const.CA_CERT, false));
 
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BEARSSL, "0.6", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM, null));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.BORINGSSL, "master", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM, Const.CERT_COMBINED_PEM));
@@ -50,7 +61,8 @@ public class PropertyManager {
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MATRIXSSL, "4.2.2", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM, null));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.MBEDTLS, "2.16.6", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM, null));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.NSS, "3.54", 4430, "cert", "/cert/db/", null));
-        //imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.OCAMLTLS, ...
+        // imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER,
+        // TlsImplementationType.OCAMLTLS, ...
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.OPENSSL, "1.1.1g", 4433, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM, null));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.RUSTLS, "0.17.0", 443, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM, null));
         imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER, TlsImplementationType.S2N, "0.10.5", 4430, Const.CERT_KEY_PEM, Const.CERT_CERT_PEM, null));

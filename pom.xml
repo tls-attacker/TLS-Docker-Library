@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TLS-Docker-Library</artifactId>
     <groupId>de.rub.nds.tlsdockerlib</groupId>
@@ -33,15 +34,14 @@
             <version>2.9.0</version>
         </dependency>
         <dependency>
-            <groupId>com.spotify</groupId>
-            <artifactId>docker-client</artifactId>
-            <version>8.16.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java-core</artifactId>
+            <version>3.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java-transport-httpclient5</artifactId>
+            <version>3.2.5</version>
         </dependency>
         <dependency>
             <groupId>com.codepoetics</groupId>
@@ -63,7 +63,7 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>27.1-jre</version>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
@@ -76,13 +76,13 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>TLS-Docker-Library</finalName>              
+        <finalName>TLS-Docker-Library</finalName>
         <plugins>
-            <plugin> 
-                <artifactId>maven-dependency-plugin</artifactId> 
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.1.1</version>
                 <executions>
-                    <execution>             
+                    <execution>
                         <id>copy</id>
                         <phase>package</phase>
                         <goals>
@@ -103,17 +103,17 @@
                     </execution>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>package</phase> 
-                        <goals> 
-                            <goal>copy-dependencies</goal> 
-                        </goals> 
-                        <configuration> 
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
                             <outputDirectory>${basedir}/apps/lib</outputDirectory>
                             <!--Ensures only runnable dependencies are included-->
-                            <includeScope>compile</includeScope> 
-                        </configuration> 
-                    </execution> 
-                </executions> 
+                            <includeScope>compile</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <!-- Build an executable JAR -->
@@ -132,8 +132,8 @@
             </plugin>
             <plugin>
                 <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>1.2.0</version>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.13</version>
                 <executions>
                     <execution>
                         <id>build-docker-base-image</id>
@@ -143,11 +143,11 @@
                         </goals>
                         <configuration>
                             <imageName>alpine-build</imageName>
-                            <dockerDirectory>${project.basedir}/images/baseimage/</dockerDirectory>
+                            <contextDirectory>${project.basedir}/images/baseimage/</contextDirectory>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>  
+            </plugin>
             <plugin>
                 <groupId>com.mycila</groupId>
                 <version>3.0</version>
