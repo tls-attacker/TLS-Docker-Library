@@ -16,12 +16,10 @@ import com.github.dockerjava.api.command.InspectVolumeResponse;
 import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.AccessMode;
 import com.github.dockerjava.api.model.Bind;
-import com.github.dockerjava.api.model.ContainerConfig;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.api.model.SELContext;
 import com.github.dockerjava.api.model.Volume;
-import com.google.common.collect.ImmutableList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -187,102 +185,6 @@ public abstract class DockerTlsInstance {
 
     public Image getImage() {
         return image;
-    }
-
-    public void setImage(Image image) {
-        ImmutableList<String> tags = new ImmutableList<>(image.getRepoTags());
-        if (tags != null && tags.size() > 0) {
-            this.name = tags.get(0).replace(":", "");
-        } else {
-            this.name = String.format("%s_%s", imageProperties.getType().name(), imageProperties.getRole().name());
-        }
-        this.name += "-" + RandomStringUtils.randomAlphanumeric(5);
-        this.image = image;
-    }
-
-    public ContainerConfig getContainerConfig() {
-        if (containerConfig == null)
-            containerConfig = generateContainerConfig();
-        return containerConfig;
-    }
-
-    public void setContainerConfig(ContainerConfig containerConfig) {
-        this.containerConfig = containerConfig;
-    }
-
-    private ContainerConfig generateContainerConfig() {
-        String protocol = hostInfo.getType() == TransportType.TCP ? "/tcp" : "/udp";
-
-        Integer targetPort = imageProperties.getInternalPort();
-        if (role == ConnectionRole.CLIENT) {
-            targetPort = hostInfo.getPort();
-        }
-
-        if (hostInfo.getHostname() == null || imageProperties.isUseIP()) {
-            host = hostInfo.getIp();
-        } else {
-            host = hostInfo.getHostname();
-        }
-
-        return ContainerConfig.builder()
-                .image(image.id())
-                .hostConfig(getInstanceHostConfig())
-                .exposedPorts(imageProperties.getInternalPort() + protocol)
-                .attachStderr(true)
-                .attachStdout(true)
-                .attachStdin(true)
-                .tty(true)
-                .stdinOnce(true)
-                .openStdin(true)
-                .cmd(convertProfileToParams(targetPort))
-                //.env("DISPLAY=$DISPLAY"));
-                .build();
-    }
-
-    private HostConfig getInstanceHostConfig() {
-        try {
-            Volume volume = DOCKER.listVolumes(DockerClient.ListVolumesParam.name("cert-data")).volumes().stream()
-                    .findFirst()
-                    .orElseThrow(CertVolumeNotFoundException::new);
-
-            switch (role) {
-                case CLIENT:
-                    String extraHost = "test:127.0.0.27";
-                    if (hostInfo.getHostname() != null) {
-                        extraHost = hostInfo.getHostname() + ":" + hostInfo.getIp();
-                    }
-
-                    return HostConfig.builder()
-                            .extraHosts(extraHost)
-                            .appendBinds(HostConfig.Bind.from(volume)
-                                    .to("/cert/")
-                                    .readOnly(true)
-                                    .noCopy(true)
-                                    .build())
-                            //ToDo: Bind of X11 Settings does not work as expected
-                            .appendBinds(HostConfig.Bind.from("/tmp/.X11-unix")
-                                    .to("/tmp/.X11-unix")
-                                    .build())
-                            .build();
-                case SERVER:
-                    String protocol = hostInfo.getType() == TransportType.TCP ? "/tcp" : "/udp";
-                    return HostConfig.builder()
-                            .portBindings(ImmutableMap.of(imageProperties.getInternalPort() + protocol, Arrays.asList(PortBinding.of("127.0.0.42", "" + hostInfo.getPort()))))
-                            .binds(HostConfig.Bind.builder()
-                                    .from(volume)
-                                    .readOnly(true)
-                                    .noCopy(true)
-                                    .to("/cert/")
-                                    .build())
-                            .readonlyRootfs(true)
-                            .build();
-                default:
-                    throw new IllegalArgumentException("Unknown ConnectionRole: " + role.name());
-            }
-        } catch (Exception e) {
-            LOGGER.error("Could not get host config", e);
-            throw new RuntimeException("Cannot create HostConfig", e);
-        }
     }
 
     @SuppressWarnings("squid:S2142") // sonarlint: "InterruptedException" should not be ignored
