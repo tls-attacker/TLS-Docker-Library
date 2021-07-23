@@ -3,8 +3,19 @@ cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
 
+# version 3.3.x
+array=(0 1)
+typeset -i i=0 max=${#array[*]}
+while (( i < max ))
+do
+        echo "Building: LibreSSL 3.2.${array[$i]}"
+        _docker build --build-arg VERSION=3.3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.3.${array[$i]} -f Dockerfile-2_x --target libressl-server .
+        _docker build --build-arg VERSION=3.3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.3.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+        i=i+1
+done
+
 # version 3.2.x
-array=(0)
+array=(0 1 2 3)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
@@ -15,7 +26,7 @@ do
 done
 
 # version 3.1.x
-array=(0 1 2 3)
+array=(0 1 2 3 4 5)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do

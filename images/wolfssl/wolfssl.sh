@@ -2,7 +2,7 @@
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
-array=(0.0-stable 1.0-stable 2.0-stable 2.0c 3.0-stable 4.0-stable)
+array=(0.0-stable 1.0-stable 2.0-stable 2.0c 3.0-stable 4.0-stable 5.0-stable 6.0-stable)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do

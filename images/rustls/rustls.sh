@@ -16,7 +16,7 @@ for i in "${versions[@]}"; do
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}rustls-server:${i} --target rustls-server -f Dockerfile_15_2-16_0 .
 done
 
-versions=(0.17.0)
+versions=(0.19.0 0.18.1 0.18.0 0.17.0)
 for i in "${versions[@]}"; do
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}rustls-client:${i} --target rustls-client -f Dockerfile .
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}rustls-server:${i} --target rustls-server -f Dockerfile .

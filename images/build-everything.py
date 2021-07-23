@@ -125,6 +125,11 @@ def main():
 
     ARGS = parser.parse_args()
 
+    if len(ARGS.version) > 1:
+        if len(ARGS.version) != len(ARGS.library):
+            error("You need to an equal amount of librarie and versions")
+            sys.exit(1)
+
     build_scripts = []
     # receive all build.sh scripts in all subfolders
     for (dirpath, dirnames, filenames) in os.walk(FOLDER):
@@ -215,14 +220,16 @@ def main():
             build_cmd = list(map(prepare_cmd,CMD_SPLIT_RE.findall(cmds[i + 1])))
 
             version = get_image_version(build_cmd)
-            if len(ARGS.version) > 0:
-                found = False
-                for v in ARGS.version:
-                    if re.search(v.replace(".", "\\."), version):
-                        found = True
-                        break
+            library = os.path.basename(cwd)
+            index = ARGS.library.index(library)
+            selectedLibraryVersion = None
+            if len(ARGS.version) > 1:
+                selectedLibraryVersion = ARGS.version[index]
+            elif len(ARGS.version) == 1:
+                selectedLibraryVersion = ARGS.version[0]
 
-                if not found:
+            if selectedLibraryVersion:
+                if not re.search(selectedLibraryVersion.replace(".", "\\."), version):
                     continue
 
             # execute the docker build command with the executor

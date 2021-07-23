@@ -1,6 +1,31 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
+
+array=(0)
+typeset -i i=0 max=${#array[*]}
+while (( i < max ))
+do
+	echo "Building: GnuTLS 3.7.${array[$i]}"
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-client .
+	i=i+1
+done
+
+
+# 3.6.6 and 3.6.5 does not compile due to strange errors
+# "Nettle lacks the required rsa_sec_decrypt function"
+array=(3 4 7 8 9 10 11 12 13 14 15)
+typeset -i i=0 max=${#array[*]}
+while (( i < max ))
+do
+	echo "Building: GnuTLS 3.6.${array[$i]}"
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.6.${array[$i]} -f Dockerfile-3_6_3-x --target gnutls-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.6.${array[$i]} -f Dockerfile-3_6_3-x --target gnutls-client .
+	i=i+1
+done
+
+
 array=(0 0_1 1 2)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
@@ -8,18 +33,6 @@ do
 	echo "Building: GnuTLS 3.6.${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.6.${array[$i]} -f Dockerfile-3_6_0-2 --target gnutls-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.6.${array[$i]} -f Dockerfile-3_6_0-2 --target gnutls-client .
-	i=i+1
-done
-
-# 3.6.6 and 3.6.5 does not compile due to strange errors
-# "Nettle lacks the required rsa_sec_decrypt function"
-array=(3 4 7 8 9 10 11 12 13 14)
-typeset -i i=0 max=${#array[*]}
-while (( i < max ))
-do
-	echo "Building: GnuTLS 3.6.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.6.${array[$i]} -f Dockerfile-3_6_3-x --target gnutls-server .
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.6.${array[$i]} -f Dockerfile-3_6_3-x --target gnutls-client .
 	i=i+1
 done
 

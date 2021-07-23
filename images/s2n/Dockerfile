@@ -1,6 +1,6 @@
 FROM debian-build:sid as s2n-base1
 ARG VERSION
-RUN apt-get install -y libssl-dev
+RUN apt-get update && apt-get install -y libssl-dev
 RUN git clone --branch=v${VERSION} --depth=1 https://github.com/awslabs/s2n
 WORKDIR s2n
 RUN make bin

@@ -63,7 +63,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
     /**
      * Update port to match actually exposed port.
      */
-    protected void updateInstancePort() {
+    public void updateInstancePort() {
         InspectContainerResponse containerInfo = DOCKER.inspectContainerCmd(getId()).exec();
         if (containerInfo == null) {
             throw new IllegalStateException("Could not find container with ID:" + getId());
