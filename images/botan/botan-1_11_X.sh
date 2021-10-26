@@ -13,8 +13,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]} -f Dockerfile-1_11_9-13 --target botan-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]} -f Dockerfile-1_11_9-13 --target botan-client .
     if [ ! -z "$DOCKER_REPOSITORY" ]; then
-      _docker push ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]}
-      _docker push ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]}
+      docker push ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]}
+      docker push ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]}
     fi
 	i=i+1
 done
@@ -27,8 +27,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]} -f Dockerfile-1_11_x --target botan-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]} -f Dockerfile-1_11_x --target botan-client .
     if [ ! -z "$DOCKER_REPOSITORY" ]; then
-      _docker push ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]}
-      _docker push ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]}
+      docker push ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]}
+      docker push ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]}
     fi
 	i=i+1
 done
@@ -36,8 +36,8 @@ done
 _docker build --build-arg VERSION=34 -t ${DOCKER_REPOSITORY}botan-server:1.11.34 -f Dockerfile-1_11_34 --target botan-server .
 _docker build --build-arg VERSION=34 -t ${DOCKER_REPOSITORY}botan-client:1.11.34 -f Dockerfile-1_11_34 --target botan-client .
     if [ ! -z "$DOCKER_REPOSITORY" ]; then
-	_docker push ${DOCKER_REPOSITORY}botan-server:1.11.34
-	_docker push ${DOCKER_REPOSITORY}botan-client:1.11.34
+	docker push ${DOCKER_REPOSITORY}botan-server:1.11.34
+	docker push ${DOCKER_REPOSITORY}botan-client:1.11.34
 fi
 
 array=(25 26 27 28 29)
@@ -48,8 +48,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]} -f Dockerfile-1_11_25-29 --target botan-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]} -f Dockerfile-1_11_25-29 --target botan-client .
     if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		_docker push ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]}
-		_docker push ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}botan-server:1.11.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}botan-client:1.11.${array[$i]}
 	fi
 	i=i+1
 done
