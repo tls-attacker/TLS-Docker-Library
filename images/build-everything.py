@@ -135,14 +135,10 @@ def main():
         os.environ["DOCKER_REPOSITORY"] = ARGS.deploy
 
     build_scripts = []
-    # TODO: make deploy_build.sh
     # call based on parameter
     # receive all build.sh scripts in all subfolders
     for (dirpath, dirnames, filenames) in os.walk(FOLDER):
-        if ARGS.deploy == None:
-            scripts = list(filter(lambda x: x == "build.sh", filenames))
-        else:
-            scripts = list(filter(lambda x: x == "build_deploy.sh", filenames)
+        scripts = list(filter(lambda x: x == "build.sh", filenames))
         scripts = list(map(lambda x: os.path.join(dirpath, x), scripts))
 
 

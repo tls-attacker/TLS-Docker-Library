@@ -11,6 +11,10 @@ do
 	echo "Building: BoringSSL ${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}boringssl-server:${array[$i]} -f Dockerfile-2272-2357 --target boringssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}boringssl-client:${array[$i]} -f Dockerfile-2272-2357 --target boringssl-client .
+    if ![-z "$var"]; then
+      _docker push ${DOCKER_REPOSITORY}boringssl-server:${i}
+      _docker push ${DOCKER_REPOSITORY}boringssl-client:${i}
+    fi
 	i=i+1
 done
 
@@ -21,6 +25,10 @@ do
 	echo "Building: BoringSSL ${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}boringssl-server:${array[$i]} -f Dockerfile-2214-2661 --target boringssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}boringssl-client:${array[$i]} -f Dockerfile-2214-2661 --target boringssl-client .
+    if ![-z "$var"]; then
+      _docker push ${DOCKER_REPOSITORY}boringssl-server:${i}
+      _docker push ${DOCKER_REPOSITORY}boringssl-client:${i}
+    fi
 	i=i+1
 done
 
@@ -31,6 +39,10 @@ do
 	echo "Building: BoringSSL ${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}boringssl-server:${array[$i]} -f Dockerfile-x --target boringssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}boringssl-client:${array[$i]} -f Dockerfile-x --target boringssl-client .
+    if ![-z "$var"]; then
+      _docker push ${DOCKER_REPOSITORY}boringssl-server:${i}
+      _docker push ${DOCKER_REPOSITORY}boringssl-client:${i}
+    fi
 	i=i+1
 done
 
