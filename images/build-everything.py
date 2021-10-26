@@ -116,27 +116,38 @@ def main():
     global ARGS
     parser = argparse.ArgumentParser(description="Build docker images for all TLS libraries or for specific ones.")
     parser.add_argument("--skip_cmd_generation", help="Skips the regeneration of the docker build commands", action="store_true", default=False)
-    parser.add_argument("-p", "--parallel_builds", help="Number of paralllel docker build operations", default=os.cpu_count()//2, type=int)
+    parser.add_argument("-p", "--parallel_builds", help="Number of parallel docker build operations", default=os.cpu_count()//2, type=int)
     parser.add_argument("-l", "--library", help="Build only docker images of a certain library. " +
                                                 "The value is matched against the subfolder names inside the images folder. " +
                                                 "Can be specified multiple times.", default=[], action="append")
     parser.add_argument("-f", "--force_rebuild", help="Build docker containers, even if they already exist.", default=False, action="store_true")
     parser.add_argument("-v", "--version", help="Only build specific versions, this is a regex that is matched against the version. Dots are escaped.", default=[], action="append")
+    parser.add_argument("-d", "--deploy", help="Deploy the project to a given repository. Be sure to use docker login and logout yourself", default=None, type=str)
 
     ARGS = parser.parse_args()
 
     if len(ARGS.version) > 1:
         if len(ARGS.version) != len(ARGS.library):
-            error("You need to an equal amount of librarie and versions")
+            error("You need to an equal amount of libraries and versions")
             sys.exit(1)
 
+    if ARGS.deploy != None:
+        os.environ["DOCKER_REPOSITORY"] = ARGS.deploy
+
     build_scripts = []
+    # TODO: make deploy_build.sh
+    # call based on parameter
     # receive all build.sh scripts in all subfolders
     for (dirpath, dirnames, filenames) in os.walk(FOLDER):
-        scripts = list(filter(lambda x: x == "build.sh", filenames))
+        if ARGS.deploy == None:
+            scripts = list(filter(lambda x: x == "build.sh", filenames))
+        else:
+            scripts = list(filter(lambda x: x == "build_deploy.sh", filenames)
         scripts = list(map(lambda x: os.path.join(dirpath, x), scripts))
 
-        build_scripts += scripts
+
+
+    build_scripts += scripts
 
 
     # filter for specific libraries
@@ -219,18 +230,21 @@ def main():
             # second line contains the docker build command
             build_cmd = list(map(prepare_cmd,CMD_SPLIT_RE.findall(cmds[i + 1])))
 
-            version = get_image_version(build_cmd)
-            library = os.path.basename(cwd)
-            index = ARGS.library.index(library)
-            selectedLibraryVersion = None
-            if len(ARGS.version) > 1:
-                selectedLibraryVersion = ARGS.version[index]
-            elif len(ARGS.version) == 1:
-                selectedLibraryVersion = ARGS.version[0]
+            try:
+                version = get_image_version(build_cmd)
+                library = os.path.basename(cwd)
+                index = ARGS.library.index(library)
+                selectedLibraryVersion = None
+                if len(ARGS.version) > 1:
+                    selectedLibraryVersion = ARGS.version[index]
+                elif len(ARGS.version) == 1:
+                    selectedLibraryVersion = ARGS.version[0]
 
-            if selectedLibraryVersion:
-                if not re.search(selectedLibraryVersion.replace(".", "\\."), version):
-                    continue
+                if selectedLibraryVersion:
+                    if not re.search(selectedLibraryVersion.replace(".", "\\."), version):
+                        continue
+            except:
+                pass
 
             # execute the docker build command with the executor
             futures.append(executor.submit(execute_docker, build_cmd, cwd))
