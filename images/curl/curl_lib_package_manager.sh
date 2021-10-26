@@ -20,5 +20,9 @@ do
             -f Dockerfile_lib_package_manager \
             --target curl \
             .
+
+            if [ ! -z "$DOCKER_REPOSITORY" ]; then
+                docker push "${DOCKER_REPOSITORY}curl:${CURL_VERSION}_openssl_${base/:/_}"
+            fi
     done
 done

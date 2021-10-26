@@ -9,6 +9,10 @@ do
 	echo "Building: CyaSSL 2.${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:2.${array[$i]} -f Dockerfile-2_x --target wolfssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:2.${array[$i]} -f Dockerfile-2_x --target wolfssl-client .
+    if [ ! -z "$DOCKER_REPOSITORY" ]; then
+        docker push ${DOCKER_REPOSITORY}wolfssl-server:2.${array[$i]}
+        docker push ${DOCKER_REPOSITORY}wolfssl-client:2.${array[$i]}
+    fi
 	i=i+1
 done
 

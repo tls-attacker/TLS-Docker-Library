@@ -6,21 +6,41 @@ array=(a b c d e f g h i j k l m n o p q r s t u)
 typeset -i i=0 max=${#array[*]}
 _docker build --build-arg VERSION= -t ${DOCKER_REPOSITORY}openssl-server:1.0.2 -f Dockerfile-1_0_2_and_betas --target openssl-server .
 _docker build --build-arg VERSION= -t ${DOCKER_REPOSITORY}openssl-client:1.0.2 -f Dockerfile-1_0_2_and_betas --target openssl-client .
+if [ ! -z "$DOCKER_REPOSITORY" ]; then
+	docker push ${DOCKER_REPOSITORY}openssl-server:1.0.2
+	docker push ${DOCKER_REPOSITORY}openssl-client:1.0.2
+fi
 
 _docker build --build-arg VERSION=-beta1 -t ${DOCKER_REPOSITORY}openssl-server:1.0.2beta1 -f Dockerfile-1_0_2_and_betas --target openssl-server .
 _docker build --build-arg VERSION=-beta1 -t ${DOCKER_REPOSITORY}openssl-client:1.0.2beta1 -f Dockerfile-1_0_2_and_betas --target openssl-client .
+if [ ! -z "$DOCKER_REPOSITORY" ]; then
+	docker push ${DOCKER_REPOSITORY}openssl-server:1.0.2beta1
+	docker push ${DOCKER_REPOSITORY}openssl-client:1.0.2beta1
+fi
 
 _docker build --build-arg VERSION=-beta2 -t ${DOCKER_REPOSITORY}openssl-server:1.0.2beta2 -f Dockerfile-1_0_2_and_betas --target openssl-server .
 _docker build --build-arg VERSION=-beta2 -t ${DOCKER_REPOSITORY}openssl-client:1.0.2beta2 -f Dockerfile-1_0_2_and_betas --target openssl-client .
+if [ ! -z "$DOCKER_REPOSITORY" ]; then
+	docker push ${DOCKER_REPOSITORY}openssl-server:1.0.2beta2
+	docker push ${DOCKER_REPOSITORY}openssl-client:1.0.2beta2
+fi
 
 _docker build --build-arg VERSION=-beta3 -t ${DOCKER_REPOSITORY}openssl-server:1.0.2beta3 -f Dockerfile-1_0_2_and_betas --target openssl-server .
 _docker build --build-arg VERSION=-beta3 -t ${DOCKER_REPOSITORY}openssl-client:1.0.2beta3 -f Dockerfile-1_0_2_and_betas --target openssl-client .
+if [ ! -z "$DOCKER_REPOSITORY" ]; then
+	docker push ${DOCKER_REPOSITORY}openssl-server:1.0.2beta3
+	docker push ${DOCKER_REPOSITORY}openssl-client:1.0.2beta3
+fi
 
 while (( i < max ))
 do
 	echo "Feld $i: Openssl 1.0.2${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}openssl-server:1.0.2${array[$i]} -f Dockerfile-1_0_2x --target openssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}openssl-client:1.0.2${array[$i]} -f Dockerfile-1_0_2x --target openssl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}openssl-server:1.0.2${array[$i]}
+		docker push ${DOCKER_REPOSITORY}openssl-client:1.0.2${array[$i]}
+	fi
 	i=i+1
 done
 

@@ -7,6 +7,10 @@ for i in "${versions[@]}"; do
 	echo "Feld: tlslite-ng-${i}"
 	_docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}tlslite_ng-server:${i} -f Dockerfile_python3 --target tlslite-ng-server .
 	_docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}tlslite_ng-client:${i} -f Dockerfile_python3 --target tlslite-ng-client .
+    if [ ! -z "$DOCKER_REPOSITORY" ]; then
+        docker push ${DOCKER_REPOSITORY}tlslite_ng-server:${i}
+        docker push ${DOCKER_REPOSITORY}tlslite_ng-client:${i}
+    fi
 done
 
 versions=(0.4.8 0.4.3 0.4.2 0.4.1 0.3.9x)
@@ -14,6 +18,10 @@ for i in "${versions[@]}"; do
 	echo "Feld: tlslite-ng-${i}"
 	_docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}tlslite_ng-server:${i} -f Dockerfile_python2 --target tlslite-ng-server .
 	_docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}tlslite_ng-client:${i} -f Dockerfile_python2 --target tlslite-ng-client .
+    if [ ! -z "$DOCKER_REPOSITORY" ]; then
+        docker push ${DOCKER_REPOSITORY}tlslite_ng-server:${i}
+        docker push ${DOCKER_REPOSITORY}tlslite_ng-client:${i}
+    fi
 done
 
 

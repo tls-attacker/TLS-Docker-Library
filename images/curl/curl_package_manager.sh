@@ -14,6 +14,10 @@ do
         -f Dockerfile_package_manager \
         --target curl \
         .
+
+        if [ ! -z "$DOCKER_REPOSITORY" ]; then
+            docker push "${DOCKER_REPOSITORY}curl:${base/:/_}"
+        fi
 done
 
 for base in "alpine"
@@ -26,4 +30,8 @@ do
         -f Dockerfile_package_manager \
         --target curl \
         .
+
+        if [ ! -z "$DOCKER_REPOSITORY" ]; then
+            docker push "${DOCKER_REPOSITORY}curl:${base/:/_}"
+        fi
 done

@@ -8,10 +8,14 @@ array=(0 1)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
-        echo "Building: LibreSSL 3.2.${array[$i]}"
-        _docker build --build-arg VERSION=3.3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.3.${array[$i]} -f Dockerfile-2_x --target libressl-server .
-        _docker build --build-arg VERSION=3.3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.3.${array[$i]} -f Dockerfile-2_x --target libressl-client .
-        i=i+1
+	echo "Building: LibreSSL 3.2.${array[$i]}"
+	_docker build --build-arg VERSION=3.3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.3.${array[$i]} -f Dockerfile-2_x --target libressl-server .
+	_docker build --build-arg VERSION=3.3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.3.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:3.3.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:3.3.${array[$i]}
+	fi
+i=i+1
 done
 
 # version 3.2.x
@@ -19,10 +23,14 @@ array=(0 1 2 3)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
-        echo "Building: LibreSSL 3.2.${array[$i]}"
-        _docker build --build-arg VERSION=3.2.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.2.${array[$i]} -f Dockerfile-2_x --target libressl-server .
-        _docker build --build-arg VERSION=3.2.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.2.${array[$i]} -f Dockerfile-2_x --target libressl-client .
-        i=i+1
+	echo "Building: LibreSSL 3.2.${array[$i]}"
+	_docker build --build-arg VERSION=3.2.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.2.${array[$i]} -f Dockerfile-2_x --target libressl-server .
+	_docker build --build-arg VERSION=3.2.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.2.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:3.2.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:3.2.${array[$i]}
+	fi
+	i=i+1
 done
 
 # version 3.1.x
@@ -30,10 +38,14 @@ array=(0 1 2 3 4 5)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
-        echo "Building: LibreSSL 3.1.${array[$i]}"
-        _docker build --build-arg VERSION=3.1.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.1.${array[$i]} -f Dockerfile-2_x --target libressl-server .
-        _docker build --build-arg VERSION=3.1.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.1.${array[$i]} -f Dockerfile-2_x --target libressl-client .
-        i=i+1
+	echo "Building: LibreSSL 3.1.${array[$i]}"
+	_docker build --build-arg VERSION=3.1.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.1.${array[$i]} -f Dockerfile-2_x --target libressl-server .
+	_docker build --build-arg VERSION=3.1.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.1.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:3.1.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:3.1.${array[$i]}
+	fi
+	i=i+1
 done
 
 # version 3.0.x
@@ -41,10 +53,14 @@ array=(0 1 2)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
-        echo "Building: LibreSSL 3.0.${array[$i]}"
-        _docker build --build-arg VERSION=3.0.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.0.${array[$i]} -f Dockerfile-2_x --target libressl-server .
-        _docker build --build-arg VERSION=3.0.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.0.${array[$i]} -f Dockerfile-2_x --target libressl-client .
-        i=i+1
+	echo "Building: LibreSSL 3.0.${array[$i]}"
+	_docker build --build-arg VERSION=3.0.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.0.${array[$i]} -f Dockerfile-2_x --target libressl-server .
+	_docker build --build-arg VERSION=3.0.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.0.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:3.0.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:3.0.${array[$i]}
+	fi
+	i=i+1
 done
 
 # version 2.9.x
@@ -55,10 +71,14 @@ array=(0 1)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
-        echo "Building: LibreSSL 2.9.${array[$i]}"
-        _docker build --build-arg VERSION=2.9.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.9.${array[$i]} -f Dockerfile-2_x --target libressl-server .
-        _docker build --build-arg VERSION=2.9.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.9.${array[$i]} -f Dockerfile-2_x --target libressl-client .
-        i=i+1
+	echo "Building: LibreSSL 2.9.${array[$i]}"
+	_docker build --build-arg VERSION=2.9.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.9.${array[$i]} -f Dockerfile-2_x --target libressl-server .
+	_docker build --build-arg VERSION=2.9.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.9.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:2.9.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:2.9.${array[$i]}
+	fi
+	i=i+1
 done
 
 
@@ -70,6 +90,10 @@ do
         echo "Building: LibreSSL 2.8.${array[$i]}"
         _docker build --build-arg VERSION=2.8.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.8.${array[$i]} -f Dockerfile-2_x --target libressl-server .
         _docker build --build-arg VERSION=2.8.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.8.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+		if [ ! -z "$DOCKER_REPOSITORY" ]; then
+			docker push ${DOCKER_REPOSITORY}libressl-server:2.8.${array[$i]}
+			docker push ${DOCKER_REPOSITORY}libressl-client:2.8.${array[$i]}
+		fi
         i=i+1
 done
 
@@ -78,10 +102,14 @@ array=(0 1 2 3 4 5)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
-        echo "Building: LibreSSL 2.7.${array[$i]}"
-        _docker build --build-arg VERSION=2.7.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.7.${array[$i]} -f Dockerfile-2_x --target libressl-server .
-        _docker build --build-arg VERSION=2.7.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.7.${array[$i]} -f Dockerfile-2_x --target libressl-client .
-        i=i+1
+	echo "Building: LibreSSL 2.7.${array[$i]}"
+	_docker build --build-arg VERSION=2.7.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.7.${array[$i]} -f Dockerfile-2_x --target libressl-server .
+	_docker build --build-arg VERSION=2.7.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.7.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:2.7.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:2.7.${array[$i]}
+	fi
+	i=i+1
 done
 
 # version 2.6.x
@@ -92,6 +120,10 @@ do
 	echo "Building: LibreSSL 2.6.${array[$i]}"
 	_docker build --build-arg VERSION=2.6.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.6.${array[$i]} -f Dockerfile-2_x --target libressl-server .
 	_docker build --build-arg VERSION=2.6.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.6.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:2.6.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:2.6.${array[$i]}
+	fi
 	i=i+1
 done
 
@@ -103,6 +135,10 @@ do
 	echo "Building: LibreSSL 2.5.${array[$i]}"
 	_docker build --build-arg VERSION=2.5.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.5.${array[$i]} -f Dockerfile-2_x --target libressl-server .
 	_docker build --build-arg VERSION=2.5.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.5.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:2.5.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:2.5.${array[$i]}
+	fi
 	i=i+1
 done
 
@@ -114,6 +150,10 @@ do
 	echo "Building: LibreSSL 2.4.${array[$i]}"
 	_docker build --build-arg VERSION=2.4.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.4.${array[$i]} -f Dockerfile-2_x --target libressl-server .
 	_docker build --build-arg VERSION=2.4.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.4.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:2.4.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:2.4.${array[$i]}
+	fi
 	i=i+1
 done
 
@@ -127,6 +167,10 @@ do
 	echo "Building: LibreSSL 2.3.${array[$i]}"
 	_docker build --build-arg VERSION=2.3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.3.${array[$i]} -f Dockerfile-2_x --target libressl-server .
 	_docker build --build-arg VERSION=2.3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.3.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:2.3.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:2.3.${array[$i]}
+	fi
 	i=i+1
 done
 
@@ -140,6 +184,10 @@ do
 	echo "Building: LibreSSL 2.2.${array[$i]}"
 	_docker build --build-arg VERSION=2.2.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.2.${array[$i]} -f Dockerfile-2_x --target libressl-server .
 	_docker build --build-arg VERSION=2.2.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.2.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:2.2.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:2.2.${array[$i]}
+	fi
 	i=i+1
 done
 
@@ -151,6 +199,10 @@ do
 	echo "Building: LibreSSL 2.1.${array[$i]}"
 	_docker build --build-arg VERSION=2.1.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.1.${array[$i]} -f Dockerfile-2_x --target libressl-server .
 	_docker build --build-arg VERSION=2.1.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.1.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:2.1.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:2.1.${array[$i]}
+	fi
 	i=i+1
 done
 
@@ -163,6 +215,10 @@ do
 	echo "Building: LibreSSL 2.0.${array[$i]}"
 	_docker build --build-arg VERSION=2.0.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:2.0.${array[$i]} -f Dockerfile-2_x --target libressl-server .
 	_docker build --build-arg VERSION=2.0.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:2.0.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+	if [ ! -z "$DOCKER_REPOSITORY" ]; then
+		docker push ${DOCKER_REPOSITORY}libressl-server:2.0.${array[$i]}
+		docker push ${DOCKER_REPOSITORY}libressl-client:2.0.${array[$i]}
+	fi
 	i=i+1
 done
 

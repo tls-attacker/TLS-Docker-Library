@@ -38,6 +38,10 @@ do
                 -f Dockerfile \
                 --target curl \
                 .
+            
+            if [ ! -z "$DOCKER_REPOSITORY" ]; then
+                docker push "${DOCKER_REPOSITORY}curl:${CURL_VERSION}_${LIB_NAME}_${SSL_VERSION}"
+            fi
         done
     done
 done
