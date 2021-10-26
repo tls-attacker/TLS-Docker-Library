@@ -140,10 +140,7 @@ def main():
     for (dirpath, dirnames, filenames) in os.walk(FOLDER):
         scripts = list(filter(lambda x: x == "build.sh", filenames))
         scripts = list(map(lambda x: os.path.join(dirpath, x), scripts))
-
-
-
-    build_scripts += scripts
+        build_scripts += scripts
 
 
     # filter for specific libraries
