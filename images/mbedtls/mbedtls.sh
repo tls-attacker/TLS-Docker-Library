@@ -11,8 +11,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}mbedtls-server:${array[$i]} -f Dockerfile-mbedtls_x2 --target mbed-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}mbedtls-client:${array[$i]} -f Dockerfile-mbedtls_x2 --target mbed-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}mbedtls-server:${array[$i]}
-		docker push ${DOCKER_REPOSITORY}mbedtls-client:${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}mbedtls-server:${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}mbedtls-client:${array[$i]}
 	fi
 	i=i+1
 done

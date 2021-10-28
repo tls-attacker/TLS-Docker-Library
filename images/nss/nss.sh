@@ -12,8 +12,8 @@ do
     _docker build --build-arg NSS_VERSION=${nss_versions[$i]} --build-arg NSPR_VERSION=${nspr_versions[$i]} --build-arg VERSION=${v} -t ${DOCKER_REPOSITORY}nss-server:${v} --target nss-server .
     _docker build --build-arg NSS_VERSION=${nss_versions[$i]} --build-arg NSPR_VERSION=${nspr_versions[$i]} --build-arg VERSION=${v} -t ${DOCKER_REPOSITORY}nss-client:${v} --target nss-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}nss-server:${v}
-		docker push ${DOCKER_REPOSITORY}nss-client:${v}
+		_docker push ${DOCKER_REPOSITORY}nss-server:${v}
+		_docker push ${DOCKER_REPOSITORY}nss-client:${v}
 	fi
     i=i+1
 done
@@ -28,8 +28,8 @@ do
     _docker build --build-arg NSS_VERSION=${nss_versions[$i]} --build-arg NSPR_VERSION=${nspr_versions[$i]} --build-arg VERSION=${v} -t ${DOCKER_REPOSITORY}nss-server:${v} --target nss-server -f Dockerfile_pre_3_36_8 .
     _docker build --build-arg NSS_VERSION=${nss_versions[$i]} --build-arg NSPR_VERSION=${nspr_versions[$i]} --build-arg VERSION=${v} -t ${DOCKER_REPOSITORY}nss-client:${v} --target nss-client -f Dockerfile_pre_3_36_8 .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}nss-server:${v}
-		docker push ${DOCKER_REPOSITORY}nss-client:${v}
+		_docker push ${DOCKER_REPOSITORY}nss-server:${v}
+		_docker push ${DOCKER_REPOSITORY}nss-client:${v}
 	fi
     i=i+1
 done

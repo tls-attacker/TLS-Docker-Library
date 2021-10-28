@@ -16,7 +16,7 @@ do
         .
 
         if [ ! -z "$DOCKER_REPOSITORY" ]; then
-            docker push "${DOCKER_REPOSITORY}curl:${base/:/_}"
+            _docker push "${DOCKER_REPOSITORY}curl:${base/:/_}"
         fi
 done
 
@@ -32,6 +32,6 @@ do
         .
 
         if [ ! -z "$DOCKER_REPOSITORY" ]; then
-            docker push "${DOCKER_REPOSITORY}curl:${base/:/_}"
+            _docker push "${DOCKER_REPOSITORY}curl:${base/:/_}"
         fi
 done

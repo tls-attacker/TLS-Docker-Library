@@ -11,7 +11,7 @@ do
 	echo "Feld $i: python-gnutls-${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}python_gnutls-server:${array[$i]} -f Dockerfile .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}python_gnutls-server:${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}python_gnutls-server:${array[$i]}
 	fi
 	i=i+1
 done

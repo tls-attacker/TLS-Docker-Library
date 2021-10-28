@@ -5,7 +5,7 @@ exit_on_error
 
 _docker build -t ${DOCKER_REPOSITORY}gotls:latest .
 if [ ! -z "$DOCKER_REPOSITORY" ]; then
-    docker push ${DOCKER_REPOSITORY}gotls:latest
+    _docker push ${DOCKER_REPOSITORY}gotls:latest
 fi
 
 exit "$EXITCODE"

@@ -10,8 +10,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}gnutls-server:3.7.${array[$i]}
-		docker push ${DOCKER_REPOSITORY}gnutls-client:3.7.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-server:3.7.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-client:3.7.${array[$i]}
 	fi
 	i=i+1
 done
@@ -27,8 +27,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.6.${array[$i]} -f Dockerfile-3_6_3-x --target gnutls-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.6.${array[$i]} -f Dockerfile-3_6_3-x --target gnutls-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}gnutls-server:3.6.${array[$i]}
-		docker push ${DOCKER_REPOSITORY}gnutls-client:3.6.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-server:3.6.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-client:3.6.${array[$i]}
 	fi
 	i=i+1
 done
@@ -42,8 +42,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.6.${array[$i]} -f Dockerfile-3_6_0-2 --target gnutls-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.6.${array[$i]} -f Dockerfile-3_6_0-2 --target gnutls-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}gnutls-server:3.6.${array[$i]}
-		docker push ${DOCKER_REPOSITORY}gnutls-client:3.6.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-server:3.6.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-client:3.6.${array[$i]}
 	fi
 	i=i+1
 done
@@ -57,8 +57,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.5.${array[$i]} -f Dockerfile-3_5_0-7 --target gnutls-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.5.${array[$i]} -f Dockerfile-3_5_0-7 --target gnutls-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}gnutls-server:3.5.${array[$i]}
-		docker push ${DOCKER_REPOSITORY}gnutls-client:3.5.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-server:3.5.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-client:3.5.${array[$i]}
 	fi
 	i=i+1
 done
@@ -71,8 +71,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.5.${array[$i]} -f Dockerfile-3_5_8-16 --target gnutls-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.5.${array[$i]} -f Dockerfile-3_5_8-16 --target gnutls-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}gnutls-server:3.5.${array[$i]}
-		docker push ${DOCKER_REPOSITORY}gnutls-client:3.5.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-server:3.5.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-client:3.5.${array[$i]}
 	fi
 	i=i+1
 done
@@ -86,8 +86,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.4.${array[$i]} -f Dockerfile-3_4_x --target gnutls-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.4.${array[$i]} -f Dockerfile-3_4_x --target gnutls-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}gnutls-server:3.4.${array[$i]}
-		docker push ${DOCKER_REPOSITORY}gnutls-client:3.4.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-server:3.4.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-client:3.4.${array[$i]}
 	fi
 	i=i+1
 done
@@ -102,8 +102,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.3.${array[$i]} -f Dockerfile-3_3_0-15 --target gnutls-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.3.${array[$i]} -f Dockerfile-3_3_0-15 --target gnutls-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}gnutls-server:3.3.${array[$i]}
-		docker push ${DOCKER_REPOSITORY}gnutls-client:3.3.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-server:3.3.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-client:3.3.${array[$i]}
 	fi
 	i=i+1
 done
@@ -117,8 +117,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.3.${array[$i]} -f Dockerfile-3_3_x --target gnutls-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.3.${array[$i]} -f Dockerfile-3_3_x --target gnutls-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}gnutls-server:3.3.${array[$i]}
-		docker push ${DOCKER_REPOSITORY}gnutls-client:3.3.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-server:3.3.${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}gnutls-client:3.3.${array[$i]}
 	fi
 	i=i+1
 done

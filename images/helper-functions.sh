@@ -20,14 +20,24 @@ for i in s:
 E
 )
 
+  command=$(python - "$@" << E
+import sys
+if 'build' in sys.argv:
+  print('build')
+  sys.exit(0)
+if 'push' in sys.argv:
+  print('push')
+E
+)
+
   if [[ $CMD_GENERATION_MODE -eq 0 ]]; then
-    echo -e "\033[1;33mBuilding $tag...\033[0m"
+    echo -e "\033[1;33m${command}ing $tag...\033[0m"
     if ! outp=$(docker "$@" 2>&1); then
-      echo -e "[-]\033[1;31m Failed to build $tag!\033[0m\n$outp"
+      echo -e "[-]\033[1;31m Failed to ${command} $tag!\033[0m\n$outp"
       EXITCODE=$((EXITCODE + 1))
       return $EXITCODE
     else
-      echo -e "[+]\033[1;32m Successfully built $tag!\033[0m"
+      echo -e "[+]\033[1;32m ${command} successful for $tag!\033[0m"
     fi
   else
     echo "cd '$(pwd)'" >> "$FOLDER/cmds.sh"

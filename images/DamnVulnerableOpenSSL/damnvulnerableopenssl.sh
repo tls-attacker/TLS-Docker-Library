@@ -8,7 +8,7 @@ cd DamnVulnerableOpenSSL
 _docker build --build-arg VERSION=1.0 -t ${DOCKER_REPOSITORY}damnvulnerableopenssl-server:latest -f Dockerfile .
 
 if [ ! -z "$DOCKER_REPOSITORY" ]; then
-    docker push ${DOCKER_REPOSITORY}damnvulnerableopenssl-server:latest
+    _docker push ${DOCKER_REPOSITORY}damnvulnerableopenssl-server:latest
 fi
 
 exit "$EXITCODE"

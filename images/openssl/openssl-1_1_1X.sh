@@ -7,8 +7,8 @@ typeset -i i=0 max=${#array[*]}
 _docker build --build-arg VERSION= -t ${DOCKER_REPOSITORY}openssl-server:1.1.1 -f Dockerfile-1_1_1x --target openssl-server .
 _docker build --build-arg VERSION= -t ${DOCKER_REPOSITORY}openssl-client:1.1.1 -f Dockerfile-1_1_1x --target openssl-client .
 if [ ! -z "$DOCKER_REPOSITORY" ]; then
-	docker push ${DOCKER_REPOSITORY}openssl-server:1.1.1
-	docker push ${DOCKER_REPOSITORY}openssl-client:1.1.1
+	_docker push ${DOCKER_REPOSITORY}openssl-server:1.1.1
+	_docker push ${DOCKER_REPOSITORY}openssl-client:1.1.1
 fi
 while (( i < max ))
 do
@@ -16,8 +16,8 @@ do
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}openssl-server:1.1.1${array[$i]} -f Dockerfile-1_1_1x --target openssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}openssl-client:1.1.1${array[$i]} -f Dockerfile-1_1_1x --target openssl-client .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}openssl-server:1.1.1${array[$i]}
-		docker push ${DOCKER_REPOSITORY}openssl-client:1.1.1${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}openssl-server:1.1.1${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}openssl-client:1.1.1${array[$i]}
 	fi
 	i=i+1
 done

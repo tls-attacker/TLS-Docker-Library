@@ -12,7 +12,7 @@ do
 	echo "Building: Firefox ${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}firefox-client:${array[$i]} .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}firefox-client:${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}firefox-client:${array[$i]}
 	fi
 	i=i+1
 done
@@ -25,7 +25,7 @@ do
 	echo "Building: Firefox ${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}firefox-client:${array[$i]} .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}firefox-client:${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}firefox-client:${array[$i]}
 	fi
 	i=i+1
 done

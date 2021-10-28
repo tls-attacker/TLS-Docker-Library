@@ -8,8 +8,8 @@ for i in "${versions[@]}"; do
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}s2n-server:${i} --target s2n-server .
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}s2n-client:${i} --target s2n-client .
     if [ ! -z "$DOCKER_REPOSITORY" ]; then
-        docker push ${DOCKER_REPOSITORY}s2n-server:${i}
-        docker push ${DOCKER_REPOSITORY}s2n-client:${i}
+        _docker push ${DOCKER_REPOSITORY}s2n-server:${i}
+        _docker push ${DOCKER_REPOSITORY}s2n-client:${i}
     fi
 done
 

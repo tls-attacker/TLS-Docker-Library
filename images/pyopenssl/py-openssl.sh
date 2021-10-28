@@ -10,7 +10,7 @@ do
 	echo "Feld $i: py-openssl-${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}py_openssl-server:${array[$i]} -f Dockerfile .
 	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}py_openssl-server:${array[$i]}
+		_docker push ${DOCKER_REPOSITORY}py_openssl-server:${array[$i]}
 	fi
 	i=i+1
 done

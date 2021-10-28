@@ -22,7 +22,7 @@ do
             .
 
             if [ ! -z "$DOCKER_REPOSITORY" ]; then
-                docker push "${DOCKER_REPOSITORY}curl:${CURL_VERSION}_openssl_${base/:/_}"
+                _docker push "${DOCKER_REPOSITORY}curl:${CURL_VERSION}_openssl_${base/:/_}"
             fi
     done
 done

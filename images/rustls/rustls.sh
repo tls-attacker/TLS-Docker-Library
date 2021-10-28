@@ -9,8 +9,8 @@ for i in "${versions[@]}"; do
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}rustls-client:${i} --target rustls-client -f Dockerfile_12_0-15_1 .
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}rustls-server:${i} --target rustls-server -f Dockerfile_12_0-15_1 .
     if [ ! -z "$DOCKER_REPOSITORY" ]; then
-        docker push ${DOCKER_REPOSITORY}rustls-client:${i}
-        docker push ${DOCKER_REPOSITORY}rustls-server:${i}
+        _docker push ${DOCKER_REPOSITORY}rustls-client:${i}
+        _docker push ${DOCKER_REPOSITORY}rustls-server:${i}
     fi
 done
 
@@ -19,8 +19,8 @@ for i in "${versions[@]}"; do
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}rustls-client:${i} --target rustls-client -f Dockerfile_15_2-16_0 .
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}rustls-server:${i} --target rustls-server -f Dockerfile_15_2-16_0 .
     if [ ! -z "$DOCKER_REPOSITORY" ]; then
-        docker push ${DOCKER_REPOSITORY}rustls-client:${i}
-        docker push ${DOCKER_REPOSITORY}rustls-server:${i}
+        _docker push ${DOCKER_REPOSITORY}rustls-client:${i}
+        _docker push ${DOCKER_REPOSITORY}rustls-server:${i}
     fi
 done
 
@@ -29,8 +29,8 @@ for i in "${versions[@]}"; do
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}rustls-client:${i} --target rustls-client -f Dockerfile .
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}rustls-server:${i} --target rustls-server -f Dockerfile .
     if [ ! -z "$DOCKER_REPOSITORY" ]; then
-        docker push ${DOCKER_REPOSITORY}rustls-client:${i}
-        docker push ${DOCKER_REPOSITORY}rustls-server:${i}
+        _docker push ${DOCKER_REPOSITORY}rustls-client:${i}
+        _docker push ${DOCKER_REPOSITORY}rustls-server:${i}
     fi
 done
 
