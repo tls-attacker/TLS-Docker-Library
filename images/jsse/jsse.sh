@@ -9,17 +9,11 @@ while (( i < max ))
 do
 	echo "Building: JsseTLS 1.${jreversions[$i]}"
 	_docker build --build-arg JRE_VERSION=openjdk:${jreversions[$i]}-jre-slim --build-arg BC_VERSION=${bcversion} -t ${DOCKER_REPOSITORY}jssetls_jre-server:${jreversions[$i]}_bc_1_${bcversion} -f Dockerfile .
-	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		_docker push ${DOCKER_REPOSITORY}jssetls_jre-server:${jreversions[$i]}_bc_1_${bcversion}
-	fi
 	i=i+1
 done
 
 bcversion=50
 jreversion=7u151
 _docker build --build-arg JRE_VERSION=openjdk:${jreversion}-jre-slim --build-arg BC_VERSION=${bcversion} -t ${DOCKER_REPOSITORY}jssetls_jre-server:${jreversion}_bc_1_${bcversion} -f Dockerfile .
-if [ ! -z "$DOCKER_REPOSITORY" ]; then
-	_docker push ${DOCKER_REPOSITORY}jssetls_jre-server:${jreversion}_bc_1_${bcversion}
-fi
 
 exit "$EXITCODE"

@@ -10,10 +10,6 @@ do
 	echo "Building: mbed TLS ${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}mbedtls-server:${array[$i]} -f Dockerfile-mbedtls_x2 --target mbed-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}mbedtls-client:${array[$i]} -f Dockerfile-mbedtls_x2 --target mbed-client .
-	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		_docker push ${DOCKER_REPOSITORY}mbedtls-server:${array[$i]}
-		_docker push ${DOCKER_REPOSITORY}mbedtls-client:${array[$i]}
-	fi
 	i=i+1
 done
 

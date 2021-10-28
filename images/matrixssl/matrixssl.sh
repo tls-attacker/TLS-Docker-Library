@@ -9,10 +9,6 @@ do
 	echo "Building: Matrixssl 4.${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}matrixssl-server:4.${array[$i]} -f Dockerfile-4_x --target matrixssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}matrixssl-client:4.${array[$i]} -f Dockerfile-4_x --target matrixssl-client .
-	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		_docker push ${DOCKER_REPOSITORY}matrixssl-server:4.${array[$i]}
-		_docker push ${DOCKER_REPOSITORY}matrixssl-client:4.${array[$i]}
-	fi
 	i=i+1
 done
 
@@ -25,10 +21,6 @@ do
 	echo "Building: Matrixssl 3.${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}matrixssl-server:3.${array[$i]} -f Dockerfile-3_x --target matrixssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}matrixssl-client:3.${array[$i]} -f Dockerfile-3_x --target matrixssl-client .
-	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		_docker push ${DOCKER_REPOSITORY}matrixssl-server:3.${array[$i]}
-		_docker push ${DOCKER_REPOSITORY}matrixssl-client:3.${array[$i]}
-	fi
 	i=i+1
 done
 
@@ -39,10 +31,6 @@ do
 	echo "Building: Matrixssl 3.${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}matrixssl-server:3.${array[$i]} -f Dockerfile-3_7_2_and_3_4_0 --target matrixssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}matrixssl-client:3.${array[$i]} -f Dockerfile-3_7_2_and_3_4_0 --target matrixssl-client .
-	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		_docker push ${DOCKER_REPOSITORY}matrixssl-server:3.${array[$i]}
-		_docker push ${DOCKER_REPOSITORY}matrixssl-client:3.${array[$i]}
-	fi
 	i=i+1
 done
 

@@ -9,10 +9,6 @@ do
 	echo "Building: polarssl ${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}mbedtls-server:${array[$i]} -f Dockerfile-polarssl_under_1.2 --target mbed-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}mbedtls-client:${array[$i]} -f Dockerfile-polarssl_under_1.2 --target mbed-client .
-	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		_docker push ${DOCKER_REPOSITORY}mbedtls-server:${array[$i]}
-		_docker push ${DOCKER_REPOSITORY}mbedtls-client:${array[$i]}
-	fi
 	i=i+1
 done
 
@@ -23,10 +19,6 @@ do
 	echo "Building: polarssl ${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}mbedtls-server:${array[$i]} -f Dockerfile-polarssl_x --target mbed-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}mbedtls-client:${array[$i]} -f Dockerfile-polarssl_x --target mbed-client .
-	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		_docker push ${DOCKER_REPOSITORY}mbedtls-server:${array[$i]}
-		_docker push ${DOCKER_REPOSITORY}mbedtls-client:${array[$i]}
-	fi
 	i=i+1
 done
 

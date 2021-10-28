@@ -9,9 +9,6 @@ while (( i < max ))
 do
 	echo "Feld $i: wolfssl-py-${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl_py-server:${array[$i]} -f Dockerfile .
-    if [ ! -z "$DOCKER_REPOSITORY" ]; then
-        _docker push ${DOCKER_REPOSITORY}wolfssl_py-server:${array[$i]}
-    fi
 	i=i+1
 done
 
