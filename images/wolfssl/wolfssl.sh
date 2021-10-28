@@ -9,10 +9,6 @@ do
 	echo "Building: WolfSSL 4.${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:4.${array[$i]} -f Dockerfile-4_x --target wolfssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:4.${array[$i]} -f Dockerfile-4_x --target wolfssl-client .
-    if [ ! -z "$DOCKER_REPOSITORY" ]; then
-        docker push ${DOCKER_REPOSITORY}wolfssl-server:4.${array[$i]}
-        docker push ${DOCKER_REPOSITORY}wolfssl-client:4.${array[$i]}
-    fi
 	i=i+1
 done
 
@@ -23,10 +19,6 @@ do
 	echo "Building: WolfSSL 3.${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:3.${array[$i]} -f Dockerfile-3_3-x --target wolfssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:3.${array[$i]} -f Dockerfile-3_3-x --target wolfssl-client .
-    if [ ! -z "$DOCKER_REPOSITORY" ]; then
-        docker push ${DOCKER_REPOSITORY}wolfssl-server:3.${array[$i]}
-        docker push ${DOCKER_REPOSITORY}wolfssl-client:3.${array[$i]}
-    fi
 	i=i+1
 done
 
@@ -37,10 +29,6 @@ do
 	echo "Building: WolfSSL 3.${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:3.${array[$i]} -f Dockerfile-3_0-2 --target wolfssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:3.${array[$i]} -f Dockerfile-3_0-2 --target wolfssl-client .
-    if [ ! -z "$DOCKER_REPOSITORY" ]; then
-        docker push ${DOCKER_REPOSITORY}wolfssl-server:3.${array[$i]}
-        docker push ${DOCKER_REPOSITORY}wolfssl-client:3.${array[$i]}
-    fi
 	i=i+1
 done
 

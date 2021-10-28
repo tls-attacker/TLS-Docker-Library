@@ -8,9 +8,6 @@ while (( i < max ))
 do
 	echo "Building: BouncyCastleTLS 1.${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}bouncycastle-server:1.${array[$i]} -f Dockerfile-1_x .
-    if [ ! -z "$DOCKER_REPOSITORY" ]; then
-      docker push ${DOCKER_REPOSITORY}bouncycastle-server:1.${array[$i]}
-    fi
 	i=i+1
 done
 

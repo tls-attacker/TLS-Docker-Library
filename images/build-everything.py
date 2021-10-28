@@ -112,6 +112,16 @@ def execute_docker(cmd, cwd):
 
     return complete.returncode, tag
 
+def execute_docker_push(tag):
+    complete = subprocess.run(["docker", "push", tag], stdout=PIPE, stderr=STDOUT, encoding="utf-8")
+    with LOG_WRITE_LOCK:
+        if complete.returncode == 0:
+            LOG_SUCCEED.writelines(["Successfully pushed " + tag + "\n"])
+            LOG_SUCCEED.flush()
+        else:
+            LOG_FAILED.writelines(["[!-!] Failed to push {}\n".format(tag), complete.stdout + "\n"])
+            LOG_FAILED.flush()
+
 def main():
     global ARGS
     parser = argparse.ArgumentParser(description="Build docker images for all TLS libraries or for specific ones.")
@@ -217,6 +227,7 @@ def main():
         return s
     # execute multiple docker build commands in parallel
     with ThreadPoolExecutor(ARGS.parallel_builds) as executor:
+
         for i in range(0, len(cmds), 2):
             # first line contains a 'cd ' bash command to the directory containing Dockerfile(s)
             cwd = cmds[i].strip()[4:-1]
@@ -255,14 +266,18 @@ def main():
 
             if returnCode > 0:
                 error(("{:" + digits + "d}/{}, build failed: {} ").format(completed, len(futures), tag))
-            elif returnCode == 0:
-                success(("{:" + digits + "d}/{}, build succeeded: {} ").format(completed, len(futures), tag))
-            if returnCode < 0:
-                warn(("{:" + digits + "d}/{}, build skipped: {} ").format(completed, len(futures), tag))
-                if not force_rebuild_info:
-                    info("Builds are skipped, when the image already exists.")
-                    info("Use '-f' to force a rebuild.")
-                    force_rebuild_info = True
+            else:
+                if returnCode == 0:
+                    success(("{:" + digits + "d}/{}, build succeeded: {} ").format(completed, len(futures), tag))
+                if returnCode < 0:
+                    warn(("{:" + digits + "d}/{}, build skipped: {} ").format(completed, len(futures), tag))
+                    if not force_rebuild_info:
+                        info("Builds are skipped, when the image already exists.")
+                        info("Use '-f' to force a rebuild.")
+                        force_rebuild_info = True
+                # if deploy is true we should also push the build
+                if ARGS.deploy:
+                    executor.submit(execute_docker_push, tag)
 
 
 

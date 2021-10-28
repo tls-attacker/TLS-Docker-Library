@@ -7,10 +7,6 @@ versions=(0.10.24 0.10.23 0.10.22 0.10.21 0.10.20 0.10.19 0.10.18 0.10.17 0.10.1
 for i in "${versions[@]}"; do
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}s2n-server:${i} --target s2n-server .
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}s2n-client:${i} --target s2n-client .
-    if [ ! -z "$DOCKER_REPOSITORY" ]; then
-        docker push ${DOCKER_REPOSITORY}s2n-server:${i}
-        docker push ${DOCKER_REPOSITORY}s2n-client:${i}
-    fi
 done
 
 exit "$EXITCODE"

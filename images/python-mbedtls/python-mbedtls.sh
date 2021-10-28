@@ -9,9 +9,6 @@ while (( i < max ))
 do
 	echo "Feld $i: python-mbedtls-${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}python_mbedtls-server:${array[$i]} -f Dockerfile .
-	if [ ! -z "$DOCKER_REPOSITORY" ]; then
-		docker push ${DOCKER_REPOSITORY}python_mbedtls-server:${array[$i]}
-	fi
 	i=i+1
 done
 

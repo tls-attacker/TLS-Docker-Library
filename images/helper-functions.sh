@@ -9,6 +9,8 @@ DOCKER_REPOSITORY="${DOCKER_REPOSITORY:-}"
 CMD_GENERATION_MODE="${CMD_GENERATION_MODE:-0}"
 
 EXITCODE=0
+
+# Instead of executing the underlying docker build command _docker simply copies this command to the cmds.sh script and optionally appends the docker push command
 function _docker {
   tag=$(python - "$@" << E
 import sys
@@ -38,6 +40,10 @@ E
         C="$C \"${arg//\"/\\\"}\""
     done
     echo docker "$C" >> "$FOLDER/cmds.sh"
+    # also push the build of sepcified
+    if [ ! -z "$DOCKER_REPOSITORY" ]; then
+      echo docker "docker push ${tag}" >> "$FOLDER/cmds.sh"
+    fi
   fi
 
   return $EXITCODE
