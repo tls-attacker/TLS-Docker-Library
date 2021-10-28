@@ -217,11 +217,19 @@ def main():
         return s
     # execute multiple docker build commands in parallel
     with ThreadPoolExecutor(ARGS.parallel_builds) as executor:
-        for i in range(0, len(cmds), 2):
+        
+        if ARGS.deploy:
+            command_stack_size = 3
+        else:
+            command_stack_size = 2
+
+        for i in range(0, len(cmds), command_stack_size):
             # first line contains a 'cd ' bash command to the directory containing Dockerfile(s)
             cwd = cmds[i].strip()[4:-1]
             # second line contains the docker build command
             build_cmd = list(map(prepare_cmd,CMD_SPLIT_RE.findall(cmds[i + 1])))
+            # if we deploy we will also find a push command in the cmds file
+            push_cmd = list(map(prepare_cmd,CMD_SPLIT_RE.findall(cmds[i + 2])))
 
             try:
                 version = get_image_version(build_cmd)
@@ -240,7 +248,7 @@ def main():
                 pass
 
             # execute the docker build command with the executor
-            futures.append(executor.submit(execute_docker, build_cmd, cwd))
+            futures.append(executor.submit(execute_docker, push_cmd, build_cmd, cwd))
 
         if len(futures) == 0:
             error("No images found that match your request...")
