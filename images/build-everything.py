@@ -113,7 +113,7 @@ def execute_docker(cmd, cwd):
     return complete.returncode, tag
 
 def execute_docker_push(tag):
-    complete = subprocess.run(["docker", "push", "tag"], stdout=PIPE, stderr=STDOUT, encoding="utf-8")
+    complete = subprocess.run(["docker", "push", tag], stdout=PIPE, stderr=STDOUT, encoding="utf-8")
     with LOG_WRITE_LOCK:
         if complete.returncode == 0:
             LOG_SUCCEED.writelines(["Successfully pushed " + tag + "\n"])
@@ -276,7 +276,8 @@ def main():
                         info("Use '-f' to force a rebuild.")
                         force_rebuild_info = True
                 # if deploy is true we should also push the build
-                executor.submit(execute_docker_push, tag)
+                if ARGS.deploy:
+                    executor.submit(execute_docker_push, tag)
 
 
 
