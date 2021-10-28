@@ -9,7 +9,7 @@
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>-d -b</cmdParameter>
+        <cmdParameter>-d -b -x -i</cmdParameter>
         <type>NONE</type>
     </Parameter>
     <Parameter>
