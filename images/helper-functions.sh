@@ -40,10 +40,6 @@ E
         C="$C \"${arg//\"/\\\"}\""
     done
     echo docker "$C" >> "$FOLDER/cmds.sh"
-    # also push the build of sepcified
-    if [ ! -z "$DOCKER_REPOSITORY" ]; then
-      echo docker "docker push ${tag}" >> "$FOLDER/cmds.sh"
-    fi
   fi
 
   return $EXITCODE
