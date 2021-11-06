@@ -35,6 +35,7 @@ public abstract class DockerTlsInstance {
     protected static final DockerClient DOCKER = DockerClientManager.getDockerClient();
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final String containerName;
     private String containerId;
     protected final Image image;
     private Optional<Long> exitCode = Optional.empty();
@@ -45,7 +46,7 @@ public abstract class DockerTlsInstance {
     protected List<DockerExecInstance> childExecs = new LinkedList<>();
     private final UnaryOperator<HostConfig> hostConfigHook;
 
-    public DockerTlsInstance(ParameterProfile profile, ImageProperties imageProperties,
+    public DockerTlsInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties,
             String version, ConnectionRole role, boolean autoRemove,
             UnaryOperator<HostConfig> hostConfigHook) {
         if (profile == null) {
@@ -57,7 +58,8 @@ public abstract class DockerTlsInstance {
         this.autoRemove = autoRemove;
         this.parameterProfile = profile;
         this.imageProperties = imageProperties;
-        this.hostConfigHook = hostConfigHook;
+        this.hostConfigHook = hostConfigHook;  
+        this.containerName = containerName;
         Map<String, String> labels = new HashMap<>();
         labels.put(TlsImageLabels.IMPLEMENTATION.getLabelName(), profile.getType().name().toLowerCase());
         labels.put(TlsImageLabels.VERSION.getLabelName(), version);
@@ -106,6 +108,9 @@ public abstract class DockerTlsInstance {
         @SuppressWarnings("squid:S2095") // sonarlint: Resources should be closed
         // Create container does not need to be closed
         CreateContainerCmd containerCmd = DOCKER.createContainerCmd(image.getId());
+        if(containerName != null) {
+            containerCmd.withName(containerName);
+        }
         containerCmd = prepareCreateContainerCmd(containerCmd);
         CreateContainerResponse container = containerCmd.exec();
         String[] warnings = container.getWarnings();
@@ -247,5 +252,9 @@ public abstract class DockerTlsInstance {
             }
         }
         return exitCode.get();
+    }
+    
+    public String getContainerName() {
+        return containerName;
     }
 }
