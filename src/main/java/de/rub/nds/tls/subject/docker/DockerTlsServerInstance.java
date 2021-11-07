@@ -67,14 +67,6 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
      * Update port to match actually exposed port.
      */
     public void updateInstancePort() {
-        InspectContainerResponse containerInfo = DOCKER.inspectContainerCmd(getId()).exec();
-        if (containerInfo == null) {
-            throw new IllegalStateException("Could not find container with ID:" + getId());
-        }
-        NetworkSettings networkSettings = containerInfo.getNetworkSettings();
-        if (networkSettings == null) {
-            throw new IllegalStateException("Cannot retrieve InstacePort, Network not properly configured for container with ID:" + getId());
-        }
         port = imageProperties.getInternalPort();
     }
 
