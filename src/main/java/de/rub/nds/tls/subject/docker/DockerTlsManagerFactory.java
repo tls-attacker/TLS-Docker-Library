@@ -53,6 +53,7 @@ public class DockerTlsManagerFactory {
         protected String additionalParameters = null;
         protected boolean parallelize = false;
         protected boolean insecureConnection = false;
+        protected String containerName;
 
         public TlsInstanceBuilder(TlsImplementationType type, String version, ConnectionRole role, TransportType transportType) {
             this.profile = retrieveParameterProfile(type, version, role);
@@ -75,6 +76,12 @@ public class DockerTlsManagerFactory {
             hostname = value;
             return (T) this;
         }
+        
+        public T containerName(String value){
+            containerName = value;
+            return (T) this;
+        }
+                
 
         public T port(int value) {
             port = value;
@@ -114,7 +121,7 @@ public class DockerTlsManagerFactory {
 
         @Override
         public DockerTlsClientInstance build() throws DockerException, InterruptedException {
-            return new DockerTlsClientInstance(profile, imageProperties, version, autoRemove, new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection,
+            return new DockerTlsClientInstance(containerName, profile, imageProperties, version, autoRemove, new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection,
                     connectOnStartup, hostConfigHook);
         }
 
@@ -133,7 +140,7 @@ public class DockerTlsManagerFactory {
 
         @Override
         public DockerTlsServerInstance build() throws DockerException, InterruptedException {
-            return new DockerTlsServerInstance(profile, imageProperties, version, autoRemove, new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection,
+            return new DockerTlsServerInstance(containerName, profile, imageProperties, version, autoRemove, new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection,
                     hostConfigHook);
         }
 
