@@ -1,0 +1,21 @@
+{
+  "build_groups": {
+    "0.x": {
+      "dockerfile": "Dockerfile-0_x",
+      "versions": [
+        "0.4",
+        "0.5",
+        "0.6"
+      ],
+      "instances": [
+        "server",
+        "client"
+      ],
+      "image_version": "{v}",
+      "build_args": {
+        "VERSION": "{v}"
+      }
+    }
+  },
+  "latest": "0.6"
+}
