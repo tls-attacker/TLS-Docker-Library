@@ -1,0 +1,53 @@
+{
+    "build_groups": {
+      "alpine": {
+        "name": "alpine",
+        "dockerfile": "Dockerfile",
+        "versions": [
+          "3.12",
+          "3.6"
+        ],
+        "instances": [
+          "build"
+        ],
+        "image_version": "{version}",
+        "build_args": {
+          "VERSION": "{version}"
+        },
+        "target": "",
+        "tag": "{n}-{i}:{v}"
+      }
+    },
+    "debian-base": {
+      "name": "debian",
+      "dockerfile": "Dockerfile_debian",
+      "versions": [
+        "sid"
+      ],
+      "instances": [
+        "build"
+      ],
+      "image_version": "{version}",
+      "build_args": {
+        "VERSION": "{version}"
+      },
+      "target": "",
+      "tag": "{n}-{i}:{v}"
+    },
+    "entrypoint": {
+        "name": "entrypoint",
+        "dockerfile": "Dockerfile_entrypoint",
+        "versions": [
+        ""
+        ],
+        "instances": [
+        ""
+        ],
+        "image_version": "{version}",
+        "build_args": {
+        },
+        "target": "",
+        "tag": "{n}"
+    },
+    "latest": "3.12"
+  }

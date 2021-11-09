@@ -7,12 +7,19 @@
     ./setup.sh
     ```
 1. Build the docker images
-    * To build every available docker image, or every docker image of a specific TLS Libraries, use the `build-everything.py` script (requires `python >=3.7`)
+    * To build every available docker image, or every docker image of a specific TLS Libraries, use the `build.py` script (requires `python >=3.7`)
         ```bash
         # use --help to see the available options
-        images/build-everything.py
+        cd images
+        python3 build.py
         ```
-    * To build only specific TLS Libraries, use the `build.sh` scripts inside the subfolders of `images/`.
+    * To build only specific TLS Libraries, use the `-l` parameter of the build script. E.g.: `python3 build.py -l matrixssl`
+    * You can specify multiple versions this way and also restrict the building to certain versions with a regex f.e.
+        
+        ```bash
+        cd images
+        python3 build.py -l matrixssl:3.* -l bearssl:0.6
+        ```
 
 ### Inspect container content
 ```bash
