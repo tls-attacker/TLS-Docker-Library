@@ -6,7 +6,7 @@ from subprocess import STDOUT, PIPE
 import datetime
 import sys
 import os
-import math
+import re
 import threading
 
 class DockerImage:
@@ -81,7 +81,7 @@ class LibraryBuilder:
     def success(self, log):
         print("{}\033[1;32m [+] {}\033[0m".format(datetime.datetime.now().isoformat(timespec='seconds'), log))
 
-    def info(log):
+    def info(self, log):
         print("{}\033[1;34m [i] {}\033[0m".format(datetime.datetime.now().isoformat(timespec='seconds'), log))
 
     def docker_images_from_build_group(self, build_group: dict, docker_repo: str, library_name: str, latest: str):
@@ -96,12 +96,18 @@ class LibraryBuilder:
 
         dockerfile = '{}/{}'.format(library_name, dockerfile)
 
-
         for version in versions:
-            is_latest = latest == image_version.format(v=version)
-            for instance in instances:
-                self.counter += 1
-                yield DockerImage(dockerfile, version, instance, image_version, build_args, docker_repo, library_name, is_latest, self.counter)
+            _image_version = image_version.format(v=version)
+            try:
+                regex = self.versions[library_name]
+            except KeyError:
+                regex = ''
+            # match against version regex
+            if bool(re.match(regex, _image_version)):
+                is_latest = latest == _image_version
+                for instance in instances:
+                    self.counter += 1
+                    yield DockerImage(dockerfile, version, instance, image_version, build_args, docker_repo, library_name, is_latest, self.counter)
 
 
 
@@ -147,10 +153,26 @@ class LibraryBuilder:
         if self.libraries != []:
             libraries = list(filter(lambda x: x in self.libraries, libraries))
 
+        self.info("Gathering docker commands from JSON files")
+
         # parse all library jsons into docker commands
         images_to_process = []
         for library in libraries:
             images_to_process += self.parse_library(library)
+        
+        # execute ./baseimage/build-base.sh script
+        # the resulting docker image is needed as base image for other docker files
+        self.info("Building base image")
+        completed = subprocess.run(os.path.join(self.folder, "baseimage", "build-base.sh"), stdout=PIPE, stderr=STDOUT, encoding="utf-8")
+        if completed.returncode != 0:
+            self.error("Building base image failed!")
+            print(completed.stdout)
+            sys.exit(1)
+        else:
+            self.success("Successfully built base image")
+
+
+        self.info("Starting to build {} docker images on {} thread pools.".format(len(images_to_process), self.parallel_builds))
 
         # put everything into a ThreadPoolExecutor
         self.futures = []
@@ -163,24 +185,37 @@ class LibraryBuilder:
             sys.exit(1)
 
         # collect all futures
-        for future in as_completed(self.futures):
+        for _ in as_completed(self.futures):
             pass
+        self.success("+++++++++++++++ Finished building the library +++++++++++++++")            
+
 
 def main():
     parser = argparse.ArgumentParser(description="Build docker images for all TLS libraries or for specific ones.")
     parser.add_argument("-p", "--parallel_builds", help="Number of parallel docker build operations", default=os.cpu_count()//2, type=int)
     parser.add_argument("-l", "--library", help="Build only docker images of a certain library. " +
                                                 "The value is matched against the subfolder names inside the images folder. " +
-                                                "Can be specified multiple times.", default=[], action="append")
+                                                "Can be specified multiple times. Use Regex for version filtering. " +
+                                                "E.g.: -l bearssl:0.* or -l bearssl", default=[], action="append")
     parser.add_argument("-f", "--force_rebuild", help="Build docker containers, even if they already exist.", default=False, action="store_true")
-    parser.add_argument("-v", "--version", help="Only build specific versions, this is a regex that is matched against the version. Dots are escaped.", default=[], action="append")
     parser.add_argument("-d", "--deploy", help="Deploy the project to a given repository. Be sure to use docker login and logout yourself", default='', type=str)
 
     ARGS = parser.parse_args()
 
-    builder = LibraryBuilder('libraries.json', ARGS.parallel_builds, ARGS.library, ARGS.force_rebuild, ARGS.version, ARGS.deploy)
+    libraries = []
+    versions = {}
+    for library in ARGS.library:
+        try:
+            library_name, version = library.split(':')
+        except ValueError:
+            # no : specified
+            version = ''
+            library_name = library
+        libraries.append(library_name)
+        versions[library_name] = version
+
+    builder = LibraryBuilder('libraries.json', ARGS.parallel_builds, libraries, ARGS.force_rebuild, versions, ARGS.deploy)
     builder.build()
         
 if __name__ == '__main__':
     main()
-    print("\nFinished!")
