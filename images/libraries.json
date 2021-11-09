@@ -1,5 +1,8 @@
 {
   "Libraries": [
-    "bearssl"
+    "bearssl",
+    "baseimage",
+    "basicClient",
+    "boringssl"
   ]
 }

@@ -10,44 +10,44 @@
         "instances": [
           "build"
         ],
-        "image_version": "{version}",
+        "image_version": "{v}",
         "build_args": {
-          "VERSION": "{version}"
+          "VERSION": "{v}"
         },
         "target": "",
         "tag": "{n}-{i}:{v}"
-      }
-    },
-    "debian-base": {
-      "name": "debian",
-      "dockerfile": "Dockerfile_debian",
-      "versions": [
-        "sid"
-      ],
-      "instances": [
-        "build"
-      ],
-      "image_version": "{version}",
-      "build_args": {
-        "VERSION": "{version}"
       },
-      "target": "",
-      "tag": "{n}-{i}:{v}"
-    },
-    "entrypoint": {
-        "name": "entrypoint",
-        "dockerfile": "Dockerfile_entrypoint",
+      "debian-base": {
+        "name": "debian",
+        "dockerfile": "Dockerfile_debian",
         "versions": [
-        ""
+          "sid"
         ],
         "instances": [
-        ""
+          "build"
         ],
-        "image_version": "{version}",
+        "image_version": "{v}",
         "build_args": {
+          "VERSION": "{v}"
         },
         "target": "",
-        "tag": "{n}"
-    },
+        "tag": "{n}-{i}:{v}"
+      },
+      "entrypoint": {
+          "name": "entrypoint",
+          "dockerfile": "Dockerfile_entrypoint",
+          "versions": [
+          ""
+          ],
+          "instances": [
+          ""
+          ],
+          "image_version": "{v}",
+          "build_args": {
+          },
+          "target": "",
+          "tag": "{n}"
+    }
+  },
     "latest": "3.12"
   }

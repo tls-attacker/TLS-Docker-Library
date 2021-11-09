@@ -32,51 +32,46 @@ class DockerImage:
         if self.docker_repo != '' and self.docker_repo[-1] != '/':
             self.docker_repo = self.docker_repo + '/'
 
-        # allow empty instance strings
-        if self.instance != '':
-            instance = '-' + self.instance
-        else:
-            instance = ''
-
         # embed version number in image version
         self.image_version = self.image_version.format(v=self.version)
 
         # construct tag
-        self.version_tag = self.tag.format(r=self.docker_repo, n=self.library_name, i=instance,v=self.image_version)
+        self.version_tag = self.tag.format(r=self.docker_repo, n=self.image_name, i=self.instance,v=self.image_version)
     
     def exists(self):
         return not self.exec_docker_command("docker images -q " +  self.version_tag).stdout.strip == ""
 
-    def build(self):        
+    def build(self):
         # construct string from build args
         build_args_str = ''
         for build_arg, build_arg_value in self.build_args.items():
             # replace any {v} in the build args with the current version
             build_arg_value = build_arg_value.format(v=self.version)
-            build_args_str += '--build-arg {}={}'.format(build_arg, build_arg_value)# optionally tag as latest
+            build_args_str += ' --build-arg {}={}'.format(build_arg, build_arg_value)# optionally tag as latest
         
         # construct tag string
         if self.latest:
-            tags =  '-t ' + self.version_tag + ' -t {docker_repo}{name}{instance}:latest'.format(docker_repo=self.docker_repo, name=self.library_name, instance=self.instance)
+            latest_tag = self.tag.format(r=self.docker_repo, n=self.image_name, i=self.instance, v='latest')
+            tags =  ' -t ' + self.version_tag + ' -t ' + latest_tag
         else:
-            tags = '-t' + self.version_tag
+            tags = ' -t ' + self.version_tag
 
         #construct target string
         if self.target != '':
-            target = '--target ' + self.target.format(i=self.instance, v=self.image_name)
+            target = ' --target ' + self.target.format(n=self.image_name, i=self.instance, v=self.image_name)
         else:
             target = ''
 
         # construct dockerfile string
-        dockerfile = '-f ' + self.dockerfile
+        dockerfile = ' -f ' + self.dockerfile
 
-        self.build_command = 'docker build {build_args} {tags} {dockerfile} {target} --no-cache .'.format(build_args=build_args_str, tags=tags, dockerfile=dockerfile, target=target)
+        self.build_command = 'docker build{build_args}{tags}{dockerfile}{target} --no-cache {folder_name}'.format(build_args=build_args_str, tags=tags, dockerfile=dockerfile, target=target, folder_name=self.library_name)
         return self.exec_docker_command(self.build_command).returncode
     
     def push(self):
         complete = self.exec_docker_command('docker push {}'.format(self.version_tag)).returncode
         if self.latest:
-            complete |= self.exec_docker_command('docker push {}'.format('{docker_repo}{name}{instance}:latest'.format(self.docker_repo, self.library_name, self.instance))).returncode
+            complete |= self.exec_docker_command('docker push {}'.format('{docker_repo}{name}-{instance}:latest'.format(self.docker_repo, self.image_name, self.instance))).returncode
         return complete
 
     def exec_docker_command(self, command: str):
