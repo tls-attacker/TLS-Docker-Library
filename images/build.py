@@ -25,6 +25,10 @@ class DockerImage:
         self.build_command = ''
         self.counter = counter
 
+        # set '/' if its missing from the docke repo
+        if self.docker_repo != '' and self.docker_repo[-1] != '/':
+            self.docker_repo = self.docker_repo + '/'
+
         # embed version number in image version
         self.image_version = self.image_version.format(v=self.version)
 
@@ -49,9 +53,9 @@ class DockerImage:
         return self.exec_docker_command(self.build_command).returncode
     
     def push(self):
-        complete = self.exec_docker_command('docker push --all-tags {}'.format(self.orig_tag)).returncode
+        complete = self.exec_docker_command('docker push {}'.format(self.version_tag)).returncode
         if self.latest:
-            complete |= self.exec_docker_command('docker push --all-tags {}'.format('{docker_repo}{name}{instance}:latest'.format(self.docker_repo, self.library_name, self.instance))).returncode
+            complete |= self.exec_docker_command('docker push {}'.format('{docker_repo}{name}{instance}:latest'.format(self.docker_repo, self.library_name, self.instance))).returncode
         return complete
 
     def exec_docker_command(self, command: str):
@@ -140,7 +144,7 @@ class LibraryBuilder:
                 if image.push() == 0:
                     self.success(("{}/{}, push succeeded: {} ").format(image.counter, len(self.futures), image.version_tag))
                 else:
-                    self.error(("{}/{}, push failed: {} ").format(image.counter, len(self.futures), image.version_tag))
+                    self.error(("{}/{}, push failed: {} Did you use docker login?").format(image.counter, len(self.futures), image.version_tag))
         else:
             self.error(("{}/{}, build failed: {} ").format(image.counter, len(self.futures), image.build_command))
 
