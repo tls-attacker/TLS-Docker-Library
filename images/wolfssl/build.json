@@ -1,0 +1,156 @@
+{
+    "build_groups": {
+        "cyassl": {
+            "name": "wolfssl",
+            "dockerfile": "Dockerfile-2_x",
+            "versions": [
+                "9.4",
+                "9.2",
+                "9.1",
+                "9.0",
+                "8.6",
+                "8.5",
+                "8.5a",
+                "8.4",
+                "8.3",
+                "8.2",
+                "8.0",
+                "7.2",
+                "7.0",
+                "6.2",
+                "6.0",
+                "5.2b",
+                "5.0",
+                "4.7",
+                "4.6",
+                "4.2",
+                "4.0",
+                "3.0"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "2.{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "wolfssl_4.x": {
+            "name": "wolfssl",
+            "dockerfile": "Dockerfile-4_x",
+            "versions": [
+                "0.0-stable",
+                "1.0-stable",
+                "2.0-stable",
+                "2.0c",
+                "3.0-stable",
+                "4.0-stable",
+                "5.0-stable",
+                "6.0-stable"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "4.{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "wolfssl_3.3.x": {
+            "name": "wolfssl",
+            "dockerfile": "Dockerfile-3_3_x",
+            "versions": [
+                "15.8",
+                "15.7-stable",
+                "15.6",
+                "15.5a",
+                "15.5-stable",
+                "15.3-stable",
+                "15.0-stable",
+                "14.5",
+                "14.4",
+                "14.2",
+                "14.0b",
+                "14.0a",
+                "14.0-stable",
+                "13.3",
+                "13.2",
+                "13.0-stable",
+                "12.2-stable",
+                "12.0-stable",
+                "11.0-stable",
+                "10.4",
+                "10.3",
+                "10.2-stable",
+                "10.0a",
+                "10.0-stable",
+                "9.10b",
+                "9.10-stable",
+                "9.8",
+                "9.6w",
+                "9.6",
+                "9.1",
+                "9.0",
+                "7.0",
+                "6.9d",
+                "6.9c",
+                "6.9b",
+                "6.9",
+                "6.8",
+                "6.6",
+                "6.2",
+                "6.0b",
+                "6.0",
+                "4.8",
+                "4.6",
+                "4.2",
+                "4.0",
+                "3.3"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "3.{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "wolfssl_3.0-2": {
+            "name": "wolfssl",
+            "dockerfile": "Dockerfile-3_0-2",
+            "versions": [
+                "3.2",
+                "3.0",
+                "2.6",
+                "2.4",
+                "2.0",
+                "1.0",
+                "0.2",
+                "0.0"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "3.{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "4.6.0-stable"
+}

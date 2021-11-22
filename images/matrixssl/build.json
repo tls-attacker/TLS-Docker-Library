@@ -1,0 +1,73 @@
+{
+    "build_groups": {
+        "matrixssl_4.x": {
+            "name": "matrixssl",
+            "dockerfile": "Dockerfile-4_x",
+            "versions": [
+                "3.0",
+                "2.2",
+                "2.1",
+                "1.0",
+                "0.2",
+                "0.1",
+                "0.0"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "4.{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "matrixssl_3.x": {
+            "name": "matrixssl",
+            "dockerfile": "Dockerfile-3_x",
+            "versions": [
+                "9.5",
+                "9.3",
+                "9.1",
+                "9.0",
+                "8.7b",
+                "8.7a",
+                "8.7",
+                "8.6",
+                "8.4"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "3.{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "matrixssl_3.7.2_and 3.4.0": {
+            "name": "matrixssl",
+            "dockerfile": "Dockerfile-3_7_2_and_3_4_0",
+            "versions": [
+                "7.2",
+                "4.0"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "3.{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "4.3.0"
+}

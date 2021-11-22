@@ -1,0 +1,20 @@
+{
+    "build_groups": {
+        "go": {
+          "name": "go",
+          "dockerfile": "Dockerfile",
+          "versions": [
+            "latest"
+          ],
+          "instances": [
+            ""
+          ],
+          "image_version": "{v}",
+          "build_args": {
+          },
+          "target": "",
+          "tag": "{r}{n}:{v}"
+        }
+    },
+    "latest": "latest"
+}

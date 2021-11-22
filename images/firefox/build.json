@@ -1,0 +1,58 @@
+{
+    "build_groups": {
+        "firefox_x": {
+          "name": "firefox",
+          "dockerfile": "Dockerfile",
+          "versions": [
+            "61.0.2",
+            "60.0.2",
+            "59.0.3",
+            "58.0.2",
+            "57.0.4",
+            "56.0.2",
+            "55.0.3",
+            "54.0.1",
+            "53.0.3",
+            "52.0.2",
+            "51.0.1",
+            "50.0.2"
+          ],
+          "instances": [
+            "client"
+          ],
+          "image_version": "{v}",
+          "build_args": {
+              "VERSION": "{v}"
+          },
+          "target": "",
+          "tag": "{r}{n}-{i}:{v}"
+        },
+
+        "firefox_esr": {
+            "name": "firefox",
+            "dockerfile": "Dockerfile",
+            "versions": [
+                "78.0esr",
+                "68.9.0esr",
+                "60.9.0esr",
+                "52.9.0esr",
+                "45.9.0esr",
+                "38.8.0esr",
+                "31.8.0esr",
+                "24.8.1esr",
+                "17.0.11esr",
+                "10.0.12esr"
+            ],
+            "instances": [
+              "client"
+            ],
+            "image_version": "{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "61.0.2"
+}

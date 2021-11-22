@@ -13,10 +13,11 @@ class DockerImage:
     """
     Helper class which holds details about a docker Image. Can be built and pushed
     """
-    def __init__(self, image_name, dockerfile, version, instances, image_version, build_args, docker_repo, target, tag, library_name, latest: bool, counter: int):
+    def __init__(self, image_name, dockerfile, version, second_version, instances, image_version, build_args, docker_repo, target, tag, library_name, latest: bool, counter: int):
         self.image_name = image_name
         self.dockerfile = dockerfile
         self.version = version
+        self.second_version = second_version
         self.instance = instances
         self.image_version = image_version
         self.build_args = build_args
@@ -33,10 +34,10 @@ class DockerImage:
             self.docker_repo = self.docker_repo + '/'
 
         # embed version number in image version
-        self.image_version = self.image_version.format(v=self.version)
+        self.image_version = self.image_version.format(v=self.version, w=self.second_version, nss_hack=self.version[:-4].replace("_","."))
 
         # construct tag
-        self.version_tag = self.tag.format(r=self.docker_repo, n=self.image_name, i=self.instance,v=self.image_version)
+        self.version_tag = self.tag.format(r=self.docker_repo, n=self.image_name, i=self.instance,v=self.image_version, nss_hack=self.version[:-4].replace("_","."))
     
     def exists(self):
         return not self.exec_docker_command("docker images -q " +  self.version_tag).stdout.strip == ""
@@ -46,11 +47,12 @@ class DockerImage:
         build_args_str = ''
         for build_arg, build_arg_value in self.build_args.items():
             # replace any {v} in the build args with the current version
-            build_arg_value = build_arg_value.format(v=self.version)
-            build_args_str += ' --build-arg {}={}'.format(build_arg, build_arg_value)# optionally tag as latest
+            build_arg_value = build_arg_value.format(v=self.version, w=self.second_version, nss_hack=self.version[:-4].replace("_","."))
+            build_args_str += ' --build-arg {}={}'.format(build_arg, build_arg_value)
         
         # construct tag string
         if self.latest:
+            # optionally tag as latest
             latest_tag = self.tag.format(r=self.docker_repo, n=self.image_name, i=self.instance, v='latest')
             tags =  ' -t ' + self.version_tag + ' -t ' + latest_tag
         else:
@@ -58,7 +60,7 @@ class DockerImage:
 
         #construct target string
         if self.target != '':
-            target = ' --target ' + self.target.format(n=self.image_name, i=self.instance, v=self.image_name)
+            target = ' --target ' + self.target.format(n=self.image_name, i=self.instance, v=self.image_name, nss_hack=self.version[:-4].replace("_","."))
         else:
             target = ''
 
@@ -111,6 +113,11 @@ class LibraryBuilder:
         image_name = build_group['name']
         dockerfile = build_group['dockerfile']
         versions = build_group['versions']
+        # hack for nss
+        try:
+            second_versions = build_group['second_versions']
+        except:
+            second_versions = len(versions) * [None]
         instances = build_group['instances']
         image_version = build_group['image_version']
         build_args = build_group['build_args']
@@ -119,8 +126,10 @@ class LibraryBuilder:
 
         dockerfile = '{}/{}'.format(library_name, dockerfile)
 
-        for version in versions:
-            _image_version = image_version.format(v=version)
+        for i in range(len(versions)):
+            version = versions[i]
+            second_version = second_versions[i]
+            _image_version = image_version.format(v=version, nss_hack=version[:-4].replace("_","."))
             try:
                 regex = self.versions_regex[library_name]
             except KeyError:
@@ -130,7 +139,7 @@ class LibraryBuilder:
                 is_latest = latest == _image_version
                 for instance in instances:
                     self.counter += 1
-                    yield DockerImage(image_name, dockerfile, version, instance, image_version, build_args, docker_repo, target, tag, library_name, is_latest, self.counter)
+                    yield DockerImage(image_name, dockerfile, version, second_version, instance, image_version, build_args, docker_repo, target, tag, library_name, is_latest, self.counter)
 
 
 

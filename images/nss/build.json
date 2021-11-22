@@ -1,0 +1,114 @@
+{
+    "build_groups": {
+        "nss_1": {
+          "name": "nss",
+          "dockerfile": "Dockerfile",
+          "versions": [
+            "3_60_RTM",
+            "3_59_1_RTM",
+            "3_59_RTM",
+            "3_58_RTM",
+            "3_57_RTM",
+            "3_56_RTM",
+            "3_55_RTM",
+            "3_54_RTM",
+            "3_53_1_RTM",
+            "3_52_1_RTM",
+            "3_51_1_RTM",
+            "3_50_RTM",
+            "3_49_2_RTM",
+            "3_48_1_RTM",
+            "3_47_1_RTM",
+            "3_46_1_RTM",
+            "3_45_RTM",
+            "3_44_4_RTM",
+            "3_43_RTM",
+            "3_42_1_RTM",
+            "3_41_RTM",
+            "3_40_1_RTM",
+            "3_39_RTM",
+            "3_38_RTM",
+            "3_37_3_RTM",
+            "3_36_8_RTM"
+          ],
+          "second_versions": [
+            "4_29_RTM",
+            "4_29_RTM",
+            "4_29_RTM",
+            "4_29_RTM",
+            "4_29_RTM",
+            "4_28_RTM",
+            "4_27_RTM",
+            "4_26_RTM",
+            "4_25_RTM",
+            "4_25_RTM",
+            "4_25_RTM",
+            "4_25_RTM",
+            "4_25_RTM",
+            "4_24_RTM",
+            "4_23_RTM",
+            "4_22_RTM",
+            "4_21_RTM",
+            "4_21_RTM",
+            "4_21_RTM",
+            "4_20_RTM",
+            "4_20_RTM",
+            "4_20_RTM",
+            "4_20_RTM",
+            "4_19_RTM",
+            "4_19_RTM",
+            "4_19_RTM"
+          ],
+          "instances": [
+            "client",
+            "server"
+          ],
+          "image_version": "{nss_hack}",
+          "build_args": {
+              "VERSION": "{nss_hack}",
+              "NSS_VERSION": "{v}",
+              "NSPR_VERSION": "{w}"
+          },
+          "target": "{n}-{i}",
+          "tag": "{r}{n}-{i}:{v}"
+        },
+
+        "nss_2": {
+            "name": "nss",
+            "dockerfile": "Dockerfile_pre_3_36_8 .",
+            "versions": [
+                "3_35_RTM",
+                "3_34_1_RTM",
+                "3_33_RTM",
+                "3_32_1_RTM",
+                "3_31_1_RTM",
+                "3_30_2_RTM",
+                "3_29_5_RTM",
+                "3_28_1_RTM"
+            ],
+            "second_versions": [
+                "4_18_RTM",
+                "4_17_RTM",
+                "4_17_RTM",
+                "4_16_RTM",
+                "4_15_RTM",
+                "4_13_RTM",
+                "4_13_RTM",
+                "4_13_RTM"
+            ],
+            "instances": [
+              "client",
+              "server"
+            ],
+            "image_version": "{nss_hack}",
+            "build_args": {
+                "VERSION": "{nss_hack}",
+                "NSS_VERSION": "{v}",
+                "NSPR_VERSION": "{w}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "61.0.2"
+}

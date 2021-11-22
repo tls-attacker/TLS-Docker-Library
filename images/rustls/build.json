@@ -1,0 +1,68 @@
+{
+    "build_groups": {
+        "rustls_0.12-15": {
+            "name": "rustls",
+            "dockerfile": "Dockerfile_12_0-15_1",
+            "versions": [
+                "0.15.1",
+                "0.15.0",
+                "0.14.0",
+                "0.13.1",
+                "0.13.0",
+                "0.12.0"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "rustls_0.15.2-16": {
+            "name": "rustls",
+            "dockerfile": "Dockerfile_15_2-16_0",
+            "versions": [
+                "0.15.2",
+                "0.16.0"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "rustls_0.17.0+": {
+            "name": "rustls",
+            "dockerfile": "Dockerfile",
+            "versions": [
+                "0.19.0",
+                "0.18.1",
+                "0.18.0",
+                "0.17.0"
+
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "0.19.0"
+}

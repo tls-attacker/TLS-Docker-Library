@@ -1,0 +1,21 @@
+{
+    "build_groups": {
+        "ocamltls": {
+            "name": "ocamltls",
+            "dockerfile": "Dockerfile",
+            "versions": [
+                "0.8.0"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "{v}",
+            "build_args": {
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "0.8.0"
+}

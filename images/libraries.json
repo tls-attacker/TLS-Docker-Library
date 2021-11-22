@@ -3,6 +3,27 @@
     "bearssl",
     "baseimage",
     "basicClient",
-    "boringssl"
+    "boringssl",
+    "botan",
+    "bouncycastle",
+    "DamnVulnerableOpenSSL",
+    "firefox",
+    "gnutls",
+    "go",
+    "jsse",
+    "libressl",
+    "matrixssl",
+    "mbedtls",
+    "nss",
+    "ocamltls",
+    "openssl",
+    "pyopenssl",
+    "python-gnutls",
+    "python-mbedtls",
+    "rustls",
+    "s2n",
+    "tlslite_ng",
+    "wolfssl",
+    "wolfssl_py"
   ]
 }
