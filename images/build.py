@@ -148,9 +148,13 @@ class LibraryBuilder:
 
         library_json = '{library}/build.json'.format(library=library)
         # load dict from json
-        with open(library_json, 'r') as f:
-            json_obj = dict(json.load(f))
-
+        try:
+            with open(library_json, 'r') as f:
+                json_obj = dict(json.load(f))
+        except Exception as err:
+            self.error("Could not open {library}/build.json".format(library=library))
+            self.error(err)
+            return images
         build_groups = json_obj['build_groups']
         # helpful for tagging the last image with :latest as well
         latest_version = json_obj['latest']
