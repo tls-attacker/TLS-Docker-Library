@@ -27,7 +27,7 @@
             "name": "jssetls_jre",
             "dockerfile": "Dockerfile",
             "versions": [
-              "7u151",
+              "7u151"
             ],
             "instances": [
               "server"
