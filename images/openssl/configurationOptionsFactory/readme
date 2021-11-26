@@ -1,0 +1,31 @@
+This directory contains factory Dockerfiles to build OpenSSL images with configuration options.
+
+To create a build with configuration options multiple steps has to be done (due to the usage of ccache):
+
+1) The factory image of the respective version has to be built. This only needs to be applied once per version.
+
+    e.g. 'docker build -t openssl-factory:1_1_1 --build-arg OPENSSL_BRANCH=OpenSSL_1_1_1 -f ./Dockerfile_Factory_OpenSSL .'
+
+2) The factory (a docker image) can then be run (as a docker container) using the respective configuration options. 
+   This starts the build process of OpenSSL. A ccache volume has to be mounted to profit from its faster build time when building multiple builds with different configuration options. The volume has to be mounted at '/src/ccache'.
+
+    e.g. 'docker run --mount source=ccache-cache,target=/src/ccache --name factory_container openssl-factory:1_1_1 <config options>'
+
+    <config options> can be for example: 'no_psk no_ec --with-rand-seed=os,getrandom'
+
+3) When the container is finished it must be committed to a temporary image. This temporary file already contains the built OpenSSL version.
+
+    e.g. 'docker commit factory_container openssl-build-raw:1_1_1_with_example_options'
+
+4) A final version is created using the Minimal_Image_Dockerfile (TODO: Rename). 
+   This image extracts the necessary files from the temporary image to create a lightweight minimal image. The temporary image can be removed afterwards.
+
+    e.g. 'docker build -t custom_openssl:1_1_1_with_example_options --build-arg TEMP_REPRO=openssl-build-raw:1_1_1_with_example_options -f ./Dockerfile_Min_Image .'
+
+5) The final image  can then be run anytime as a docker container.
+
+    e.g. 'docker run -p 4433:4433 -it -v cert-data:/cert/:ro,nocopy custom_openssl:1_1_1_with_example_options -accept 4433 -key /cert/ec256key.pem -cert /cert/ec256cert.pem'
+
+    to start a server.
+
+

@@ -1,0 +1,26 @@
+### OpenSSL build factory for OpenSSL 1.1.1 ###
+
+## Build environment neccessary for building OpenSSL (using ccache)
+FROM alpine as alpine-build-with-ccache
+
+# Load build essentials (including ccache)
+RUN apk update && apk add git alpine-sdk perl linux-headers ccache zlib-dev lksctp-tools-dev libexecinfo-dev
+
+# Install ccache as compiler
+ENV CCACHE_DIR=/src/ccache
+RUN cp /usr/bin/ccache /usr/local/bin/
+RUN ln -s /usr/local/bin/ccache /usr/local/bin/gcc
+
+
+## Build factory
+FROM alpine-build-with-ccache as openssl-build-factory
+WORKDIR /src
+ARG OPENSSL_BRANCH
+RUN git clone --depth=1 --branch ${OPENSSL_BRANCH} https://github.com/openssl/openssl
+WORKDIR /src/openssl
+
+# Append the build script to the image
+ADD ./buildScript.sh /usr/buildScript.sh
+RUN chmod +x /usr/buildScript.sh
+
+ENTRYPOINT ["/usr/buildScript.sh"]
