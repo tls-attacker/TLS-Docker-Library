@@ -40,7 +40,7 @@ class DockerImage:
         self.version_tag = self.tag.format(r=self.docker_repo, n=self.image_name, i=self.instance,v=self.image_version, nss_hack=self.version[:-4].replace("_","."))
     
     def exists(self):
-        return not self.exec_docker_command("docker images -q " +  self.version_tag).stdout.strip == ""
+        return not self.exec_docker_command("docker images -q " +  self.version_tag).stdout.strip() == ""
 
     def build(self):
         # construct string from build args
