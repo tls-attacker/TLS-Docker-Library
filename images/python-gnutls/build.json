@@ -1,0 +1,20 @@
+{
+    "build_groups": {
+        "gnu-openssl": {
+            "name": "gnu_openssl",
+            "dockerfile": "Dockerfile",
+            "versions": [
+                "release-3.1.2"
+            ],
+            "instances": [
+              "server"
+            ],
+            "image_version": "{v}",
+            "build_args": {
+            },
+            "target": "",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "release-3.1.2"
+}

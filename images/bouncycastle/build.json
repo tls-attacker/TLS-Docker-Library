@@ -1,0 +1,30 @@
+{
+    "build_groups": {
+        "bouncycastle": {
+          "name": "bouncycastle",
+          "dockerfile": "Dockerfile-1_x",
+          "versions": [
+            "50",
+            "51",
+            "52",
+            "53",
+            "54",
+            "55",
+            "56",
+            "57",
+            "58"
+          ],
+          "instances": [
+            "server",
+            "client"
+          ],
+          "image_version": "1.{v}",
+          "build_args": {
+              "VERSION": "{v}"
+          },
+          "target": "",
+          "tag": "{r}{n}-{i}:{v}"
+        }
+    },
+    "latest": "1.58"
+}

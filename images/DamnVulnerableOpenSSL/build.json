@@ -1,0 +1,21 @@
+{
+    "build_groups": {
+        "damnvulnerableopenssl": {
+          "name": "DamnVulnerableOpenSSL",
+          "dockerfile": "Dockerfile",
+          "versions": [
+            "latest"
+          ],
+          "instances": [
+            "server"
+          ],
+          "image_version": "{v}",
+          "build_args": {
+              "VERSION": "1.0"
+          },
+          "target": "",
+          "tag": "{r}{n}-{i}:{v}"
+        }
+    },
+    "latest": "latest"
+}
