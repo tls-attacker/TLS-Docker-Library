@@ -21,6 +21,13 @@
         python3 build.py -l matrixssl:3.* -l bearssl:0.6
         ```
 
+## Currently broken images
+
+- s2n: Docker image fails with a compilation error
+- pyopenssl, python-gnutls, python-mbedtls, wolfssl_py: Docker images fail because of a version problem with python2 and python3
+
+## Docker Utility
+
 ### Inspect container content
 ```bash
 docker build --squash -t <image name> . 
