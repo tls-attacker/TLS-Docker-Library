@@ -75,7 +75,7 @@
 
         "nss_2": {
             "name": "nss",
-            "dockerfile": "Dockerfile_pre_3_36_8 .",
+            "dockerfile": "Dockerfile_pre_3_36_8",
             "versions": [
                 "3_35_RTM",
                 "3_34_1_RTM",

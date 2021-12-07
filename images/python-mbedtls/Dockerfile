@@ -1,6 +1,6 @@
 FROM alpine-build:3.12 as python-mbedtls
 ARG VERSION
-RUN apk add --no-cache mbedtls-dev py-setuptools python-dev
+RUN apk add --no-cache mbedtls-dev py-setuptools python2-dev
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 RUN python get-pip.py
 RUN pip install contextlib2 pytest enum34 ipaddress certifi 

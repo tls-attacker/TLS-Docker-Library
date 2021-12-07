@@ -1,4 +1,0 @@
-gnutls-client
---without-ssl --with-gnutls
-_none.sh
-3.6.14

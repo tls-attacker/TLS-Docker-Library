@@ -82,7 +82,7 @@
             "build_args": {
                 "VERSION": "{v}"
             },
-            "target": "tlstlite-ng-{i}",
+            "target": "tlslite-ng-{i}",
             "tag": "{r}{n}-{i}:{v}"
           },
 

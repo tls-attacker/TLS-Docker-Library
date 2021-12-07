@@ -91,7 +91,7 @@
             ],
             "instances": [
               "server",
-              "instances"
+              "clients"
             ],
             "image_version": "0.9.8{v}",
             "build_args": {

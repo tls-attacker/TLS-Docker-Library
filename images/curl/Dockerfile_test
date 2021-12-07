@@ -1,4 +1,0 @@
-#docker run --rm -it $(docker build -q -f Dockerfile_test . 2>/dev/null | tail -c+8)
-FROM alpine-build:3.12 as curl-base
-COPY --from=gnutls-client:3.6.14 /artifacts/ssllib/ /ssllib/
-ENTRYPOINT [ "bash" ]

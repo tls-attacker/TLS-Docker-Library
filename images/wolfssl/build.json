@@ -66,7 +66,7 @@
 
           "wolfssl_3.3.x": {
             "name": "wolfssl",
-            "dockerfile": "Dockerfile-3_3_x",
+            "dockerfile": "Dockerfile-3_3-x",
             "versions": [
                 "15.8",
                 "15.7-stable",
