@@ -1,13 +1,7 @@
 ARG TEMP_REPRO=finished-build-raw:latest
 FROM $TEMP_REPRO as temp-repro
 
-# Extract the neccessary files from a raw build in a minimal image
-# -- non debug variant:
-#FROM scratch as openssl-custom-build
-# -- temporary debug variant:
-FROM alpine as openssl-custom-build
-RUN apk update && apk add bash
-# --
+FROM entrypoint as openssl-custom-build
 
 COPY --from=temp-repro /lib/ld-musl-x86_64.so.* \
   /lib/libz.so.* \
@@ -15,5 +9,6 @@ COPY --from=temp-repro /lib/ld-musl-x86_64.so.* \
   /usr/lib/libgcc_s.so.* \
   /build/lib/*.so.* /lib/
 COPY --from=temp-repro /build/bin/openssl /bin/
-#COPY --from=finished-build-raw:latest /build/bin/openssl /bin/
-ENTRYPOINT ["openssl", "s_server"]
+
+# To start a client use --entrypoint client-entrypoint openssl s_server
+ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]

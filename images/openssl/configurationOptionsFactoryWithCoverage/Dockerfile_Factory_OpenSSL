@@ -1,0 +1,47 @@
+### OpenSSL build factory for OpenSSL 1.1.1 ###
+
+FROM golang:1.17 AS openssl-server-entrypoint
+COPY opensslServerEntrypoint /build/
+WORKDIR /build
+RUN CGO_ENABLED=0 GOOS=linux go build -o /build/openssl-server-entrypoint
+
+
+## Build environment neccessary for building OpenSSL (using ccache)
+FROM alpine as alpine-build-with-ccache
+
+# Load build essentials (including ccache)
+RUN apk update && apk add git alpine-sdk perl linux-headers ccache zlib-dev lksctp-tools-dev libexecinfo-dev bash
+
+# Install ccache as compiler
+ENV CCACHE_DIR=/src/ccache
+RUN cp /usr/bin/ccache /usr/local/bin/
+RUN ln -s /usr/local/bin/ccache /usr/local/bin/gcc
+
+# Install lcov
+WORKDIR /src
+RUN git clone --depth=1 --branch v1.15 https://github.com/linux-test-project/lcov.git
+WORKDIR /src/lcov
+RUN make install
+
+
+## Build factory
+FROM alpine-build-with-ccache as openssl-build-factory
+
+# Install openssl-server-go executable
+COPY --from=openssl-server-entrypoint /build/openssl-server-entrypoint /bin/
+COPY --from=entrypoint /bin/client-entrypoint /bin/
+
+# Get OpenSSL sources with git
+WORKDIR /src
+ARG OPENSSL_BRANCH
+RUN git clone --depth=1 --branch ${OPENSSL_BRANCH} https://github.com/openssl/openssl
+WORKDIR /src/openssl
+
+# Append the build script to the image
+ADD ./buildScript.sh /usr/buildScript.sh
+RUN chmod +x /usr/buildScript.sh
+
+ADD ./opensslEntrypoint.sh /usr/opensslEntrypoint.sh
+RUN chmod +x /usr/opensslEntrypoint.sh
+
+ENTRYPOINT ["/usr/buildScript.sh"]
