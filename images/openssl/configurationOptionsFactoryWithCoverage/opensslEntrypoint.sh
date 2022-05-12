@@ -81,7 +81,7 @@ then
 elif [ "$client_mode" = true ]
 then
     echo "Start OpenSSL Client."
-    client-entrypoint ./apps/openssl s_client -connect $client_dest
+    /bin/openssl-client-entrypoint ./apps/openssl s_client -connect $client_dest
 fi
 
 # --- Collect the coverage data ---

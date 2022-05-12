@@ -1,9 +1,11 @@
 ### OpenSSL build factory for OpenSSL 1.1.1 ###
 
-FROM golang:1.17 AS openssl-server-entrypoint
-COPY opensslServerEntrypoint /build/
-WORKDIR /build
+FROM golang:1.17 AS openssl-entrypoint
+COPY opensslEntrypoint /build/
+WORKDIR /build/server/
 RUN CGO_ENABLED=0 GOOS=linux go build -o /build/openssl-server-entrypoint
+WORKDIR /build/client/
+RUN CGO_ENABLED=0 GOOS=linux go build -o /build/openssl-client-entrypoint
 
 
 ## Build environment neccessary for building OpenSSL (using ccache)
@@ -28,8 +30,9 @@ RUN make install
 FROM alpine-build-with-ccache as openssl-build-factory
 
 # Install openssl-server-go executable
-COPY --from=openssl-server-entrypoint /build/openssl-server-entrypoint /bin/
-COPY --from=entrypoint /bin/client-entrypoint /bin/
+COPY --from=openssl-entrypoint /build/openssl-server-entrypoint /bin/
+COPY --from=openssl-entrypoint /build/openssl-client-entrypoint /bin/
+#COPY --from=entrypoint /bin/client-entrypoint /bin/
 
 # Get OpenSSL sources with git
 WORKDIR /src

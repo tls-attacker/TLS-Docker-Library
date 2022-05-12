@@ -15,8 +15,6 @@ COPY --from=temp-repro /lib/ld-musl-x86_64.so.* \
   /usr/local/lib/perl5 \
   /lib/ 
 
-COPY --from=entrypoint /bin/client-entrypoint /bin/
-
 COPY --from=temp-repro /src/lcov/bin/* /bin/
 
 COPY --from=temp-repro /usr/info/* /usr/info/
@@ -24,9 +22,15 @@ COPY --from=temp-repro /usr/info/* /usr/info/
 COPY --from=temp-repro \
   /bin/openssl-server-entrypoint /bin/
 
+COPY --from=temp-repro \
+  /bin/openssl-client-entrypoint /bin/
+
 COPY --from=temp-repro /usr/opensslEntrypoint.sh /usr/
 
 COPY --from=temp-repro /src/openssl/ /src/openssl/
-#COPY --from=finished-build-raw:latest /build/bin/openssl /bin/
-# To start a client use --entrypoint client-entrypoint openssl s_server
-ENTRYPOINT ["/usr/opensslEntrypoint.sh"]
+
+# Entrypoint Usage:
+#   server mode: 'opensslEntrypoint.sh [-d <output_directory>] server'"
+#   client mode: 'opensslEntrypoint.sh [-d <output_directory>] client <host>:<port>'"
+#
+ENTRYPOINT ["opensslEntrypoint.sh"]
