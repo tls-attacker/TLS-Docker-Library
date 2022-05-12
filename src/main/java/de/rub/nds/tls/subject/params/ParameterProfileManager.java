@@ -50,10 +50,9 @@ public class ParameterProfileManager {
         URL url = getClass().getResource(RESOURCE_PATH);
 
         try {
-            FileSystem zipfs = FileSystems.newFileSystem(url.toURI(), env);
+            FileSystems.newFileSystem(url.toURI(), env);
         } catch (URISyntaxException | IOException e) {
             LOGGER.warn("Problem reading profiles", e);
-            e.printStackTrace();
         }
 
         for (ConnectionRole role : ConnectionRole.values()) {
@@ -65,7 +64,7 @@ public class ParameterProfileManager {
                         allProfileList.add(profile);
                     }
                 }
-            } catch (IOException ex) {
+            } catch (IOException | URISyntaxException ex) {
                 LOGGER.warn("Problem reading profiles", ex);
                 ex.printStackTrace();
             }
@@ -85,18 +84,14 @@ public class ParameterProfileManager {
         }
     }
 
-    private List<String> getResourceFiles(URL url) throws IOException {
+    private List<String> getResourceFiles(URL url) throws IOException, URISyntaxException {
         List<String> resourceList = new ArrayList<>();
         Path pathToResource = null;
-        try {
             pathToResource = Paths.get(url.toURI());
             Files.walk(pathToResource, 5).forEach(path1 -> {
                 String resource = path1.toString();
                 resourceList.add(resource.substring(resource.lastIndexOf("/") + 1, resource.length()));
             });
-        } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
         return new ArrayList<>(resourceList);
     }
 
