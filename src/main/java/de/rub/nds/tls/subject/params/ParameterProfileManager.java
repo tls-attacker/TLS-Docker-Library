@@ -1,21 +1,20 @@
 package de.rub.nds.tls.subject.params;
 
+
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.*;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -45,9 +44,21 @@ public class ParameterProfileManager {
         defaultClientProfileList = new LinkedList<>();
         allProfileList = new LinkedList<>();
 
+        //Create file system inside the jar for fetching the profiles later
+        Map<String, String> env = new HashMap<>();
+        env.put("create", "true");
+        URL url = getClass().getResource(RESOURCE_PATH);
+
+        try {
+            FileSystem zipfs = FileSystems.newFileSystem(url.toURI(), env);
+        } catch (URISyntaxException | IOException e) {
+            LOGGER.warn("Problem reading profiles", e);
+            e.printStackTrace();
+        }
+
         for (ConnectionRole role : ConnectionRole.values()) {
             try {
-                for (String filename : getResourceFiles(RESOURCE_PATH + role.name().toLowerCase() + "/")) {
+                for (String filename : getResourceFiles(url)) {
                     ParameterProfile profile = tryLoadProfile(role, filename);
                     if (profile != null) {
                         LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name() + " - " + profile.getDescription());
@@ -74,9 +85,18 @@ public class ParameterProfileManager {
         }
     }
 
-    private List<String> getResourceFiles(String path) throws IOException {
-        Reflections reflections = new Reflections(null, new ResourcesScanner());
-        Set<String> resourceList = reflections.getResources(Pattern.compile(".*\\.profile")).parallelStream().map(x -> new File(x).getName()).collect(Collectors.toSet());
+    private List<String> getResourceFiles(URL url) throws IOException {
+        List<String> resourceList = new ArrayList<>();
+        Path pathToResource = null;
+        try {
+            pathToResource = Paths.get(url.toURI());
+            Files.walk(pathToResource, 5).forEach(path1 -> {
+                String resource = path1.toString();
+                resourceList.add(resource.substring(resource.lastIndexOf("/") + 1, resource.length()));
+            });
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
         return new ArrayList<>(resourceList);
     }
 
@@ -85,7 +105,7 @@ public class ParameterProfileManager {
             InputStream stream = ParameterProfileManager.class
                     .getResourceAsStream(RESOURCE_PATH + role.name().toLowerCase() + "/" + filename);
             return ParameterProfileSerializer.read(stream);
-        } catch (IOException | JAXBException | XMLStreamException E) {
+        } catch (IllegalArgumentException | IOException | JAXBException | XMLStreamException E) {
             LOGGER.debug("Could not find other ParameterProfile for: " + RESOURCE_PATH + role.name().toLowerCase() + "/" + filename + ": " + role.name());
             LOGGER.trace(E);
             return null;
