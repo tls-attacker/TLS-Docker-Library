@@ -70,6 +70,15 @@ fi
 
 # ===== Execution =====
 
+# Handle docker stop (sending SIGTERM)
+terminated=false
+_term() {
+    echo "Caught SIGTERM signal!" 
+    terminated=true
+    kill -15 "$child" 2>/dev/null
+}
+trap _term TERM
+
 # --- Execute the server/client ---
 
 cd "/src/openssl/"
@@ -77,11 +86,22 @@ cd "/src/openssl/"
 if [ "$server_mode" = true ]
 then
     echo "Start OpenSSL Server."
-    /bin/openssl-server-entrypoint ./apps/openssl s_server -accept 4433 -key /cert/ec256key.pem -cert /cert/ec256cert.pem
+    /bin/openssl-server-entrypoint ./apps/openssl s_server -accept 4433 -key /cert/ec256key.pem -cert /cert/ec256cert.pem  &
+    child=$!
+    wait "$child"
+    wait "$child"
 elif [ "$client_mode" = true ]
 then
     echo "Start OpenSSL Client."
-    /bin/openssl-client-entrypoint ./apps/openssl s_client -connect $client_dest
+    /bin/openssl-client-entrypoint ./apps/openssl s_client -connect $client_dest &
+    child=$!
+    wait "$child"
+    wait "$child"
+fi
+
+if [ "$terminated" = true ] ; then
+    echo "Entrypoint was terminated with SIGTERM (probably from 'docker stop'). Coverage data is not processed yet."
+    exit 0
 fi
 
 # --- Collect the coverage data ---

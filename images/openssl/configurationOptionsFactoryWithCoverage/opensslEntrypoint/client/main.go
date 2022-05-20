@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -32,7 +34,6 @@ func Init() {
 	} else if len(args) > 0 {
 		program = args[0]
 	} else {
-
 		fmt.Println(
 			"Missing Arguments for Client Entrypoint!\n" +
 				"  Syntax is:   " + os.Args[0] + " <client program> <client program args>\n" +
@@ -49,10 +50,11 @@ func RunClientWithArgs() int {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
-
+	// s_client closes automatically after connection if no stdin is bound
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	return cmd.ProcessState.ExitCode()
 }
 
@@ -82,8 +84,30 @@ func Trigger(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "triggered")
 }
 
+func ConfigureProperTermination() {
+	signalChanel := make(chan os.Signal, 1)
+	signal.Notify(signalChanel, syscall.SIGTERM)
+
+	go func() {
+		for {
+			s := <-signalChanel
+			switch s {
+			case syscall.SIGTERM:
+				fmt.Println("Termination signal triggered.")
+				onShutdown = true
+				server.Shutdown(context.Background())
+
+			default:
+				fmt.Println("Unknown signal triggered.")
+				os.Exit(98)
+			}
+		}
+	}()
+}
+
 func main() {
 	Init()
+	ConfigureProperTermination()
 
 	m := http.NewServeMux()
 	server = &http.Server{Addr: ":8090", Handler: m, ConnState: ConnStateListener}

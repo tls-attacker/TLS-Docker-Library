@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 )
 
@@ -44,6 +46,22 @@ func Init() {
 	} else if len(args) > 0 {
 		program = args[0]
 	} else {
+		debug := true
+		if debug {
+			program = "openssl"
+			argv = make([]string, 7)
+			argv[0] = "s_server"
+			argv[1] = "-accept"
+			argv[2] = "4433"
+			argv[3] = "-key"
+			argv[4] = "/home/fabian/OtherRepos/Builds/ssl/ec256key.pem"
+			argv[5] = "-cert"
+			argv[6] = "/home/fabian/OtherRepos/Builds/ssl/ec256cert.pem"
+			fmt.Printf("PID: %d\n", os.Getpid())
+
+			return
+		}
+
 		fmt.Println(
 			"Missing Arguments for Server Entrypoint!\n" +
 				"  Syntax is:   " + os.Args[0] + " <server program> <server program args>\n" +
@@ -71,12 +89,7 @@ func StartServer() int {
 
 // Shutting down OpenSSL properly (without SIGKILL) is quite hard (and weird). At first we need to input the letter 'Q'. Afterwards the next client connection
 // will trigger the shutdown. A proper shutdown is necessary for coverage data to be collected.
-func Shutdown(w http.ResponseWriter, req *http.Request) {
-	server.SetKeepAlivesEnabled(false)
-	fmt.Fprintf(w, "shutdowned\n")
-	fmt.Println("Shutdown function called.")
-
-	onShutdown = true
+func StopServer() {
 	io.WriteString(stdin, "Q\n")
 	cmd := exec.Command(shutdownProgram, shutdownClientArgs[:]...)
 	cmd.Stdout = os.Stdout
@@ -84,6 +97,15 @@ func Shutdown(w http.ResponseWriter, req *http.Request) {
 	cmd.Run()
 	time.Sleep(200 * time.Millisecond)
 	cmd.Process.Kill()
+}
+
+func Shutdown(w http.ResponseWriter, req *http.Request) {
+	server.SetKeepAlivesEnabled(false)
+	fmt.Fprintf(w, "shutdowned\n")
+	fmt.Println("Shutdown function called.")
+
+	onShutdown = true
+	StopServer()
 }
 
 // Used to shutdown the server after /shutdown. The server is only terminated after the connection /shutdown request connection is closed properly.
@@ -121,8 +143,32 @@ func infinite() {
 	}
 }
 
+func ConfigureProperTermination() {
+	signalChanel := make(chan os.Signal, 1)
+	signal.Notify(signalChanel, syscall.SIGTERM)
+
+	go func() {
+		for {
+			s := <-signalChanel
+			switch s {
+			case syscall.SIGTERM:
+				fmt.Println("Termination signal triggered.")
+				onShutdown = true
+				StopServer()
+				server.Shutdown(context.Background())
+
+			default:
+				fmt.Println("Unknown signal triggered.")
+				os.Exit(98)
+			}
+		}
+	}()
+}
+
 func main() {
 	Init()
+	ConfigureProperTermination()
+
 	m := http.NewServeMux()
 	server = &http.Server{Addr: ":8090", Handler: m, ConnState: ConnStateListener}
 
