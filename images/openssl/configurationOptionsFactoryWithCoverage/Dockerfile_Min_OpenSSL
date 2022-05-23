@@ -33,4 +33,4 @@ COPY --from=temp-repro /src/openssl/ /src/openssl/
 #   server mode: 'opensslEntrypoint.sh [-d <output_directory>] server'"
 #   client mode: 'opensslEntrypoint.sh [-d <output_directory>] client <host>:<port>'"
 #
-ENTRYPOINT ["opensslEntrypoint.sh"]
+ENTRYPOINT ["/usr/opensslEntrypoint.sh"]
