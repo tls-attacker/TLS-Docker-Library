@@ -49,6 +49,9 @@ func RunClientWithArgs() int {
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	// keep stdin open (otherwise s_client shutdowns connection immediately after the handshake)
+	cmd.StdinPipe()
+
 	err := cmd.Run()
 	// s_client closes automatically after connection if no stdin is bound
 	if err != nil {
