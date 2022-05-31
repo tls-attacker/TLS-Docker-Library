@@ -86,14 +86,14 @@ cd "/src/openssl/"
 if [ "$server_mode" = true ]
 then
     echo "Start OpenSSL Server."
-    /bin/openssl-server-entrypoint ./apps/openssl s_server -accept 4433 -key /cert/ec256key.pem -cert /cert/ec256cert.pem  &
+    /bin/openssl-server-entrypoint ./apps/openssl s_server -accept 4433 -key /cert/ec256key.pem -cert /cert/ec256cert.pem -comp &
     child=$!
     wait "$child"
     wait "$child"
 elif [ "$client_mode" = true ]
 then
     echo "Start OpenSSL Client."
-    /bin/openssl-client-entrypoint ./apps/openssl s_client -connect $client_dest &
+    /bin/openssl-client-entrypoint ./apps/openssl s_client -connect $client_dest -comp &
     child=$!
     wait "$child"
     wait "$child"

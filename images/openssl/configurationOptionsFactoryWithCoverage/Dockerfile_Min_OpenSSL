@@ -25,9 +25,10 @@ COPY --from=temp-repro \
 COPY --from=temp-repro \
   /bin/openssl-client-entrypoint /bin/
 
-COPY --from=temp-repro /usr/opensslEntrypoint.sh /usr/
-
 COPY --from=temp-repro /src/openssl/ /src/openssl/
+
+ADD ./opensslEntrypoint.sh /usr/opensslEntrypoint.sh
+RUN chmod +x /usr/opensslEntrypoint.sh
 
 # Entrypoint Usage:
 #   server mode: 'opensslEntrypoint.sh [-d <output_directory>] server'"

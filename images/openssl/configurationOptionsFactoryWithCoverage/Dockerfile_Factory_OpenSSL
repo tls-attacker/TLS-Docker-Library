@@ -44,7 +44,4 @@ WORKDIR /src/openssl
 ADD ./buildScript.sh /usr/buildScript.sh
 RUN chmod +x /usr/buildScript.sh
 
-ADD ./opensslEntrypoint.sh /usr/opensslEntrypoint.sh
-RUN chmod +x /usr/opensslEntrypoint.sh
-
 ENTRYPOINT ["/usr/buildScript.sh"]
