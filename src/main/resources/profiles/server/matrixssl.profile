@@ -8,8 +8,4 @@
         <cmdParameter>-P [port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
-    <Parameter>
-        <cmdParameter>-c [cert] -k [key]</cmdParameter>
-        <type>CERTIFICATE_KEY</type>
-    </Parameter>
 </parameterProfile>

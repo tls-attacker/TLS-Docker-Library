@@ -5,7 +5,7 @@
     <type>WOLFSSL</type>
     <role>SERVER</role>
     <Parameter>
-        <cmdParameter>-c [cert] -k [key] -v 4</cmdParameter>
+        <cmdParameter>-c [cert] -k [key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>

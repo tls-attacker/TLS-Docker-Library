@@ -5,7 +5,6 @@ import de.rub.nds.tls.subject.TlsImplementationType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.reflections.scanners.Scanners;
 
 public class ParameterProfileManager {
 
@@ -75,7 +75,7 @@ public class ParameterProfileManager {
     }
 
     private List<String> getResourceFiles(String path) throws IOException {
-        Reflections reflections = new Reflections(null, new ResourcesScanner());
+        Reflections reflections = new Reflections("profiles", Scanners.Resources);
         Set<String> resourceList = reflections.getResources(Pattern.compile(".*\\.profile")).parallelStream().map(x -> new File(x).getName()).collect(Collectors.toSet());
         return new ArrayList<>(resourceList);
     }
