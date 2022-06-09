@@ -14,6 +14,9 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
+import static java.lang.Thread.sleep;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DockerTlsServerInstance extends DockerTlsInstance {
 
@@ -23,10 +26,10 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
     private final boolean parallelize;
     private final boolean insecureConnection;
 
-    public DockerTlsServerInstance(ParameterProfile profile, ImageProperties imageProperties, String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
+    public DockerTlsServerInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties, String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
             boolean insecureConnection,
             UnaryOperator<HostConfig> hostConfigHook) {
-        super(profile, imageProperties, version, ConnectionRole.SERVER, autoRemove, hostConfigHook);
+        super(containerName, profile, imageProperties, version, ConnectionRole.SERVER, autoRemove, hostConfigHook);
         this.port = hostInfo.getPort(); // fill with default port
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;
@@ -64,16 +67,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
      * Update port to match actually exposed port.
      */
     public void updateInstancePort() {
-        InspectContainerResponse containerInfo = DOCKER.inspectContainerCmd(getId()).exec();
-        if (containerInfo == null) {
-            throw new IllegalStateException("Could not find container with ID:" + getId());
-        }
-        NetworkSettings networkSettings = containerInfo.getNetworkSettings();
-        if (networkSettings == null) {
-            throw new IllegalStateException("Cannot retrieve InstacePort, Network not properly configured for container with ID:" + getId());
-        }
-        // TODO: ignore other exposed ports
-        port = new Integer(networkSettings.getPorts().getBindings().values().iterator().next()[0].getHostPortSpec());
+        port = imageProperties.getInternalPort();
     }
 
     public int getPort() {

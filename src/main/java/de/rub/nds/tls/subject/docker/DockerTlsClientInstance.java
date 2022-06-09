@@ -33,11 +33,11 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
     private final boolean connectOnStartup;
 
     // TODO move away from HostInfo for client...
-    public DockerTlsClientInstance(ParameterProfile profile, ImageProperties imageProperties, String version,
+    public DockerTlsClientInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties, String version,
             boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
             boolean insecureConnection, boolean connectOnStartup,
             UnaryOperator<HostConfig> hostConfigHook) {
-        super(profile, imageProperties, version, ConnectionRole.CLIENT, autoRemove, hostConfigHook);
+        super(containerName, profile, imageProperties, version, ConnectionRole.CLIENT, autoRemove, hostConfigHook);
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;
         this.parallelize = parallelize;
