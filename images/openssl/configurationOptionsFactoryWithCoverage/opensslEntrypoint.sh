@@ -112,7 +112,7 @@ LCOV_DIR=lcov-results
 LCOV_FILE=coverage_tmp.info
 LCOV_FILTERED=/usr/info/coverage.info
 
-lcov --capture --directory . --output-file $LCOV_FILE
+lcov --capture --no-markers --directory . --output-file $LCOV_FILE
 lcov -r $LCOV_FILE /usr/include/\* --output-file $LCOV_FILTERED
 
 # --- Store the coverage data in the docker volume ---
