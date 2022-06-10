@@ -22,6 +22,7 @@ var server *http.Server
 
 var shutdownProgram string
 var shutdownClientArgs [3]string
+var state string
 
 var stdin io.WriteCloser
 
@@ -29,6 +30,7 @@ var argv []string
 var program string
 
 func Init() {
+	state = "initial"
 	shutdownProgram = "openssl"
 	shutdownClientArgs[0] = "s_client"
 	shutdownClientArgs[1] = "-connect"
@@ -78,11 +80,12 @@ func StartServer() int {
 	// keep stdin open
 	var err error
 	stdin, _ = cmd.StdinPipe()
-
+	state = "running"
 	err = cmd.Run()
 
 	if err != nil {
 		fmt.Println(err)
+		state = "error"
 	}
 	return cmd.ProcessState.ExitCode()
 }
@@ -106,6 +109,10 @@ func Shutdown(w http.ResponseWriter, req *http.Request) {
 
 	onShutdown = true
 	StopServer()
+}
+
+func State(w http.ResponseWriter, _ *http.Request) {
+	fmt.Fprint(w, state)
 }
 
 // Used to shutdown the server after /shutdown. The server is only terminated after the connection /shutdown request connection is closed properly.
@@ -133,6 +140,7 @@ func infinite() {
 		}
 
 		if failed > 5 {
+			state = "error"
 			fmt.Println("Server crashed over 5 times. Manager stopped...")
 			os.Exit(99)
 		}
@@ -174,6 +182,7 @@ func main() {
 
 	go infinite()
 	m.HandleFunc("/shutdown", Shutdown)
+	m.HandleFunc("/state", State)
 	fmt.Println("Listening on: 8090...")
 	server.ListenAndServe()
 }

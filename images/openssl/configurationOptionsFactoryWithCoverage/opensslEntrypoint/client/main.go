@@ -15,6 +15,7 @@ import (
 var args = os.Args[1:]
 
 var server *http.Server
+var state string
 
 var argv []string
 var program string
@@ -87,6 +88,10 @@ func Trigger(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "triggered")
 }
 
+func State(w http.ResponseWriter, _ *http.Request) {
+	fmt.Fprint(w, state)
+}
+
 func ConfigureProperTermination() {
 	signalChanel := make(chan os.Signal, 1)
 	signal.Notify(signalChanel, syscall.SIGTERM)
@@ -117,7 +122,8 @@ func main() {
 
 	m.HandleFunc("/shutdown", Shutdown)
 	m.HandleFunc("/trigger", Trigger)
-
+	m.HandleFunc("/state", State)
 	fmt.Println("Listening on: 8090...")
+	state = "running"
 	server.ListenAndServe()
 }
