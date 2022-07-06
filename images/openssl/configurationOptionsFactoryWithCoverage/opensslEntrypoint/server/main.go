@@ -21,7 +21,7 @@ var onShutdown bool = false
 var server *http.Server
 
 var shutdownProgram string
-var shutdownClientArgs [3]string
+var shutdownClientArgs [4]string
 var state string
 
 var stdin io.WriteCloser
@@ -31,10 +31,11 @@ var program string
 
 func Init() {
 	state = "initial"
-	shutdownProgram = "openssl"
-	shutdownClientArgs[0] = "s_client"
-	shutdownClientArgs[1] = "-connect"
-	shutdownClientArgs[2] = "localhost:4433"
+	shutdownProgram = "nc"
+	shutdownClientArgs[0] = "-w"
+	shutdownClientArgs[1] = "5"
+	shutdownClientArgs[2] = "localhost"
+	shutdownClientArgs[3] = "4433"
 
 	if len(args) > 0 {
 		argv = make([]string, len(args)-1)
@@ -90,15 +91,16 @@ func StartServer() int {
 	return cmd.ProcessState.ExitCode()
 }
 
-// Shutting down OpenSSL properly (without SIGKILL) is quite hard (and weird). At first we need to input the letter 'Q'. Afterwards the next client connection
+// Shutting down OpenSSL properly (without SIGKILL) is quite hard (and weird). At first we need to input the letter 'Q'. Afterward, the next client connection
 // will trigger the shutdown. A proper shutdown is necessary for coverage data to be collected.
 func StopServer() {
 	io.WriteString(stdin, "Q\n")
+	time.Sleep(200 * time.Millisecond)
 	cmd := exec.Command(shutdownProgram, shutdownClientArgs[:]...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Run()
-	time.Sleep(200 * time.Millisecond)
+	time.Sleep(600 * time.Millisecond)
 	cmd.Process.Kill()
 }
 
