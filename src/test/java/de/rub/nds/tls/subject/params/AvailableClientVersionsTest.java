@@ -1,8 +1,17 @@
+/**
+ * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+ *
+ * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package de.rub.nds.tls.subject.params;
 
 import java.io.File;
@@ -14,6 +23,7 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
+import de.rub.nds.tls.subject.SlowTests;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
 
@@ -24,6 +34,7 @@ import de.rub.nds.tls.subject.docker.DockerTlsClientInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import de.rub.nds.tls.subject.report.ContainerReport;
 import de.rub.nds.tls.subject.report.InstanceContainer;
+import org.junit.experimental.categories.Category;
 
 public class AvailableClientVersionsTest {
 
@@ -51,6 +62,7 @@ public class AvailableClientVersionsTest {
     }
 
     @Test
+    @Category(SlowTests.class)
     public void testAllVersionsFunctional() throws JAXBException, IOException {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
         System.out.println("Functional Clients: ");
@@ -63,7 +75,8 @@ public class AvailableClientVersionsTest {
                 try {
                     boolean isFunctional = isFunctional(testServer, type, version);
                     System.out.println(type.name() + ":" + version + " - " + isFunctional);
-                    report.addInstanceContainer(new InstanceContainer(ConnectionRole.CLIENT, type, version, isFunctional));
+                    report.addInstanceContainer(
+                        new InstanceContainer(ConnectionRole.CLIENT, type, version, isFunctional));
                 } catch (Exception E) {
                     E.printStackTrace();
                     System.out.println(type.name() + ":" + version + "       ERROR");
@@ -87,7 +100,8 @@ public class AvailableClientVersionsTest {
                 System.out.println("Null: " + version);
                 return false;
             }
-            client = DockerTlsManagerFactory.getTlsClientBuilder(type, version).ip(IP).hostname(HOSTNAME).port(PORT).connectOnStartup(false).insecureConnection(false).build();
+            client = DockerTlsManagerFactory.getTlsClientBuilder(type, version).ip(IP).hostname(HOSTNAME).port(PORT)
+                .connectOnStartup(false).insecureConnection(false).build();
             client.start();
             ei = (DockerExecInstance) client.connect();
             boolean waiting = true;

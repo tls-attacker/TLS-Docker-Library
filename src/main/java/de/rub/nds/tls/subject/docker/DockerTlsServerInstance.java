@@ -1,3 +1,12 @@
+/**
+ * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+ *
+ * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tls.subject.docker;
 
 import java.util.function.UnaryOperator;
@@ -26,9 +35,9 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
     private final boolean parallelize;
     private final boolean insecureConnection;
 
-    public DockerTlsServerInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties, String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
-            boolean insecureConnection,
-            UnaryOperator<HostConfig> hostConfigHook) {
+    public DockerTlsServerInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties,
+        String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
+        boolean insecureConnection, UnaryOperator<HostConfig> hostConfigHook) {
         super(containerName, profile, imageProperties, version, ConnectionRole.SERVER, autoRemove, hostConfigHook);
         this.port = hostInfo.getPort(); // fill with default port
         this.hostInfo = hostInfo;
@@ -40,8 +49,9 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
     @Override
     protected HostConfig prepareHostConfig(HostConfig cfg) {
         return super.prepareHostConfig(cfg)
-                .withPortBindings(new PortBinding(Binding.empty(), new ExposedPort(imageProperties.getInternalPort(), hostInfo.getType().toInternetProtocol())))
-                .withReadonlyRootfs(true);
+            .withPortBindings(new PortBinding(Binding.empty(),
+                new ExposedPort(imageProperties.getInternalPort(), hostInfo.getType().toInternetProtocol())))
+            .withReadonlyRootfs(true);
     }
 
     @Override
@@ -52,9 +62,10 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
         } else {
             host = hostInfo.getHostname();
         }
-        return super.prepareCreateContainerCmd(cmd)
-                .withCmd(parameterProfile.toParameters(host, imageProperties.getInternalPort(), imageProperties, additionalParameters, parallelize, insecureConnection))
-                .withExposedPorts(new ExposedPort(imageProperties.getInternalPort(), hostInfo.getType().toInternetProtocol()));
+        return super.prepareCreateContainerCmd(cmd).withCmd(parameterProfile.toParameters(host,
+            imageProperties.getInternalPort(), imageProperties, additionalParameters, parallelize, insecureConnection))
+            .withExposedPorts(
+                new ExposedPort(imageProperties.getInternalPort(), hostInfo.getType().toInternetProtocol()));
     }
 
     @Override

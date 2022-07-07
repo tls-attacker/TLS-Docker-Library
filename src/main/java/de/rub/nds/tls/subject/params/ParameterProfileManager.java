@@ -1,3 +1,12 @@
+/**
+ * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+ *
+ * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tls.subject.params;
 
 import de.rub.nds.tls.subject.ConnectionRole;
@@ -50,7 +59,8 @@ public class ParameterProfileManager {
                 for (String filename : getResourceFiles(RESOURCE_PATH + role.name().toLowerCase() + "/")) {
                     ParameterProfile profile = tryLoadProfile(role, filename);
                     if (profile != null) {
-                        LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name() + " - " + profile.getDescription());
+                        LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name() + " - "
+                            + profile.getDescription());
                         allProfileList.add(profile);
                     }
                 }
@@ -61,7 +71,8 @@ public class ParameterProfileManager {
         }
 
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            ParameterProfile profile = tryLoadProfile(ConnectionRole.SERVER, "" + type.name().toLowerCase() + ".profile");
+            ParameterProfile profile =
+                tryLoadProfile(ConnectionRole.SERVER, "" + type.name().toLowerCase() + ".profile");
             if (profile != null) {
                 LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name());
                 defaultServerProfileList.add(profile);
@@ -76,17 +87,19 @@ public class ParameterProfileManager {
 
     private List<String> getResourceFiles(String path) throws IOException {
         Reflections reflections = new Reflections("profiles", Scanners.Resources);
-        Set<String> resourceList = reflections.getResources(Pattern.compile(".*\\.profile")).parallelStream().map(x -> new File(x).getName()).collect(Collectors.toSet());
+        Set<String> resourceList = reflections.getResources(Pattern.compile(".*\\.profile")).parallelStream()
+            .map(x -> new File(x).getName()).collect(Collectors.toSet());
         return new ArrayList<>(resourceList);
     }
 
     private ParameterProfile tryLoadProfile(ConnectionRole role, String filename) {
         try {
             InputStream stream = ParameterProfileManager.class
-                    .getResourceAsStream(RESOURCE_PATH + role.name().toLowerCase() + "/" + filename);
+                .getResourceAsStream(RESOURCE_PATH + role.name().toLowerCase() + "/" + filename);
             return ParameterProfileSerializer.read(stream);
         } catch (IOException | JAXBException | XMLStreamException E) {
-            LOGGER.debug("Could not find other ParameterProfile for: " + RESOURCE_PATH + role.name().toLowerCase() + "/" + filename + ": " + role.name());
+            LOGGER.debug("Could not find other ParameterProfile for: " + RESOURCE_PATH + role.name().toLowerCase() + "/"
+                + filename + ": " + role.name());
             LOGGER.trace(E);
             return null;
         }

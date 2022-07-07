@@ -1,3 +1,12 @@
+/**
+ * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+ *
+ * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tls.subject.docker;
 
 import java.util.ArrayList;
@@ -33,10 +42,9 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
     private final boolean connectOnStartup;
 
     // TODO move away from HostInfo for client...
-    public DockerTlsClientInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties, String version,
-            boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
-            boolean insecureConnection, boolean connectOnStartup,
-            UnaryOperator<HostConfig> hostConfigHook) {
+    public DockerTlsClientInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties,
+        String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
+        boolean insecureConnection, boolean connectOnStartup, UnaryOperator<HostConfig> hostConfigHook) {
         super(containerName, profile, imageProperties, version, ConnectionRole.CLIENT, autoRemove, hostConfigHook);
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;
@@ -51,8 +59,7 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
         if (hostInfo.getHostname() != null) {
             extraHost = hostInfo.getHostname() + ":" + hostInfo.getIp();
         }
-        cfg = super.prepareHostConfig(cfg)
-                .withExtraHosts(extraHost);
+        cfg = super.prepareHostConfig(cfg).withExtraHosts(extraHost);
 
         List<Bind> binds = new ArrayList<>(Arrays.asList(cfg.getBinds()));
         // TODO: Bind of X11 Settings does not work as expected
@@ -74,7 +81,7 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
         }
         if (connectOnStartup) {
             cmd = cmd.withCmd(parameterProfile.toParameters(host, hostInfo.getPort(), imageProperties,
-                    additionalParameters, parallelize, insecureConnection));
+                additionalParameters, parallelize, insecureConnection));
         } else {
             cmd = cmd.withEntrypoint("client-entrypoint");
         }
@@ -100,7 +107,7 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
     }
 
     public DockerExecInstance connect(String host, int targetPort, String additionalParameters, Boolean parallelize,
-            Boolean insecureConnection) {
+        Boolean insecureConnection) {
         ContainerConfig imageCfg = DOCKER.inspectImageCmd(image.getId()).exec().getConfig();
         if (imageCfg == null) {
             throw new IllegalStateException("Could not get config for image " + image.getId());
@@ -116,17 +123,13 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
             LOGGER.warn("Image {} did not have client-entrypoint as entrypoint", image.getId());
         }
         String[] params = parameterProfile.toParameters(host, targetPort, imageProperties, additionalParameters,
-                parallelize, insecureConnection);
+            parallelize, insecureConnection);
         cmd_lst.addAll(Arrays.asList(params));
         ExecCreateCmdResponse exec = DOCKER.execCreateCmd(getId()).withCmd(cmd_lst.toArray(EMPTY_STR_ARR))
-                .withAttachStdin(false)
-                .withAttachStdout(true)
-                .withAttachStderr(true)
-                .withTty(true)
-                .exec();
+            .withAttachStdin(false).withAttachStdout(true).withAttachStderr(true).withTty(true).exec();
         DockerExecInstance ret = new DockerExecInstance(exec);
         childExecs.add(ret);
         return ret;
     }
-    
+
 }

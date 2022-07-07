@@ -1,3 +1,12 @@
+/**
+ * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+ *
+ * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tls.subject.params;
 
 import java.io.File;
@@ -7,6 +16,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import de.rub.nds.tls.subject.SlowTests;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -18,6 +28,7 @@ import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import de.rub.nds.tls.subject.docker.DockerTlsServerInstance;
 import de.rub.nds.tls.subject.report.ContainerReport;
 import de.rub.nds.tls.subject.report.InstanceContainer;
+import org.junit.experimental.categories.Category;
 
 public class AvailableServerVersionsTest {
 
@@ -38,6 +49,7 @@ public class AvailableServerVersionsTest {
     }
 
     @Test
+    @Category(SlowTests.class)
     public void testAllVersionsFunctional() throws JAXBException, IOException {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
         ContainerReport report = new ContainerReport();
@@ -47,7 +59,8 @@ public class AvailableServerVersionsTest {
                 try {
                     boolean isFunctional = isFunctional(type, version);
                     System.out.println(type.name() + ":" + version + " - " + isFunctional);
-                    report.addInstanceContainer(new InstanceContainer(ConnectionRole.SERVER, type, version, isFunctional));
+                    report.addInstanceContainer(
+                        new InstanceContainer(ConnectionRole.SERVER, type, version, isFunctional));
                 } catch (Exception E) {
                     E.printStackTrace();
                     System.out.println(type.name() + ":" + version + "       ERROR");

@@ -1,5 +1,14 @@
+/**
+ * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+ *
+ * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
 /*
  */
+
 package de.rub.nds.tls.subject.report;
 
 import de.rub.nds.tls.subject.params.Parameter;
@@ -43,7 +52,8 @@ public class ContainerReport implements Serializable {
         return context;
     }
 
-    public static void write(File file, ContainerReport report) throws FileNotFoundException, JAXBException, IOException {
+    public static void write(File file, ContainerReport report)
+        throws FileNotFoundException, JAXBException, IOException {
         FileOutputStream fos = new FileOutputStream(file);
         write(fos, report);
     }
@@ -70,14 +80,11 @@ public class ContainerReport implements Serializable {
         return report;
     }
 
-    @XmlElements(value = {
-        @XmlElement(type = InstanceContainer.class, name = "Container")})
+    @XmlElements(value = { @XmlElement(type = InstanceContainer.class, name = "Container") })
     private final List<InstanceContainer> functionalContainerList;
-    @XmlElements(value = {
-        @XmlElement(type = InstanceContainer.class, name = "Container")})
+    @XmlElements(value = { @XmlElement(type = InstanceContainer.class, name = "Container") })
     private final List<InstanceContainer> nonFunctionalContainerList;
-    @XmlElements(value = {
-        @XmlElement(type = InstanceContainer.class, name = "Container")})
+    @XmlElements(value = { @XmlElement(type = InstanceContainer.class, name = "Container") })
 
     private final List<InstanceContainer> totalContainerList;
 

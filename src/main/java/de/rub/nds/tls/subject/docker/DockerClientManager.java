@@ -1,3 +1,12 @@
+/**
+ * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+ *
+ * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tls.subject.docker;
 
 import java.lang.reflect.InvocationHandler;
@@ -40,10 +49,8 @@ public class DockerClientManager {
     public static DockerClient getNewDockerClient() {
         ensureConfigExists();
         if (DHTTPCLIENT == null) {
-            DHTTPCLIENT = new ApacheDockerHttpClient.Builder()
-                    .dockerHost(DCONFIG.getDockerHost())
-                    .sslConfig(DCONFIG.getSSLConfig())
-                    .build();
+            DHTTPCLIENT = new ApacheDockerHttpClient.Builder().dockerHost(DCONFIG.getDockerHost())
+                .sslConfig(DCONFIG.getSSLConfig()).build();
         }
         return DockerClientImpl.getInstance(DCONFIG, DHTTPCLIENT);
     }

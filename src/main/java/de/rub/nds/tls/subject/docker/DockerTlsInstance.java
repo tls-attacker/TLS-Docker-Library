@@ -1,3 +1,12 @@
+/**
+ * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+ *
+ * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tls.subject.docker;
 
 import java.util.Arrays;
@@ -47,8 +56,7 @@ public abstract class DockerTlsInstance {
     private final UnaryOperator<HostConfig> hostConfigHook;
 
     public DockerTlsInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties,
-            String version, ConnectionRole role, boolean autoRemove,
-            UnaryOperator<HostConfig> hostConfigHook) {
+        String version, ConnectionRole role, boolean autoRemove, UnaryOperator<HostConfig> hostConfigHook) {
         if (profile == null) {
             throw new NullPointerException("profile may not be null");
         }
@@ -58,28 +66,21 @@ public abstract class DockerTlsInstance {
         this.autoRemove = autoRemove;
         this.parameterProfile = profile;
         this.imageProperties = imageProperties;
-        this.hostConfigHook = hostConfigHook;  
+        this.hostConfigHook = hostConfigHook;
         this.containerName = containerName;
         Map<String, String> labels = new HashMap<>();
         labels.put(TlsImageLabels.IMPLEMENTATION.getLabelName(), profile.getType().name().toLowerCase());
         labels.put(TlsImageLabels.VERSION.getLabelName(), version);
         labels.put(TlsImageLabels.CONNECTION_ROLE.getLabelName(), role.toString().toLowerCase());
-        this.image = DOCKER.listImagesCmd()
-                .withLabelFilter(labels)
-                .exec()
-                .stream().findFirst()
-                .orElseThrow(TlsVersionNotFoundException::new);
+        this.image = DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream().findFirst()
+            .orElseThrow(TlsVersionNotFoundException::new);
     }
 
     protected HostConfig prepareHostConfig(HostConfig cfg) {
         // Check if volume exists; Without this check, the container would be started
         // without any problems, swallowing the error and making it harder to identify
-        InspectVolumeResponse vol = DOCKER.listVolumesCmd()
-                .withFilter("name", Arrays.asList("cert-data"))
-                .exec()
-                .getVolumes().stream()
-                .findFirst()
-                .orElseThrow(CertVolumeNotFoundException::new);
+        InspectVolumeResponse vol = DOCKER.listVolumesCmd().withFilter("name", Arrays.asList("cert-data")).exec()
+            .getVolumes().stream().findFirst().orElseThrow(CertVolumeNotFoundException::new);
 
         // hook is handled in prepareCreateContainerCmd; this ensures it is called last
         return cfg.withBinds(new Bind(vol.getName(), new Volume("/cert/"), AccessMode.ro, SELContext.DEFAULT, true));
@@ -90,14 +91,8 @@ public abstract class DockerTlsInstance {
         if (hostConfigHook != null) {
             hcfg = hostConfigHook.apply(hcfg);
         }
-        return cmd
-                .withAttachStderr(true)
-                .withAttachStdout(true)
-                .withAttachStdin(true)
-                .withTty(true)
-                .withStdInOnce(true)
-                .withStdinOpen(true)
-                .withHostConfig(hcfg);
+        return cmd.withAttachStderr(true).withAttachStdout(true).withAttachStdin(true).withTty(true).withStdInOnce(true)
+            .withStdinOpen(true).withHostConfig(hcfg);
         // missing: hostConfig, exposedPorts, cmd
     }
 
@@ -108,7 +103,7 @@ public abstract class DockerTlsInstance {
         @SuppressWarnings("squid:S2095") // sonarlint: Resources should be closed
         // Create container does not need to be closed
         CreateContainerCmd containerCmd = DOCKER.createContainerCmd(image.getId());
-        if(containerName != null) {
+        if (containerName != null) {
             containerCmd.withName(containerName);
         }
         containerCmd = prepareCreateContainerCmd(containerCmd);
@@ -228,11 +223,8 @@ public abstract class DockerTlsInstance {
         fh.awaitCompletion();
         String[] lines = fh.getLines();
         // TODO optimize the following into the frame handler itself
-        String logs = Arrays.stream(lines)
-                .skip(logReadOffset)
-                .map(s -> s.concat("\n"))
-                .reduce(String::concat)
-                .orElse("-");
+        String logs =
+            Arrays.stream(lines).skip(logReadOffset).map(s -> s.concat("\n")).reduce(String::concat).orElse("-");
         logReadOffset = lines.length;
         return logs;
     }
@@ -253,7 +245,7 @@ public abstract class DockerTlsInstance {
         }
         return exitCode.get();
     }
-    
+
     public String getContainerName() {
         return containerName;
     }

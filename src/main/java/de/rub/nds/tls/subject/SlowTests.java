@@ -9,7 +9,8 @@
 
 package de.rub.nds.tls.subject;
 
-public enum ConnectionRole {
-    CLIENT,
-    SERVER
+/**
+ * JUnit test category. Slow tests that should not be included in the default packaging process.
+ */
+public interface SlowTests {
 }
