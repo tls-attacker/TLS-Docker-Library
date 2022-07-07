@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
+import de.rub.nds.tls.subject.SlowTests;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Test;
 
@@ -33,6 +34,7 @@ import de.rub.nds.tls.subject.docker.DockerTlsClientInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import de.rub.nds.tls.subject.report.ContainerReport;
 import de.rub.nds.tls.subject.report.InstanceContainer;
+import org.junit.experimental.categories.Category;
 
 public class AvailableClientVersionsTest {
 
@@ -60,6 +62,7 @@ public class AvailableClientVersionsTest {
     }
 
     @Test
+    @Category(SlowTests.class)
     public void testAllVersionsFunctional() throws JAXBException, IOException {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
         System.out.println("Functional Clients: ");
