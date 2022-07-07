@@ -6,6 +6,82 @@
     <groupId>de.rub.nds.tlsdockerlib</groupId>
     <version>2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
+
+    <developers>
+        <developer>
+            <id>jsomorovsky</id>
+            <name>Juraj Somorovsky</name>
+            <email>Juraj.Somorovsky@rub.de</email>
+            <url>https://www.nds.rub.de/</url>
+            <organization>NDS</organization>
+            <organizationUrl>https://www.nds.rub.de</organizationUrl>
+            <roles>
+                <role>Architect</role>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>ic0ns</id>
+            <name>Robert Merget</name>
+            <email>robert.merget@rub.de</email>
+            <url>http://www.nds.rub.de/</url>
+            <organization>NDS</organization>
+            <organizationUrl>https://www.nds.rub.de</organizationUrl>
+            <roles>
+                <role>Team lead</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>mmaehren</id>
+            <name>Marcel Maehren</name>
+            <email>marcel.maehren@rub.de</email>
+            <url>https://www.nds.rub.de/</url>
+            <organization>NDS</organization>
+            <organizationUrl>https://www.nds.rub.de</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>NErinola</id>
+            <name>Nurullah Erinola</name>
+            <email>nurullah.erinola@rub.de</email>
+            <url>https://www.nds.rub.de/</url>
+            <organization>NDS</organization>
+            <organizationUrl>https://www.nds.rub.de</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>rub-nexus</id>
+            <name>TLS-Attacker Internal Repository</name>
+            <url>https://hydrogen.cloud.nds.rub.de/nexus/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <!-- Information to version control system -->
+    <scm>
+        <connection>scm:git:git://github.com/tls-attacker/TLS-Docker-Library.git</connection>
+        <developerConnection>scm:git:ssh://github.com/tls-attacker/TLS-Docker-Library.git</developerConnection>
+        <url>https://github.com/tls-attacker/TLS-Docker-Library/tree/master</url>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -87,6 +163,21 @@
         </dependency>
     </dependencies>
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>net.revelc.code.formatter</groupId>
+                    <artifactId>formatter-maven-plugin</artifactId>
+                    <version>2.14.0</version>
+                </plugin>
+                <!-- Use a Licence Header -->
+                <plugin>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>3.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <finalName>TLS-Docker-Library</finalName>
         <plugins>
             <plugin>
@@ -170,10 +261,26 @@
                         <include>src/**/*.java</include>
                     </includes>
                     <properties>
-                        <year>${project.inceptionYear}</year>
-                        <owner>Ruhr University Bochum, Hackmanit GmbH</owner>
+                        <startYear>2014</startYear>
+                        <year>${buildYear}</year>
+                        <description>A Modular Penetration Testing Framework for TLS</description>
+                        <owner>Ruhr University Bochum, Paderborn University, Hackmanit GmbH</owner>
+                        <licenseName>Apache License, Version 2.0</licenseName>
+                        <licenseURL>http://www.apache.org/licenses/LICENSE-2.0.txt</licenseURL>
+                        <projectName>TLS-Attacker</projectName>
                     </properties>
+                    <mapping>
+                        <java>JAVADOC_STYLE</java>
+                    </mapping>
                 </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -187,6 +294,43 @@
                 <configuration>
                     <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <configuration>
+                    <configFile>${main.basedir}/maven-eclipse-codestyle.xml</configFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.1.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>8.37</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <violationSeverity>info</violationSeverity>
+                    <failOnViolation>false</failOnViolation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
             </plugin>
             <!-- Deacitvated automatic imageconstruction for now
             <plugin>
@@ -211,6 +355,9 @@
     </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+        <buildYear>${maven.build.timestamp}</buildYear>
+        <main.basedir>${project.basedir}</main.basedir>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
