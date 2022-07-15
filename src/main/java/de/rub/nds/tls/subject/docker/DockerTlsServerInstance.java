@@ -31,6 +31,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
     private final String additionalParameters;
     private final boolean parallelize;
     private final boolean insecureConnection;
+    private ExposedPort exposedImplementationPort;
 
     public DockerTlsServerInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties,
         String version, boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
@@ -59,10 +60,10 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
         } else {
             host = hostInfo.getHostname();
         }
-        return super.prepareCreateContainerCmd(cmd)
-            .withCmd(parameterProfile.toParameters(host, hostInfo.getPort(), imageProperties, additionalParameters,
-                parallelize, insecureConnection))
-            .withExposedPorts(new ExposedPort(hostInfo.getPort(), hostInfo.getType().toInternetProtocol()));
+        exposedImplementationPort = new ExposedPort(hostInfo.getPort(), hostInfo.getType().toInternetProtocol());
+        return super.prepareCreateContainerCmd(cmd).withCmd(parameterProfile.toParameters(host, hostInfo.getPort(),
+            imageProperties, additionalParameters, parallelize, insecureConnection))
+            .withExposedPorts(exposedImplementationPort);
     }
 
     @Override
@@ -84,7 +85,12 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
             throw new IllegalStateException(
                 "Cannot retrieve InstacePort, Network not properly configured for container with ID:" + getId());
         }
-        Binding[] binding = networkSettings.getPorts().getBindings().values().iterator().next();
+        if (exposedImplementationPort == null) {
+            throw new IllegalStateException(
+                "Unable to update port - no exposed port set for container with ID:" + getId());
+        }
+
+        Binding[] binding = networkSettings.getPorts().getBindings().get(exposedImplementationPort);
         if (binding != null) {
             // only update if port mapping was necessary
             port = Integer.valueOf(binding[0].getHostPortSpec());
