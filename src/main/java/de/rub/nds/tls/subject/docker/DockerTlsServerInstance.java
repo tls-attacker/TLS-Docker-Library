@@ -23,9 +23,6 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
-import static java.lang.Thread.sleep;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DockerTlsServerInstance extends DockerTlsInstance {
 
@@ -62,10 +59,10 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
         } else {
             host = hostInfo.getHostname();
         }
-        return super.prepareCreateContainerCmd(cmd).withCmd(parameterProfile.toParameters(host,
-            imageProperties.getInternalPort(), imageProperties, additionalParameters, parallelize, insecureConnection))
-            .withExposedPorts(
-                new ExposedPort(imageProperties.getInternalPort(), hostInfo.getType().toInternetProtocol()));
+        return super.prepareCreateContainerCmd(cmd)
+            .withCmd(parameterProfile.toParameters(host, hostInfo.getPort(), imageProperties, additionalParameters,
+                parallelize, insecureConnection))
+            .withExposedPorts(new ExposedPort(hostInfo.getPort(), hostInfo.getType().toInternetProtocol()));
     }
 
     @Override
@@ -78,7 +75,20 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
      * Update port to match actually exposed port.
      */
     public void updateInstancePort() {
-        port = imageProperties.getInternalPort();
+        InspectContainerResponse containerInfo = DOCKER.inspectContainerCmd(getId()).exec();
+        if (containerInfo == null) {
+            throw new IllegalStateException("Could not find container with ID:" + getId());
+        }
+        NetworkSettings networkSettings = containerInfo.getNetworkSettings();
+        if (networkSettings == null) {
+            throw new IllegalStateException(
+                "Cannot retrieve InstacePort, Network not properly configured for container with ID:" + getId());
+        }
+        Binding[] binding = networkSettings.getPorts().getBindings().values().iterator().next();
+        if (binding != null) {
+            // only update if port mapping was necessary
+            port = Integer.valueOf(binding[0].getHostPortSpec());
+        }
     }
 
     public int getPort() {
