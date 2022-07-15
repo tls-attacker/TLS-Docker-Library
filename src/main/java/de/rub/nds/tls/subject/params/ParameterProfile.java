@@ -96,19 +96,22 @@ public class ParameterProfile implements Serializable {
         StringBuilder finalParams = new StringBuilder();
         for (Parameter param : parameterList) {
             if (supportsInsecure()) {
-                if (insecureConnection) {
-                    // do not add CA param if we use insecure
-                    if (param.getType() == ParameterType.CA_CERTIFICATE)
-                        continue;
-                } else {
-                    // do not add insecure if not wanted
-                    if (param.getType() == ParameterType.INSECURE)
-                        continue;
+                if ((insecureConnection && param.getType() == ParameterType.CA_CERTIFICATE)
+                    || (!insecureConnection && param.getType() == ParameterType.INSECURE)) {
+                    // do not add CA param if we use insecure, do not add insecure
+                    // if not wanted
+                    continue;
                 }
             }
-            // do not add parallelize if not wanted
-            if (!parallelize && param.getType() == ParameterType.PARALLELIZE)
+
+            if (!parallelize && param.getType() == ParameterType.PARALLELIZE) {
+                // do not add parallelize if not wanted
                 continue;
+            }
+            if (param.getCmdParameter().equals("")) {
+                // do not add empty commands that cause a blank space
+                continue;
+            }
             finalParams.append(param.getCmdParameter());
             finalParams.append(" ");
         }
