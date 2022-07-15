@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TLS-Docker-Library</artifactId>
     <groupId>de.rub.nds.tlsdockerlib</groupId>
-    <version>2.0.1</version>
+    <version>2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <developers>
