@@ -3,8 +3,10 @@
         "damnvulnerableopenssl": {
           "name": "damnvulnerableopenssl",
           "dockerfile": "DamnVulnerableOpenSSL/Dockerfile",
+          "context": "DamnVulnerableOpenSSL",
           "versions": [
-            "latest"
+            "latest",
+            "1.0"
           ],
           "instances": [
             "server"

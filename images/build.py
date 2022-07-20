@@ -13,10 +13,11 @@ class DockerImage:
     """
     Helper class which holds details about a docker Image. Can be built and pushed
     """
-    def __init__(self, image_name, dockerfile, version, second_version, instances, image_version, build_args, docker_repo, target, tag, library_name, latest: bool, counter: int):
+    def __init__(self, image_name, dockerfile, version, context, second_version, instances, image_version, build_args, docker_repo, target, tag, library_name, latest: bool, counter: int):
         self.image_name = image_name
         self.dockerfile = dockerfile
         self.version = version
+        self.context = context
         self.second_version = second_version
         self.instance = instances
         self.image_version = image_version
@@ -67,7 +68,12 @@ class DockerImage:
         # construct dockerfile string
         dockerfile = ' -f ' + self.dockerfile
 
-        self.build_command = 'docker build{build_args}{tags}{dockerfile}{target} --no-cache {folder_name}'.format(build_args=build_args_str, tags=tags, dockerfile=dockerfile, target=target, folder_name=self.library_name)
+        # construct build context
+        context = self.library_name
+        if self.context != "":
+            context += "/" + self.context
+
+        self.build_command = 'docker build{build_args}{tags}{dockerfile}{target} --no-cache {folder_name}'.format(build_args=build_args_str, tags=tags, dockerfile=dockerfile, target=target, folder_name=context)
         return self.exec_docker_command(self.build_command).returncode
     
     def push(self):
@@ -118,6 +124,10 @@ class LibraryBuilder:
             second_versions = build_group['second_versions']
         except:
             second_versions = len(versions) * [None]
+        try:
+            context = build_group['context']
+        except:
+            context = ""
         instances = build_group['instances']
         image_version = build_group['image_version']
         build_args = build_group['build_args']
@@ -139,7 +149,7 @@ class LibraryBuilder:
                 is_latest = latest == _image_version
                 for instance in instances:
                     self.counter += 1
-                    yield DockerImage(image_name, dockerfile, version, second_version, instance, image_version, build_args, docker_repo, target, tag, library_name, is_latest, self.counter)
+                    yield DockerImage(image_name, dockerfile, version, context, second_version, instance, image_version, build_args, docker_repo, target, tag, library_name, is_latest, self.counter)
 
 
 
