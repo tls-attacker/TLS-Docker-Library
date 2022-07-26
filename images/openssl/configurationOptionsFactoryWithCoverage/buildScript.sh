@@ -14,12 +14,14 @@ fi
 
 if [ -d "/build/lib/" ]; then
     cp /build/lib/*.so.* /lib/
+elif [ -d "/build/lib64/" ]; then
+    find /build/lib64/ -name '*.so*' -exec cp "{}" /lib/  \;
 else
-    exit 1
+    exit 64
 fi
 
 if [ ! -f "/src/openssl/apps/openssl" ]; then
-    exit 1
+    exit 65
 fi
 
 # Remove all non coverage file (but keep the openssl file). Used to keep the final cotainer small.

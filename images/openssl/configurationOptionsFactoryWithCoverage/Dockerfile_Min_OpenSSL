@@ -12,6 +12,7 @@ COPY --from=temp-repro /lib/ld-musl-x86_64.so.* \
   /usr/lib/libstdc++.so.* \
   /usr/lib/libgcc_s.so.* \
   /build/lib/*.so.* \
+  /build/lib64/*.so.* \
   /usr/local/lib/perl5 \
   /lib/ 
 
