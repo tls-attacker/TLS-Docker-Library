@@ -29,6 +29,9 @@ public class DockerClientManager {
     private static DockerClientConfig DCONFIG = null;
     private static DockerHttpClient DHTTPCLIENT = null;
 
+    private static String dockerServerUsername;
+    private static String dockerServerPassword;
+
     public static DockerClient getDockerClient() {
         if (DOCKER == null) {
             DOCKER = getNewDockerClient();
@@ -53,6 +56,22 @@ public class DockerClientManager {
                 .sslConfig(DCONFIG.getSSLConfig()).build();
         }
         return DockerClientImpl.getInstance(DCONFIG, DHTTPCLIENT);
+    }
+
+    public static String getDockerServerUsername() {
+        return dockerServerUsername;
+    }
+
+    public static void setDockerServerUsername(String dockerServerUsername) {
+        DockerClientManager.dockerServerUsername = dockerServerUsername;
+    }
+
+    public static String getDockerServerPassword() {
+        return dockerServerPassword;
+    }
+
+    public static void setDockerServerPassword(String dockerServerPassword) {
+        DockerClientManager.dockerServerPassword = dockerServerPassword;
     }
 
     private DockerClientManager() {

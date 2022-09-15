@@ -9,10 +9,14 @@
 
 package de.rub.nds.tls.subject.docker;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -27,15 +31,23 @@ import de.rub.nds.tls.subject.constants.TlsImageLabels;
 import de.rub.nds.tls.subject.constants.TransportType;
 import de.rub.nds.tls.subject.exceptions.DefaultProfileNotFoundException;
 import de.rub.nds.tls.subject.exceptions.PropertyNotFoundException;
+import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.params.ParameterProfileManager;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import de.rub.nds.tls.subject.properties.PropertyManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Creates TLS-Server or TLS-Client Instances as Docker Container Holds the Config for each TLS-Server or TLS-Client
  */
 public class DockerTlsManagerFactory {
+
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    private static final int TIMEOUT = 2;
+
     private DockerTlsManagerFactory() {
         throw new UnsupportedOperationException("Utility class");
     }
@@ -62,6 +74,10 @@ public class DockerTlsManagerFactory {
         protected boolean parallelize = false;
         protected boolean insecureConnection = false;
         protected String containerName;
+
+        private static final String REPOSITORY_LOCATION = "https://hydrogen.cloud.nds.rub.de/nexus";
+
+        private static final String DOCKER_LIBRARY = "hydrogen.cloud.nds.rub.de/tls-attacker/docker-library/";
 
         public TlsInstanceBuilder(TlsImplementationType type, String version, ConnectionRole role,
             TransportType transportType) {
@@ -116,6 +132,49 @@ public class DockerTlsManagerFactory {
             return (T) this;
         }
 
+        public void pull(ConnectionRole connectionRole) {
+            // only pull if image does not exist
+            Map<String, String> labels = new HashMap<>();
+            labels.put(TlsImageLabels.IMPLEMENTATION.getLabelName(), profile.getType().name().toLowerCase());
+            labels.put(TlsImageLabels.VERSION.getLabelName(), version);
+            labels.put(TlsImageLabels.CONNECTION_ROLE.getLabelName(), connectionRole.toString().toLowerCase());
+            Image image = DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream().findFirst()
+                .orElseThrow(TlsVersionNotFoundException::new);
+            if (image != null) {
+                LOGGER.warn("Not pulling image, image already exists!");
+                return;
+            }
+
+            // TODO: implement public docker repo when published
+            LOGGER.warn("Could not pull repository from Public Repository. Trying internal repository.");
+
+            String username = DockerClientManager.getDockerServerUsername();
+            String password = DockerClientManager.getDockerServerPassword();
+            if (username == null || password == null) {
+                LOGGER.warn("Username or Password for private Docker repository not set. Set in DockerClientManager");
+                return;
+            }
+
+            Runtime runtime = Runtime.getRuntime();
+            try {
+                // we import docker-java to handle this but I just couldnt find a way to make docker-java do this
+                // its not documented and Im pretty sure that it does not fully work as intended so we go with this
+                // for now
+                String loginCommand = "docker login -u " + DockerClientManager.getDockerServerUsername() + " -p "
+                    + DockerClientManager.getDockerServerPassword() + " " + REPOSITORY_LOCATION;
+                String pullCommand = "docker pull " + DOCKER_LIBRARY + profile.getType().name().toLowerCase() + "-"
+                    + connectionRole.toString().toLowerCase() + ":" + version;
+                String logoutCommand = "docker logout";
+
+                executeCommand(runtime, loginCommand, TIMEOUT);
+                executeCommand(runtime, pullCommand, TIMEOUT);
+                executeCommand(runtime, logoutCommand, TIMEOUT);
+            } catch (IOException | InterruptedException ex) {
+                LOGGER.warn("Could not launch command line argument for pulling docker image");
+                throw new TlsVersionNotFoundException();
+            }
+        }
+
         public abstract DockerTlsInstance build() throws DockerException, InterruptedException;
     }
 
@@ -125,6 +184,11 @@ public class DockerTlsManagerFactory {
 
         public TlsClientInstanceBuilder(TlsImplementationType type, String version, TransportType transportType) {
             super(type, version, ConnectionRole.CLIENT, transportType);
+        }
+
+        public TlsClientInstanceBuilder pull() {
+            super.pull(ConnectionRole.CLIENT);
+            return this;
         }
 
         @Override
@@ -145,6 +209,11 @@ public class DockerTlsManagerFactory {
 
         public TlsServerInstanceBuilder(TlsImplementationType type, String version, TransportType transportType) {
             super(type, version, ConnectionRole.SERVER, transportType);
+        }
+
+        public TlsServerInstanceBuilder pull() {
+            super.pull(ConnectionRole.SERVER);
+            return this;
         }
 
         @Override
@@ -224,5 +293,21 @@ public class DockerTlsManagerFactory {
     public static List<Image> getAllImages() {
         return DOCKER.listImagesCmd().withLabelFilter(TlsImageLabels.IMPLEMENTATION.getLabelName())
             .withDanglingFilter(false).exec();
+    }
+
+    private static void executeCommand(Runtime runtime, String command, int timeout)
+        throws InterruptedException, IOException {
+        Process process = runtime.exec(command);
+        process.waitFor(timeout, TimeUnit.MINUTES);
+        if (process.exitValue() != 0) {
+            String readLine;
+            StringBuilder output = new StringBuilder();
+            BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            while ((readLine = processOutputReader.readLine()) != null) {
+                output.append(readLine);
+            }
+            LOGGER.warn("Pulling docker commands failed with exit code " + process.exitValue() + "\nSTDERR: " + output);
+            throw new IOException();
+        }
     }
 }

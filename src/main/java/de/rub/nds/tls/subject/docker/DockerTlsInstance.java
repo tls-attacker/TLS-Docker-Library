@@ -9,36 +9,24 @@
 
 package de.rub.nds.tls.subject.docker;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.UnaryOperator;
-
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
 import com.github.dockerjava.api.command.InspectVolumeResponse;
 import com.github.dockerjava.api.exception.DockerException;
-import com.github.dockerjava.api.model.AccessMode;
-import com.github.dockerjava.api.model.Bind;
-import com.github.dockerjava.api.model.HostConfig;
-import com.github.dockerjava.api.model.Image;
-import com.github.dockerjava.api.model.SELContext;
-import com.github.dockerjava.api.model.Volume;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import com.github.dockerjava.api.model.*;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.constants.TlsImageLabels;
 import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.*;
+import java.util.function.UnaryOperator;
 
 public abstract class DockerTlsInstance {
     protected static final DockerClient DOCKER = DockerClientManager.getDockerClient();
@@ -46,7 +34,7 @@ public abstract class DockerTlsInstance {
 
     private final String containerName;
     private String containerId;
-    protected final Image image;
+    protected Image image;
     private Optional<Long> exitCode = Optional.empty();
     private boolean autoRemove;
     private int logReadOffset = 0;
