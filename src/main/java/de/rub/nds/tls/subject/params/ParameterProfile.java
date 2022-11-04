@@ -1,25 +1,23 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tls.subject.params;
 
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.properties.ImageProperties;
-
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,17 +34,21 @@ public class ParameterProfile implements Serializable {
 
     private ConnectionRole role;
 
-    @XmlElements(value = { @XmlElement(type = String.class, name = "Version") })
+    @XmlElements(value = {@XmlElement(type = String.class, name = "Version")})
     private List<String> versionList;
 
-    @XmlElements(value = { @XmlElement(type = Parameter.class, name = "Parameter") })
+    @XmlElements(value = {@XmlElement(type = Parameter.class, name = "Parameter")})
     private List<Parameter> parameterList;
 
-    public ParameterProfile() {
-    }
+    public ParameterProfile() {}
 
-    public ParameterProfile(String name, String description, TlsImplementationType type, ConnectionRole role,
-        List<String> versionList, List<Parameter> parameterList) {
+    public ParameterProfile(
+            String name,
+            String description,
+            TlsImplementationType type,
+            ConnectionRole role,
+            List<String> versionList,
+            List<Parameter> parameterList) {
         this.name = name;
         this.description = description;
         this.type = type;
@@ -85,19 +87,37 @@ public class ParameterProfile implements Serializable {
 
     @Override
     public String toString() {
-        return "ParameterProfile{" + "name=" + name + ", description=" + description + ", type=" + type + ", role="
-            + role + ", versionList=" + versionList + ", parameterList=" + parameterList + '}';
+        return "ParameterProfile{"
+                + "name="
+                + name
+                + ", description="
+                + description
+                + ", type="
+                + type
+                + ", role="
+                + role
+                + ", versionList="
+                + versionList
+                + ", parameterList="
+                + parameterList
+                + '}';
     }
 
-    @SuppressWarnings("squid:S3776") // sonarlint: Cognitive Complexity of methods should not be too high
+    @SuppressWarnings(
+            "squid:S3776") // sonarlint: Cognitive Complexity of methods should not be too high
     // at some point this should be refactored (especially if more params are added)
-    public String[] toParameters(String host, Integer targetPort, ImageProperties imageProperties,
-        String additionalParameters, boolean parallelize, boolean insecureConnection) {
+    public String[] toParameters(
+            String host,
+            Integer targetPort,
+            ImageProperties imageProperties,
+            String additionalParameters,
+            boolean parallelize,
+            boolean insecureConnection) {
         StringBuilder finalParams = new StringBuilder();
         for (Parameter param : parameterList) {
             if (supportsInsecure()) {
                 if ((insecureConnection && param.getType() == ParameterType.CA_CERTIFICATE)
-                    || (!insecureConnection && param.getType() == ParameterType.INSECURE)) {
+                        || (!insecureConnection && param.getType() == ParameterType.INSECURE)) {
                     // do not add CA param if we use insecure, do not add insecure
                     // if not wanted
                     continue;
@@ -133,7 +153,9 @@ public class ParameterProfile implements Serializable {
             afterReplace = afterReplace.replace("[key]", imageProperties.getDefaultKeyPath());
         }
         if (imageProperties.getDefaultCertKeyCombinedPath() != null) {
-            afterReplace = afterReplace.replace("[combined]", imageProperties.getDefaultCertKeyCombinedPath());
+            afterReplace =
+                    afterReplace.replace(
+                            "[combined]", imageProperties.getDefaultCertKeyCombinedPath());
         }
         afterReplace = afterReplace.trim();
         LOGGER.debug("Final parameters: {}", afterReplace);

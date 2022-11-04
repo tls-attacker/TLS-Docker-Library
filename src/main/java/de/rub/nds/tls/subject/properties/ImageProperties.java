@@ -1,12 +1,11 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tls.subject.properties;
 
 import de.rub.nds.tls.subject.ConnectionRole;
@@ -24,8 +23,12 @@ public class ImageProperties {
     private String defaultCertKeyCombinedPath;
     private boolean useIP;
 
-    public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion,
-        String defaultCertPath, boolean useIP) {
+    public ImageProperties(
+            ConnectionRole role,
+            TlsImplementationType type,
+            String defaultVersion,
+            String defaultCertPath,
+            boolean useIP) {
         // Called for TLS client images
         this.role = role;
         this.type = type;
@@ -36,8 +39,14 @@ public class ImageProperties {
         this.useIP = useIP;
     }
 
-    public ImageProperties(ConnectionRole role, TlsImplementationType type, String defaultVersion, Integer internalPort,
-        String defaultKeyPath, String defaultCertPath, String defaultCertKeyCombindPath) {
+    public ImageProperties(
+            ConnectionRole role,
+            TlsImplementationType type,
+            String defaultVersion,
+            Integer internalPort,
+            String defaultKeyPath,
+            String defaultCertPath,
+            String defaultCertKeyCombindPath) {
         // Called for TLS server images
         this.role = role;
         this.type = type;

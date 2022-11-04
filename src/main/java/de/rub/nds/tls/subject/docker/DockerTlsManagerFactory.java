@@ -1,29 +1,16 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tls.subject.docker;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Image;
-
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.TlsImplementationType;
@@ -36,11 +23,21 @@ import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.params.ParameterProfileManager;
 import de.rub.nds.tls.subject.properties.ImageProperties;
 import de.rub.nds.tls.subject.properties.PropertyManager;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.UnaryOperator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Creates TLS-Server or TLS-Client Instances as Docker Container Holds the Config for each TLS-Server or TLS-Client
+ * Creates TLS-Server or TLS-Client Instances as Docker Container Holds the Config for each
+ * TLS-Server or TLS-Client
  */
 public class DockerTlsManagerFactory {
 
@@ -52,7 +49,8 @@ public class DockerTlsManagerFactory {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    private static final com.github.dockerjava.api.DockerClient DOCKER = DockerClientManager.getDockerClient();
+    private static final com.github.dockerjava.api.DockerClient DOCKER =
+            DockerClientManager.getDockerClient();
 
     private static final int DEFAULT_PORT = 4433;
 
@@ -77,10 +75,14 @@ public class DockerTlsManagerFactory {
 
         private static final String REPOSITORY_LOCATION = "https://hydrogen.cloud.nds.rub.de/nexus";
 
-        private static final String DOCKER_LIBRARY = "hydrogen.cloud.nds.rub.de/tls-attacker/docker-library/";
+        private static final String DOCKER_LIBRARY =
+                "hydrogen.cloud.nds.rub.de/tls-attacker/docker-library/";
 
-        public TlsInstanceBuilder(TlsImplementationType type, String version, ConnectionRole role,
-            TransportType transportType) {
+        public TlsInstanceBuilder(
+                TlsImplementationType type,
+                String version,
+                ConnectionRole role,
+                TransportType transportType) {
             this.profile = retrieveParameterProfile(type, version, role);
             this.imageProperties = retrieveImageProperties(role, type);
             this.version = version;
@@ -135,35 +137,56 @@ public class DockerTlsManagerFactory {
         public void pull(ConnectionRole connectionRole) {
             // only pull if image does not exist
             Map<String, String> labels = new HashMap<>();
-            labels.put(TlsImageLabels.IMPLEMENTATION.getLabelName(), profile.getType().name().toLowerCase());
+            labels.put(
+                    TlsImageLabels.IMPLEMENTATION.getLabelName(),
+                    profile.getType().name().toLowerCase());
             labels.put(TlsImageLabels.VERSION.getLabelName(), version);
-            labels.put(TlsImageLabels.CONNECTION_ROLE.getLabelName(), connectionRole.toString().toLowerCase());
-            Image image = DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream().findFirst()
-                .orElseThrow(TlsVersionNotFoundException::new);
+            labels.put(
+                    TlsImageLabels.CONNECTION_ROLE.getLabelName(),
+                    connectionRole.toString().toLowerCase());
+            Image image =
+                    DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream()
+                            .findFirst()
+                            .orElseThrow(TlsVersionNotFoundException::new);
             if (image != null) {
                 LOGGER.warn("Not pulling image, image already exists!");
                 return;
             }
 
             // TODO: implement public docker repo when published
-            LOGGER.warn("Could not pull repository from Public Repository. Trying internal repository.");
+            LOGGER.warn(
+                    "Could not pull repository from Public Repository. Trying internal repository.");
 
             String username = DockerClientManager.getDockerServerUsername();
             String password = DockerClientManager.getDockerServerPassword();
             if (username == null || password == null) {
-                LOGGER.warn("Username or Password for private Docker repository not set. Set in DockerClientManager");
+                LOGGER.warn(
+                        "Username or Password for private Docker repository not set. Set in DockerClientManager");
                 return;
             }
 
             Runtime runtime = Runtime.getRuntime();
             try {
-                // we import docker-java to handle this but I just couldnt find a way to make docker-java do this
-                // its not documented and Im pretty sure that it does not fully work as intended so we go with this
+                // we import docker-java to handle this but I just couldnt find a way to make
+                // docker-java do this
+                // its not documented and Im pretty sure that it does not fully work as intended so
+                // we go with this
                 // for now
-                String loginCommand = "docker login -u " + DockerClientManager.getDockerServerUsername() + " -p "
-                    + DockerClientManager.getDockerServerPassword() + " " + REPOSITORY_LOCATION;
-                String pullCommand = "docker pull " + DOCKER_LIBRARY + profile.getType().name().toLowerCase() + "-"
-                    + connectionRole.toString().toLowerCase() + ":" + version;
+                String loginCommand =
+                        "docker login -u "
+                                + DockerClientManager.getDockerServerUsername()
+                                + " -p "
+                                + DockerClientManager.getDockerServerPassword()
+                                + " "
+                                + REPOSITORY_LOCATION;
+                String pullCommand =
+                        "docker pull "
+                                + DOCKER_LIBRARY
+                                + profile.getType().name().toLowerCase()
+                                + "-"
+                                + connectionRole.toString().toLowerCase()
+                                + ":"
+                                + version;
                 String logoutCommand = "docker logout";
 
                 executeCommand(runtime, loginCommand, TIMEOUT);
@@ -178,11 +201,13 @@ public class DockerTlsManagerFactory {
         public abstract DockerTlsInstance build() throws DockerException, InterruptedException;
     }
 
-    public static class TlsClientInstanceBuilder extends TlsInstanceBuilder<TlsClientInstanceBuilder> {
+    public static class TlsClientInstanceBuilder
+            extends TlsInstanceBuilder<TlsClientInstanceBuilder> {
 
         protected boolean connectOnStartup = true;
 
-        public TlsClientInstanceBuilder(TlsImplementationType type, String version, TransportType transportType) {
+        public TlsClientInstanceBuilder(
+                TlsImplementationType type, String version, TransportType transportType) {
             super(type, version, ConnectionRole.CLIENT, transportType);
         }
 
@@ -193,21 +218,31 @@ public class DockerTlsManagerFactory {
 
         @Override
         public DockerTlsClientInstance build() throws DockerException, InterruptedException {
-            return new DockerTlsClientInstance(containerName, profile, imageProperties, version, autoRemove,
-                new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection,
-                connectOnStartup, hostConfigHook);
+            return new DockerTlsClientInstance(
+                    containerName,
+                    profile,
+                    imageProperties,
+                    version,
+                    autoRemove,
+                    new HostInfo(ip, hostname, port, transportType),
+                    additionalParameters,
+                    parallelize,
+                    insecureConnection,
+                    connectOnStartup,
+                    hostConfigHook);
         }
 
         public TlsClientInstanceBuilder connectOnStartup(boolean value) {
             connectOnStartup = value;
             return this;
         }
-
     }
 
-    public static class TlsServerInstanceBuilder extends TlsInstanceBuilder<TlsServerInstanceBuilder> {
+    public static class TlsServerInstanceBuilder
+            extends TlsInstanceBuilder<TlsServerInstanceBuilder> {
 
-        public TlsServerInstanceBuilder(TlsImplementationType type, String version, TransportType transportType) {
+        public TlsServerInstanceBuilder(
+                TlsImplementationType type, String version, TransportType transportType) {
             super(type, version, ConnectionRole.SERVER, transportType);
         }
 
@@ -218,26 +253,37 @@ public class DockerTlsManagerFactory {
 
         @Override
         public DockerTlsServerInstance build() throws DockerException, InterruptedException {
-            return new DockerTlsServerInstance(containerName, profile, imageProperties, version, autoRemove,
-                new HostInfo(ip, hostname, port, transportType), additionalParameters, parallelize, insecureConnection,
-                hostConfigHook);
+            return new DockerTlsServerInstance(
+                    containerName,
+                    profile,
+                    imageProperties,
+                    version,
+                    autoRemove,
+                    new HostInfo(ip, hostname, port, transportType),
+                    additionalParameters,
+                    parallelize,
+                    insecureConnection,
+                    hostConfigHook);
         }
-
     }
 
-    public static TlsClientInstanceBuilder getTlsClientBuilder(TlsImplementationType type, String version) {
+    public static TlsClientInstanceBuilder getTlsClientBuilder(
+            TlsImplementationType type, String version) {
         return new TlsClientInstanceBuilder(type, version, TransportType.TCP);
     }
 
-    public static TlsClientInstanceBuilder getDTlsClientBuilder(TlsImplementationType type, String version) {
+    public static TlsClientInstanceBuilder getDTlsClientBuilder(
+            TlsImplementationType type, String version) {
         return new TlsClientInstanceBuilder(type, version, TransportType.UDP);
     }
 
-    public static TlsServerInstanceBuilder getTlsServerBuilder(TlsImplementationType type, String version) {
+    public static TlsServerInstanceBuilder getTlsServerBuilder(
+            TlsImplementationType type, String version) {
         return new TlsServerInstanceBuilder(type, version, TransportType.TCP);
     }
 
-    public static TlsServerInstanceBuilder getDTlsServerBuilder(TlsImplementationType type, String version) {
+    public static TlsServerInstanceBuilder getDTlsServerBuilder(
+            TlsImplementationType type, String version) {
         return new TlsServerInstanceBuilder(type, version, TransportType.UDP);
     }
 
@@ -249,36 +295,47 @@ public class DockerTlsManagerFactory {
         return checkExists(type, version, ConnectionRole.SERVER);
     }
 
-    private static boolean checkExists(TlsImplementationType type, String version, ConnectionRole role) {
+    private static boolean checkExists(
+            TlsImplementationType type, String version, ConnectionRole role) {
         return PropertyManager.instance().getProperties(role, type) != null
-            && ParameterProfileManager.instance().getProfile(type, version, role) != null;
+                && ParameterProfileManager.instance().getProfile(type, version, role) != null;
     }
 
-    public static ImageProperties retrieveImageProperties(ConnectionRole role, TlsImplementationType type)
-        throws PropertyNotFoundException {
+    public static ImageProperties retrieveImageProperties(
+            ConnectionRole role, TlsImplementationType type) throws PropertyNotFoundException {
         ImageProperties properties = PropertyManager.instance().getProperties(role, type);
         if (properties == null) {
-            throw new PropertyNotFoundException("Could not find a Property for " + role.name() + ": " + type.name());
+            throw new PropertyNotFoundException(
+                    "Could not find a Property for " + role.name() + ": " + type.name());
         }
         return properties;
     }
 
-    public static ParameterProfile retrieveParameterProfile(TlsImplementationType type, String version,
-        ConnectionRole role) throws DefaultProfileNotFoundException {
-        ParameterProfile profile = ParameterProfileManager.instance().getProfile(type, version, role);
+    public static ParameterProfile retrieveParameterProfile(
+            TlsImplementationType type, String version, ConnectionRole role)
+            throws DefaultProfileNotFoundException {
+        ParameterProfile profile =
+                ParameterProfileManager.instance().getProfile(type, version, role);
         if (profile == null) {
             throw new DefaultProfileNotFoundException(
-                "Could not find a Profile for " + role.name() + ": " + type.name() + ":" + version);
+                    "Could not find a Profile for "
+                            + role.name()
+                            + ": "
+                            + type.name()
+                            + ":"
+                            + version);
         }
         return profile;
     }
 
-    public static List<String> getAvailableVersions(ConnectionRole role, TlsImplementationType type) {
+    public static List<String> getAvailableVersions(
+            ConnectionRole role, TlsImplementationType type) {
         List<String> versionList = new LinkedList<>();
         Map<String, String> labels = new HashMap<>();
         labels.put(TlsImageLabels.IMPLEMENTATION.getLabelName(), type.name().toLowerCase());
         labels.put(TlsImageLabels.CONNECTION_ROLE.getLabelName(), role.toString().toLowerCase());
-        List<Image> serverImageList = DOCKER.listImagesCmd().withLabelFilter(labels).withDanglingFilter(false).exec();
+        List<Image> serverImageList =
+                DOCKER.listImagesCmd().withLabelFilter(labels).withDanglingFilter(false).exec();
         for (Image image : serverImageList) {
             if (image.getLabels() != null) {
                 String version = image.getLabels().get(TlsImageLabels.VERSION.getLabelName());
@@ -291,22 +348,29 @@ public class DockerTlsManagerFactory {
     }
 
     public static List<Image> getAllImages() {
-        return DOCKER.listImagesCmd().withLabelFilter(TlsImageLabels.IMPLEMENTATION.getLabelName())
-            .withDanglingFilter(false).exec();
+        return DOCKER.listImagesCmd()
+                .withLabelFilter(TlsImageLabels.IMPLEMENTATION.getLabelName())
+                .withDanglingFilter(false)
+                .exec();
     }
 
     private static void executeCommand(Runtime runtime, String command, int timeout)
-        throws InterruptedException, IOException {
+            throws InterruptedException, IOException {
         Process process = runtime.exec(command);
         process.waitFor(timeout, TimeUnit.MINUTES);
         if (process.exitValue() != 0) {
             String readLine;
             StringBuilder output = new StringBuilder();
-            BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            BufferedReader processOutputReader =
+                    new BufferedReader(new InputStreamReader(process.getErrorStream()));
             while ((readLine = processOutputReader.readLine()) != null) {
                 output.append(readLine);
             }
-            LOGGER.warn("Pulling docker commands failed with exit code " + process.exitValue() + "\nSTDERR: " + output);
+            LOGGER.warn(
+                    "Pulling docker commands failed with exit code "
+                            + process.exitValue()
+                            + "\nSTDERR: "
+                            + output);
             throw new IOException();
         }
     }

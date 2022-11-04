@@ -1,12 +1,11 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tls.subject.docker;
 
 import com.github.dockerjava.api.DockerClient;
@@ -22,11 +21,10 @@ import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.*;
 import java.util.function.UnaryOperator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class DockerTlsInstance {
     protected static final DockerClient DOCKER = DockerClientManager.getDockerClient();
@@ -43,8 +41,14 @@ public abstract class DockerTlsInstance {
     protected List<DockerExecInstance> childExecs = new LinkedList<>();
     private final UnaryOperator<HostConfig> hostConfigHook;
 
-    public DockerTlsInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties,
-        String version, ConnectionRole role, boolean autoRemove, UnaryOperator<HostConfig> hostConfigHook) {
+    public DockerTlsInstance(
+            String containerName,
+            ParameterProfile profile,
+            ImageProperties imageProperties,
+            String version,
+            ConnectionRole role,
+            boolean autoRemove,
+            UnaryOperator<HostConfig> hostConfigHook) {
         if (profile == null) {
             throw new NullPointerException("profile may not be null");
         }
@@ -57,21 +61,38 @@ public abstract class DockerTlsInstance {
         this.hostConfigHook = hostConfigHook;
         this.containerName = containerName;
         Map<String, String> labels = new HashMap<>();
-        labels.put(TlsImageLabels.IMPLEMENTATION.getLabelName(), profile.getType().name().toLowerCase());
+        labels.put(
+                TlsImageLabels.IMPLEMENTATION.getLabelName(),
+                profile.getType().name().toLowerCase());
         labels.put(TlsImageLabels.VERSION.getLabelName(), version);
         labels.put(TlsImageLabels.CONNECTION_ROLE.getLabelName(), role.toString().toLowerCase());
-        this.image = DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream().findFirst()
-            .orElseThrow(TlsVersionNotFoundException::new);
+        this.image =
+                DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream()
+                        .findFirst()
+                        .orElseThrow(TlsVersionNotFoundException::new);
     }
 
     protected HostConfig prepareHostConfig(HostConfig cfg) {
         // Check if volume exists; Without this check, the container would be started
         // without any problems, swallowing the error and making it harder to identify
-        InspectVolumeResponse vol = DOCKER.listVolumesCmd().withFilter("name", Arrays.asList("cert-data")).exec()
-            .getVolumes().stream().findFirst().orElseThrow(CertVolumeNotFoundException::new);
+        InspectVolumeResponse vol =
+                DOCKER
+                        .listVolumesCmd()
+                        .withFilter("name", Arrays.asList("cert-data"))
+                        .exec()
+                        .getVolumes()
+                        .stream()
+                        .findFirst()
+                        .orElseThrow(CertVolumeNotFoundException::new);
 
         // hook is handled in prepareCreateContainerCmd; this ensures it is called last
-        return cfg.withBinds(new Bind(vol.getName(), new Volume("/cert/"), AccessMode.ro, SELContext.DEFAULT, true));
+        return cfg.withBinds(
+                new Bind(
+                        vol.getName(),
+                        new Volume("/cert/"),
+                        AccessMode.ro,
+                        SELContext.DEFAULT,
+                        true));
     }
 
     protected CreateContainerCmd prepareCreateContainerCmd(CreateContainerCmd cmd) {
@@ -79,8 +100,13 @@ public abstract class DockerTlsInstance {
         if (hostConfigHook != null) {
             hcfg = hostConfigHook.apply(hcfg);
         }
-        return cmd.withAttachStderr(true).withAttachStdout(true).withAttachStdin(true).withTty(true).withStdInOnce(true)
-            .withStdinOpen(true).withHostConfig(hcfg);
+        return cmd.withAttachStderr(true)
+                .withAttachStdout(true)
+                .withAttachStdin(true)
+                .withTty(true)
+                .withStdInOnce(true)
+                .withStdinOpen(true)
+                .withHostConfig(hcfg);
         // missing: hostConfig, exposedPorts, cmd
     }
 
@@ -139,7 +165,9 @@ public abstract class DockerTlsInstance {
     }
 
     private void storeExitCode() {
-        this.exitCode = Optional.of(DOCKER.inspectContainerCmd(getId()).exec().getState().getExitCodeLong());
+        this.exitCode =
+                Optional.of(
+                        DOCKER.inspectContainerCmd(getId()).exec().getState().getExitCodeLong());
     }
 
     private void closeChildren() {
@@ -212,12 +240,18 @@ public abstract class DockerTlsInstance {
         String[] lines = fh.getLines();
         // TODO optimize the following into the frame handler itself
         String logs =
-            Arrays.stream(lines).skip(logReadOffset).map(s -> s.concat("\n")).reduce(String::concat).orElse("-");
+                Arrays.stream(lines)
+                        .skip(logReadOffset)
+                        .map(s -> s.concat("\n"))
+                        .reduce(String::concat)
+                        .orElse("-");
         logReadOffset = lines.length;
         return logs;
     }
 
-    @SuppressWarnings("squid:S3655") // sonarlint: Optional value should only be accessed after calling isPresent()
+    @SuppressWarnings(
+            "squid:S3655") // sonarlint: Optional value should only be accessed after calling
+    // isPresent()
     // this is fixed as if there is no value we either throw an exception or store a
     // new value
     public long getExitCode() {

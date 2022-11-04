@@ -1,21 +1,18 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tls.subject;
 
+import de.rub.nds.tls.subject.exceptions.ImplementationDidNotStartException;
 import java.io.IOException;
 import java.net.Socket;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import de.rub.nds.tls.subject.exceptions.ImplementationDidNotStartException;
 
 public class ServerUtil {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -27,13 +24,15 @@ public class ServerUtil {
     public void waitUntilServerIsOnline(String host, int port) {
         long startTime = System.currentTimeMillis();
         while (!isServerOnline(host, port)) {
-            if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS < System.currentTimeMillis()) {
+            if (startTime + TIMEOUT_WAIT_FOR_SERVER_SPINUP_MILLISECONDS
+                    < System.currentTimeMillis()) {
                 throw new ImplementationDidNotStartException("Could not start Server: Timeout");
             }
             try {
                 Thread.sleep(SERVER_POLL_INTERVAL_MILLISECONDS);
             } catch (InterruptedException ex) {
-                throw new ImplementationDidNotStartException("Interrupted while waiting for Server", ex);
+                throw new ImplementationDidNotStartException(
+                        "Interrupted while waiting for Server", ex);
             }
         }
     }
@@ -52,5 +51,4 @@ public class ServerUtil {
             return false;
         }
     }
-
 }

@@ -1,14 +1,17 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tls.subject.params;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,10 +22,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -43,7 +42,7 @@ public class ParameterProfileSerializer {
     }
 
     public static void write(File file, ParameterProfile profile)
-        throws FileNotFoundException, JAXBException, IOException {
+            throws FileNotFoundException, JAXBException, IOException {
         FileOutputStream fos = new FileOutputStream(file);
         ParameterProfileSerializer.write(fos, profile);
     }
@@ -54,7 +53,8 @@ public class ParameterProfileSerializer {
         return new String(bos.toByteArray(), "UTF-8");
     }
 
-    public static void write(OutputStream outputStream, ParameterProfile profile) throws JAXBException, IOException {
+    public static void write(OutputStream outputStream, ParameterProfile profile)
+            throws JAXBException, IOException {
         context = getJAXBContext();
         Marshaller m = context.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -62,7 +62,8 @@ public class ParameterProfileSerializer {
         outputStream.close();
     }
 
-    public static ParameterProfile read(InputStream inputStream) throws JAXBException, IOException, XMLStreamException {
+    public static ParameterProfile read(InputStream inputStream)
+            throws JAXBException, IOException, XMLStreamException {
         context = getJAXBContext();
         Unmarshaller m = context.createUnmarshaller();
 
@@ -97,10 +98,7 @@ public class ParameterProfileSerializer {
         } else {
             throw new IllegalArgumentException("Cannot read Folder, because its not a Folder");
         }
-
     }
 
-    private ParameterProfileSerializer() {
-
-    }
+    private ParameterProfileSerializer() {}
 }

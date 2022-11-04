@@ -1,17 +1,12 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tls.subject.docker;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
@@ -19,7 +14,6 @@ import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,8 +35,10 @@ public class DockerClientManager {
 
     private static void ensureConfigExists() {
         if (DCONFIG == null) {
-            DefaultDockerClientConfig.Builder cfgBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder();
-            if (System.getenv("DOCKER_HOST") == null && System.getProperty("os.name").startsWith("Windows")) {
+            DefaultDockerClientConfig.Builder cfgBuilder =
+                    DefaultDockerClientConfig.createDefaultConfigBuilder();
+            if (System.getenv("DOCKER_HOST") == null
+                    && System.getProperty("os.name").startsWith("Windows")) {
                 cfgBuilder = cfgBuilder.withDockerHost("npipe:////./pipe/docker_engine");
             }
             DCONFIG = cfgBuilder.build();
@@ -52,8 +48,11 @@ public class DockerClientManager {
     public static DockerClient getNewDockerClient() {
         ensureConfigExists();
         if (DHTTPCLIENT == null) {
-            DHTTPCLIENT = new ApacheDockerHttpClient.Builder().dockerHost(DCONFIG.getDockerHost())
-                .sslConfig(DCONFIG.getSSLConfig()).build();
+            DHTTPCLIENT =
+                    new ApacheDockerHttpClient.Builder()
+                            .dockerHost(DCONFIG.getDockerHost())
+                            .sslConfig(DCONFIG.getSSLConfig())
+                            .build();
         }
         return DockerClientImpl.getInstance(DCONFIG, DHTTPCLIENT);
     }

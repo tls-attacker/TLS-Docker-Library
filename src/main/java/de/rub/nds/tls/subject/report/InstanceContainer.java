@@ -1,14 +1,11 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-/*
- */
-
 package de.rub.nds.tls.subject.report;
 
 import de.rub.nds.tls.subject.ConnectionRole;
@@ -16,7 +13,6 @@ import de.rub.nds.tls.subject.TlsImplementationType;
 import java.io.Serializable;
 
 /**
- *
  * @author robert
  */
 public class InstanceContainer implements Serializable {
@@ -29,11 +25,13 @@ public class InstanceContainer implements Serializable {
 
     private boolean functional;
 
-    private InstanceContainer() {
-    }
+    private InstanceContainer() {}
 
-    public InstanceContainer(ConnectionRole role, TlsImplementationType implementationType, String version,
-        boolean functional) {
+    public InstanceContainer(
+            ConnectionRole role,
+            TlsImplementationType implementationType,
+            String version,
+            boolean functional) {
         this.role = role;
         this.implementationType = implementationType;
         this.version = version;

@@ -1,17 +1,11 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package de.rub.nds.tls.subject.params;
 
 import java.io.FileInputStream;
@@ -60,8 +54,12 @@ public class TlsTestServer extends Thread {
             SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
             sslContext.init(km, tm, null);
             return sslContext;
-        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException
-            | UnrecoverableKeyException | KeyManagementException ex) {
+        } catch (KeyStoreException
+                | IOException
+                | NoSuchAlgorithmException
+                | CertificateException
+                | UnrecoverableKeyException
+                | KeyManagementException ex) {
             ex.printStackTrace();
         }
         return null;
@@ -74,7 +72,8 @@ public class TlsTestServer extends Thread {
         SSLContext sslContext = this.createSSLContext();
         try {
             SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();
-            sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(this.port);
+            sslServerSocket =
+                    (SSLServerSocket) sslServerSocketFactory.createServerSocket(this.port);
             while (!isServerDone) {
                 sslSocket = (SSLSocket) sslServerSocket.accept();
                 new ServerConnectionThread(sslSocket).start();

@@ -1,41 +1,34 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package de.rub.nds.tls.subject.params;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.xml.bind.JAXBException;
-
-import de.rub.nds.tls.subject.SlowTests;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.junit.Test;
-
 import de.rub.nds.tls.subject.ConnectionRole;
+import de.rub.nds.tls.subject.TestCategories;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.docker.DockerExecInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsClientInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import de.rub.nds.tls.subject.report.ContainerReport;
 import de.rub.nds.tls.subject.report.InstanceContainer;
-import org.junit.experimental.categories.Category;
+import jakarta.xml.bind.JAXBException;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
+@Disabled("TODO: refactor")
 public class AvailableClientVersionsTest {
 
     private static final String HOSTNAME = "nds.tls-docker-library-test.de";
@@ -46,14 +39,14 @@ public class AvailableClientVersionsTest {
     private static final int PORT = 8000;
     private static final int CONNECTION_TIMEOUT = 10;
 
-    public AvailableClientVersionsTest() {
-    }
+    public AvailableClientVersionsTest() {}
 
     @Test
     public void listAllClients() {
         System.out.println("Available Clients: ");
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = DockerTlsManagerFactory.getAvailableVersions(ConnectionRole.CLIENT, type);
+            List<String> availableVersions =
+                    DockerTlsManagerFactory.getAvailableVersions(ConnectionRole.CLIENT, type);
             System.out.println("Client version: " + type);
             for (String version : availableVersions) {
                 System.out.println(version);
@@ -62,7 +55,7 @@ public class AvailableClientVersionsTest {
     }
 
     @Test
-    @Category(SlowTests.class)
+    @Tag(TestCategories.SLOW_TEST)
     public void testAllVersionsFunctional() throws JAXBException, IOException {
         Configurator.setRootLevel(org.apache.logging.log4j.Level.OFF);
         System.out.println("Functional Clients: ");
@@ -70,13 +63,15 @@ public class AvailableClientVersionsTest {
         testServer.start();
         ContainerReport report = new ContainerReport();
         for (TlsImplementationType type : TlsImplementationType.values()) {
-            List<String> availableVersions = DockerTlsManagerFactory.getAvailableVersions(ConnectionRole.CLIENT, type);
+            List<String> availableVersions =
+                    DockerTlsManagerFactory.getAvailableVersions(ConnectionRole.CLIENT, type);
             for (String version : availableVersions) {
                 try {
                     boolean isFunctional = isFunctional(testServer, type, version);
                     System.out.println(type.name() + ":" + version + " - " + isFunctional);
                     report.addInstanceContainer(
-                        new InstanceContainer(ConnectionRole.CLIENT, type, version, isFunctional));
+                            new InstanceContainer(
+                                    ConnectionRole.CLIENT, type, version, isFunctional));
                 } catch (Exception E) {
                     E.printStackTrace();
                     System.out.println(type.name() + ":" + version + "       ERROR");
@@ -87,11 +82,13 @@ public class AvailableClientVersionsTest {
         try {
             testServer.stop("localhost", PORT);
         } catch (IOException ex) {
-            Logger.getLogger(AvailableClientVersionsTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AvailableClientVersionsTest.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
     }
 
-    public boolean isFunctional(TlsTestServer testServer, TlsImplementationType type, String version) {
+    public boolean isFunctional(
+            TlsTestServer testServer, TlsImplementationType type, String version) {
         DockerTlsClientInstance client = null;
         DockerExecInstance ei = null;
         testServer.setIsConnectionSuccessful(false);
@@ -100,8 +97,14 @@ public class AvailableClientVersionsTest {
                 System.out.println("Null: " + version);
                 return false;
             }
-            client = DockerTlsManagerFactory.getTlsClientBuilder(type, version).ip(IP).hostname(HOSTNAME).port(PORT)
-                .connectOnStartup(false).insecureConnection(false).build();
+            client =
+                    DockerTlsManagerFactory.getTlsClientBuilder(type, version)
+                            .ip(IP)
+                            .hostname(HOSTNAME)
+                            .port(PORT)
+                            .connectOnStartup(false)
+                            .insecureConnection(false)
+                            .build();
             client.start();
             ei = (DockerExecInstance) client.connect();
             boolean waiting = true;

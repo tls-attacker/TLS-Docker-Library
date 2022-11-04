@@ -1,19 +1,17 @@
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
  *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tls.subject.docker;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 import com.github.dockerjava.api.async.ResultCallbackTemplate;
 import com.github.dockerjava.api.model.Frame;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class FrameHandler extends ResultCallbackTemplate<FrameHandler, Frame> {
     private static String[] EMPTY_STR_ARR = new String[] {};
@@ -57,5 +55,4 @@ public class FrameHandler extends ResultCallbackTemplate<FrameHandler, Frame> {
         }
         return ret.toArray(EMPTY_STR_ARR);
     }
-
 }
