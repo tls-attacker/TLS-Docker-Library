@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
 import org.apache.logging.log4j.LogManager;
@@ -144,18 +145,12 @@ public class DockerTlsManagerFactory {
             labels.put(
                     TlsImageLabels.CONNECTION_ROLE.getLabelName(),
                     connectionRole.toString().toLowerCase());
-            Image image =
-                    DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream()
-                            .findFirst()
-                            .orElseThrow(TlsVersionNotFoundException::new);
-            if (image != null) {
+            Optional<Image> image =
+                    DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream().findFirst();
+            if (image.isPresent()) {
                 LOGGER.warn("Not pulling image, image already exists!");
                 return;
             }
-
-            // TODO: implement public docker repo when published
-            LOGGER.warn(
-                    "Could not pull repository from Public Repository. Trying internal repository.");
 
             String username = DockerClientManager.getDockerServerUsername();
             String password = DockerClientManager.getDockerServerPassword();
@@ -173,11 +168,11 @@ public class DockerTlsManagerFactory {
                 // we go with this
                 // for now
                 String loginCommand =
-                        "docker login -u "
-                                + DockerClientManager.getDockerServerUsername()
-                                + " -p "
+                        "echo "
                                 + DockerClientManager.getDockerServerPassword()
-                                + " "
+                                + " | docker login -u "
+                                + DockerClientManager.getDockerServerUsername()
+                                + " --password-stdin "
                                 + REPOSITORY_LOCATION;
                 String pullCommand =
                         "docker pull "
