@@ -13,6 +13,7 @@ import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.ContainerConfig;
 import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.api.model.Volume;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
@@ -39,6 +40,7 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
 
     // TODO move away from HostInfo for client...
     public DockerTlsClientInstance(
+            Image image,
             String containerName,
             ParameterProfile profile,
             ImageProperties imageProperties,
@@ -51,6 +53,7 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
             boolean connectOnStartup,
             UnaryOperator<HostConfig> hostConfigHook) {
         super(
+                image,
                 containerName,
                 profile,
                 imageProperties,

@@ -60,6 +60,7 @@ public class DockerTlsManagerFactory {
         protected final ParameterProfile profile;
         protected final ImageProperties imageProperties;
         protected final String version;
+        protected Image image;
         protected boolean autoRemove = true;
         // shared constructor parameters
         // Host Info:
@@ -87,6 +88,21 @@ public class DockerTlsManagerFactory {
             this.profile = retrieveParameterProfile(type, version, role);
             this.imageProperties = retrieveImageProperties(role, type);
             this.version = version;
+            this.transportType = transportType;
+        }
+
+        public TlsInstanceBuilder(Image image, TransportType transportType) {
+            this.version = image.getLabels().get(TlsImageLabels.VERSION.getLabelName());
+            TlsImplementationType type =
+                    TlsImplementationType.fromString(
+                            image.getLabels().get(TlsImageLabels.IMPLEMENTATION.getLabelName()));
+            ConnectionRole role =
+                    ConnectionRole.valueOf(
+                            image.getLabels()
+                                    .get(TlsImageLabels.CONNECTION_ROLE.getLabelName())
+                                    .toUpperCase());
+            this.profile = retrieveParameterProfile(type, version, role);
+            this.imageProperties = retrieveImageProperties(role, type);
             this.transportType = transportType;
         }
 
@@ -206,6 +222,10 @@ public class DockerTlsManagerFactory {
             super(type, version, ConnectionRole.CLIENT, transportType);
         }
 
+        public TlsClientInstanceBuilder(Image image, TransportType transportType) {
+            super(image, transportType);
+        }
+
         public TlsClientInstanceBuilder pull() {
             super.pull(ConnectionRole.CLIENT);
             return this;
@@ -214,6 +234,7 @@ public class DockerTlsManagerFactory {
         @Override
         public DockerTlsClientInstance build() throws DockerException, InterruptedException {
             return new DockerTlsClientInstance(
+                    image,
                     containerName,
                     profile,
                     imageProperties,
@@ -241,6 +262,10 @@ public class DockerTlsManagerFactory {
             super(type, version, ConnectionRole.SERVER, transportType);
         }
 
+        public TlsServerInstanceBuilder(Image image, TransportType transportType) {
+            super(image, transportType);
+        }
+
         public TlsServerInstanceBuilder pull() {
             super.pull(ConnectionRole.SERVER);
             return this;
@@ -249,6 +274,7 @@ public class DockerTlsManagerFactory {
         @Override
         public DockerTlsServerInstance build() throws DockerException, InterruptedException {
             return new DockerTlsServerInstance(
+                    image,
                     containerName,
                     profile,
                     imageProperties,
@@ -347,6 +373,28 @@ public class DockerTlsManagerFactory {
                 .withLabelFilter(TlsImageLabels.IMPLEMENTATION.getLabelName())
                 .withDanglingFilter(false)
                 .exec();
+    }
+
+    public static Image getMatchingImage(
+            List<Image> images, TlsImplementationType type, String version, ConnectionRole role) {
+        return images.stream()
+                .filter(
+                        image ->
+                                image.getLabels()
+                                        .get(TlsImageLabels.VERSION.getLabelName())
+                                        .equals(version))
+                .filter(
+                        image ->
+                                image.getLabels()
+                                        .get(TlsImageLabels.IMPLEMENTATION.getLabelName())
+                                        .equals(type.name().toLowerCase()))
+                .filter(
+                        image ->
+                                image.getLabels()
+                                        .get(TlsImageLabels.CONNECTION_ROLE.getLabelName())
+                                        .equals(role.name().toLowerCase()))
+                .findFirst()
+                .orElse(null);
     }
 
     private static void executeCommand(Runtime runtime, String command, int timeout)

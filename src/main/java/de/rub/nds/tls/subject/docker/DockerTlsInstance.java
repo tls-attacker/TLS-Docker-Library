@@ -42,6 +42,7 @@ public abstract class DockerTlsInstance {
     private final UnaryOperator<HostConfig> hostConfigHook;
 
     public DockerTlsInstance(
+            Image image,
             String containerName,
             ParameterProfile profile,
             ImageProperties imageProperties,
@@ -66,10 +67,14 @@ public abstract class DockerTlsInstance {
                 profile.getType().name().toLowerCase());
         labels.put(TlsImageLabels.VERSION.getLabelName(), version);
         labels.put(TlsImageLabels.CONNECTION_ROLE.getLabelName(), role.toString().toLowerCase());
-        this.image =
-                DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream()
-                        .findFirst()
-                        .orElseThrow(TlsVersionNotFoundException::new);
+        if (image == null) {
+            this.image =
+                    DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream()
+                            .findFirst()
+                            .orElseThrow(TlsVersionNotFoundException::new);
+        } else {
+            this.image = image;
+        }
     }
 
     protected HostConfig prepareHostConfig(HostConfig cfg) {

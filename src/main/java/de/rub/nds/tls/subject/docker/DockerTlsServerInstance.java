@@ -12,6 +12,7 @@ import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.api.model.NetworkSettings;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports.Binding;
@@ -31,6 +32,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
     private ExposedPort exposedImplementationPort;
 
     public DockerTlsServerInstance(
+            Image image,
             String containerName,
             ParameterProfile profile,
             ImageProperties imageProperties,
@@ -42,6 +44,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
             boolean insecureConnection,
             UnaryOperator<HostConfig> hostConfigHook) {
         super(
+                image,
                 containerName,
                 profile,
                 imageProperties,
