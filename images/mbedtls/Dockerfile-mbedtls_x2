@@ -1,6 +1,6 @@
 FROM alpine-build:3.12 as mbed-base1
 ARG VERSION
-RUN git clone --depth 1 --branch mbedtls-${VERSION} https://github.com/ARMmbed/mbedtls mbed
+RUN git clone --depth 1 --branch mbedtls-${VERSION} https://github.com/Mbed-TLS/mbedtls mbed
 RUN cd mbed && git submodule update --init --recursive
 RUN sed -i -e 's/ -Werror//g' /src/mbed/CMakeLists.txt
 WORKDIR /build/
