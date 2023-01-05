@@ -240,7 +240,7 @@ public abstract class DockerTlsInstance {
 
     public String getLogs() throws InterruptedException {
         FrameHandler fh = new FrameHandler();
-        DOCKER.logContainerCmd(getId()).exec(fh);
+        DOCKER.logContainerCmd(getId()).withStdOut(true).withStdErr(true).exec(fh);
         fh.awaitCompletion();
         String[] lines = fh.getLines();
         // TODO optimize the following into the frame handler itself
