@@ -7,7 +7,7 @@
     <Version>1.11.1[3-9]</Version>
     <Version>1.11.2[0-5]</Version>
     <Parameter>
-        <cmdParameter>[cert] [key] --policy=default</cmdParameter>
+        <cmdParameter>[cert] [key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>

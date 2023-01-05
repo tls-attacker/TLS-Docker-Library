@@ -15,7 +15,7 @@
           "build_args": {
               "VERSION": "1.0"
           },
-          "target": "",
+            "target": "",
           "tag": "{r}{n}-{i}:{v}"
         }
     },

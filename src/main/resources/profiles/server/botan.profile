@@ -5,7 +5,7 @@
     <type>BOTAN</type>
     <role>SERVER</role>
     <Parameter>
-        <cmdParameter>[cert] [key] --policy=default</cmdParameter>
+        <cmdParameter>[cert] [key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>

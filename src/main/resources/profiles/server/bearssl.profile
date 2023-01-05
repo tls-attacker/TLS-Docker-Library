@@ -5,7 +5,7 @@
     <type>BEARSSL</type>
     <role>SERVER</role>
     <Parameter>
-        <cmdParameter>-cert [cert] -key [key] --policy=bsi</cmdParameter>
+        <cmdParameter>-cert [cert] -key [key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>
