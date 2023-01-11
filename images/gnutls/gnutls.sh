@@ -2,13 +2,13 @@
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
-array=(0)
+array=(0 1 2 3 4 5 6 7 8)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.7.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-server .
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-server --progress=plain .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-client --progress=plain .
 	i=i+1
 done
 
