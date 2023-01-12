@@ -2,13 +2,13 @@
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
-array=(0.0-stable 1.0-stable 2.0-stable 2.0c 3.0-stable 4.0-stable 5.0-stable 6.0-stable)
+array=(4.0.0-stable 4.1.0-stable 4.2.0-stable 4.2.0c 4.3.0-stable 4.4.0-stable 4.5.0-stable 4.6.0-stable 5.5.4-stable)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
-	echo "Building: WolfSSL 4.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:4.${array[$i]} -f Dockerfile-4_x --target wolfssl-server .
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:4.${array[$i]} -f Dockerfile-4_x --target wolfssl-client .
+	echo "Building: WolfSSL ${array[$i]}"
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:${array[$i]} -f Dockerfile-4_x --target wolfssl-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:${array[$i]} -f Dockerfile-4_x --target wolfssl-client .
 	i=i+1
 done
 

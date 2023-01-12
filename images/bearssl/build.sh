@@ -3,6 +3,6 @@ cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 exit_on_error
 
-track_error ./bearssl-0_X.sh
+track_error ./bearssl.sh
 
 exit "$EXITCODE"
