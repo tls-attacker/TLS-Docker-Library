@@ -1,12 +1,11 @@
-FROM debian:stretch
+FROM debian:latest
 
 RUN apt-get update 
 RUN apt-get install software-properties-common -y
-RUN apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
 RUN apt-get update && apt-get install -y \
     openssl \
     libnss3-tools \
-    openjdk-8-jdk \
+    default-jdk \
     curl
 
 WORKDIR /certs
