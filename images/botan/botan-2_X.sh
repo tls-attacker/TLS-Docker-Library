@@ -10,11 +10,12 @@ do
 done
 
 
-versions=(11.0 12.0 12.1 13.0 14.0 15.0 16.0 17.0 17.1 17.2 17.3 19.3)
+versions=(11.0 12.0 12.1 13.0 14.0 15.0 16.0 17.0 17.1 17.2 17.3 18.0 18.1 18.2 19.0 19.1 19.2 19.3)
 for i in "${versions[@]}"
 do
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}botan-server:2.${i} -f Dockerfile-2_11-x --target botan-server .
     _docker build --build-arg VERSION=${i} -t ${DOCKER_REPOSITORY}botan-client:2.${i} -f Dockerfile-2_11-x --target botan-client .
 done
+
 
 exit "$EXITCODE"

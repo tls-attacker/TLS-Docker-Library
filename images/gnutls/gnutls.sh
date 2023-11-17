@@ -15,7 +15,7 @@ done
 
 # 3.6.6 and 3.6.5 does not compile due to strange errors
 # "Nettle lacks the required rsa_sec_decrypt function"
-array=(3 4 7 8 9 10 11 12 13 14 15)
+array=(3 4 7 8 9 10 11 12 13 14 15 16)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do

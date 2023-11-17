@@ -6,6 +6,7 @@ RUN hg clone -r NSPR_${NSPR_VERSION} https://hg.mozilla.org/projects/nspr
 RUN apk add py-pip && \
     apk add ninja && \
     pip install setuptools && \
+    pip install six && \
     git clone https://chromium.googlesource.com/external/gyp && \
     cd gyp && ./setup.py install
 WORKDIR /src/nss

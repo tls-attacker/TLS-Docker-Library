@@ -2,7 +2,7 @@
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
-array=(1.0-beta1 0.7)
+array=(1.0-beta1 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.0)
 typeset -i i=0 max=${#array[*]}
 _docker build --build-arg VERSION= -t ${DOCKER_REPOSITORY}openssl-server:3 -f Dockerfile-3_x --target openssl-server .
 _docker build --build-arg VERSION= -t ${DOCKER_REPOSITORY}openssl-client:3 -f Dockerfile-3_x --target openssl-client .
