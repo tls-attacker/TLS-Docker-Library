@@ -7,8 +7,8 @@ typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: WolfSSL ${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:${array[$i]} -f Dockerfile-4_x --target wolfssl-server .
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:${array[$i]} -f Dockerfile-4_x --target wolfssl-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-server:${array[$i]} -f Dockerfile-4_and_5_x --target wolfssl-server .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}wolfssl-client:${array[$i]} -f Dockerfile-4_and_5_x --target wolfssl-client .
 	i=i+1
 done
 
