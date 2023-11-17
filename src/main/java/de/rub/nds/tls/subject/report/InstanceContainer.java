@@ -25,6 +25,7 @@ public class InstanceContainer implements Serializable {
 
     private boolean functional;
 
+    @SuppressWarnings("unused")
     private InstanceContainer() {}
 
     public InstanceContainer(
