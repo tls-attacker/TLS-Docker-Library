@@ -2,20 +2,23 @@
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
-array=(0)
+_docker build --build-arg VERSION=8 -t ${DOCKER_REPOSITORY}gnutls-server:3.7.8-ct -f Dockerfile-3_7_0-x-ct --target gnutls-server --progress=plain .
+_docker build --build-arg VERSION=8 -t ${DOCKER_REPOSITORY}gnutls-client:3.7.8-ct -f Dockerfile-3_7_0-x-ct --target gnutls-client --progress=plain .
+
+array=(0 1 2 3 4 5 6 7 8)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
 	echo "Building: GnuTLS 3.7.${array[$i]}"
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-server .
-	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-client .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-server:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-server --progress=plain .
+	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}gnutls-client:3.7.${array[$i]} -f Dockerfile-3_7_0-x --target gnutls-client --progress=plain .
 	i=i+1
 done
 
 
 # 3.6.6 and 3.6.5 does not compile due to strange errors
 # "Nettle lacks the required rsa_sec_decrypt function"
-array=(3 4 7 8 9 10 11 12 13 14 15)
+array=(3 4 7 8 9 10 11 12 13 14 15 16)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do

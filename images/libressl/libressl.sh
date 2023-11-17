@@ -2,48 +2,14 @@
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
-
-# version 3.3.x
-array=(0 1)
+# version 3.x.x
+array=(7.0 6.1 6.0 5.3 5.2 5.1 5.0 4.3 4.2 4.1 4.0 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0 1.0 1.1 1.2 1.3 1.4 1.5 0.0 0.1 0.2)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do
-        echo "Building: LibreSSL 3.2.${array[$i]}"
-        _docker build --build-arg VERSION=3.3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.3.${array[$i]} -f Dockerfile-2_x --target libressl-server .
-        _docker build --build-arg VERSION=3.3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.3.${array[$i]} -f Dockerfile-2_x --target libressl-client .
-        i=i+1
-done
-
-# version 3.2.x
-array=(0 1 2 3)
-typeset -i i=0 max=${#array[*]}
-while (( i < max ))
-do
-        echo "Building: LibreSSL 3.2.${array[$i]}"
-        _docker build --build-arg VERSION=3.2.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.2.${array[$i]} -f Dockerfile-2_x --target libressl-server .
-        _docker build --build-arg VERSION=3.2.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.2.${array[$i]} -f Dockerfile-2_x --target libressl-client .
-        i=i+1
-done
-
-# version 3.1.x
-array=(0 1 2 3 4 5)
-typeset -i i=0 max=${#array[*]}
-while (( i < max ))
-do
-        echo "Building: LibreSSL 3.1.${array[$i]}"
-        _docker build --build-arg VERSION=3.1.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.1.${array[$i]} -f Dockerfile-2_x --target libressl-server .
-        _docker build --build-arg VERSION=3.1.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.1.${array[$i]} -f Dockerfile-2_x --target libressl-client .
-        i=i+1
-done
-
-# version 3.0.x
-array=(0 1 2)
-typeset -i i=0 max=${#array[*]}
-while (( i < max ))
-do
-        echo "Building: LibreSSL 3.0.${array[$i]}"
-        _docker build --build-arg VERSION=3.0.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.0.${array[$i]} -f Dockerfile-2_x --target libressl-server .
-        _docker build --build-arg VERSION=3.0.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.0.${array[$i]} -f Dockerfile-2_x --target libressl-client .
+        echo "Building: LibreSSL 3.${array[$i]}"
+        _docker build --build-arg VERSION=3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-server:3.${array[$i]} -f Dockerfile-2_x --target libressl-server .
+        _docker build --build-arg VERSION=3.${array[$i]} -t ${DOCKER_REPOSITORY}libressl-client:3.${array[$i]} -f Dockerfile-2_x --target libressl-client .
         i=i+1
 done
 

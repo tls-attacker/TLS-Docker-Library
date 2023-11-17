@@ -10,6 +10,7 @@ RUN apk add py3-pip && \
   git clone https://chromium.googlesource.com/external/gyp && \
   cd gyp && python3 ./setup.py install
 WORKDIR /src/nss
+RUN cat coreconf/werror.py
 RUN ./build.sh --opt
 # copy all libs we need
 RUN mkdir /libdeps

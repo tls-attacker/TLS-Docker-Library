@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"github.com/phayes/freeport"
+	"regexp"
 )
 
 var args = os.Args[1:]
@@ -27,13 +28,30 @@ func ExecuteArgs() int {
 		
 		if portSwitch {
 			port = freeport
+			replaced := false
+			// find numbers in arguments and replace with free port
 			for i, s := range argv {
 				if _, errA := strconv.Atoi(s); errA == nil {
 					fmt.Printf("Changing port %q to %q for new container instance.\n", s, strconv.Itoa(port))
 					argv[i] = strconv.Itoa(port)
 				}
 			}
+			
+			// attempt to replace in structures like --port=4433
+			if replaced == false {
+				for j, t := range argv {
+					regex := regexp.MustCompile("[0-9]+")
+					found := regex.FindAllString(t, -1)
+					// ensure argument only has one number and ends with this number
+					if len(found) == 1 && strings.HasSuffix(t, found[0]) && strings.Contains(t, "=") {
+						fmt.Printf("Changing port %q of parameter %q to %q for new container instance.\n", found[0], t, strconv.Itoa(port))
+						argv[j] = strings.Replace(argv[j], found[0], strconv.Itoa(port), -1)
+					}
+				}
+			}
+			
 		} else {
+			// try to set port according to arguments
 			for _, s := range argv {
 				if val, errA := strconv.Atoi(s); errA == nil {
 					port = val

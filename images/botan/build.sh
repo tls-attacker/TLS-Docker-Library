@@ -5,5 +5,6 @@ exit_on_error
 
 track_error ./botan-1_11_X.sh
 track_error ./botan-2_X.sh
+track_error ./botan-3_X.sh
 
 exit "$EXITCODE"

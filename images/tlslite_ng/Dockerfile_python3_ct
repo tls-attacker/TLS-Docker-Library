@@ -1,0 +1,29 @@
+FROM python:3.3-alpine as tlslite-ng
+ARG VERSION
+RUN apk update && apk add git make
+RUN git clone --depth=1 --branch=v${VERSION} https://github.com/tomato42/tlslite-ng
+WORKDIR tlslite-ng
+RUN cat tlslite/utils/constanttime.py 
+ADD constanttime.py tlslite/utils/constanttime.py 
+RUN cat tlslite/utils/constanttime.py 
+RUN pip install ecdsa
+RUN python setup.py install
+RUN make test
+
+FROM entrypoint as entrypoint
+
+FROM tlslite-ng as tlslite-ng-server
+ARG VERSION
+LABEL "tls_implementation"="tlslite_ng"
+LABEL "tls_implementation_version"="${VERSION}-ct"
+LABEL "tls_implementation_connectionRole"="server"
+COPY --from=entrypoint /bin/server-entrypoint /usr/local/bin/
+ENTRYPOINT ["server-entrypoint", "tls.py", "server"]
+
+FROM tlslite-ng as tlslite-ng-client
+ARG VERSION
+LABEL "tls_implementation"="tlslite_ng"
+LABEL "tls_implementation_version"="${VERSION}-ct"
+LABEL "tls_implementation_connectionRole"="client"
+COPY --from=entrypoint /bin/client-entrypoint /usr/local/bin/
+ENTRYPOINT ["client-entrypoint", "tls.py", "client"]

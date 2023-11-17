@@ -1,6 +1,7 @@
 FROM alpine-build:3.12 as boringssl-base1
-ARG VERSION
-RUN git clone --depth=1 -b ${VERSION} https://github.com/google/boringssl.git
+RUN git clone --depth=1 -b chromium-stable https://github.com/google/boringssl.git
+WORKDIR /src/boringssl/
+RUN git checkout 04b3a96452b57f74f9768b1126f35b7398ddfff3
 WORKDIR /build/
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 /src/boringssl/ &&\
   make
@@ -20,13 +21,13 @@ COPY --from=boringssl-base1 /build/tool/bssl \
 FROM boringssl-base2 as boringssl-server
 ARG VERSION
 LABEL "tls_implementation"="boringssl"
-LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_version"="chromium-stable-eval"
 LABEL "tls_implementation_connectionRole"="server"
 ENTRYPOINT ["server-entrypoint", "bssl", "s_server"]
 
 FROM boringssl-base2 as boringssl-client
 ARG VERSION
 LABEL "tls_implementation"="boringssl"
-LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_version"="chromium-stable-eval"
 LABEL "tls_implementation_connectionRole"="client"
 ENTRYPOINT ["client-entrypoint", "bssl", "s_client"]
