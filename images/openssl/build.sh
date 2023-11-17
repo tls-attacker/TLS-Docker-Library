@@ -9,5 +9,6 @@ track_error ./openssl-1_0_1X.sh
 track_error ./openssl-1_0_2X.sh
 track_error ./openssl-1_1_0X.sh
 track_error ./openssl-1_1_1X.sh
+track_error ./openssl-3_X.sh
 
 exit "$EXITCODE"

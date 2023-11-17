@@ -1,6 +1,6 @@
 FROM alpine-build:3.12 as boringssl-base1
 ARG VERSION
-RUN git clone --depth=1 -b ${VERSION} https://boringssl.googlesource.com/boringssl
+RUN git clone --depth=1 -b ${VERSION} https://github.com/google/boringssl.git
 #remove the errorflags in CMakeLists.txt otherwise boringssl will not compile (workaround)
 #/src/boringssl/crypto/pem/pem_lib.c:460:2: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
 RUN sed -i -e 's/-Wall -Wshadow -Werror //g' /src/boringssl/CMakeLists.txt

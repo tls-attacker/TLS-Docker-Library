@@ -1,6 +1,6 @@
 FROM alpine-build:3.12 as bearssl-base1
 ARG VERSION
-RUN git clone --depth=1 --branch=v${VERSION} https://www.bearssl.org/git/BearSSL
+RUN git clone --depth=1 --branch=${VERSION} https://www.bearssl.org/git/BearSSL
 WORKDIR BearSSL
 RUN make
 

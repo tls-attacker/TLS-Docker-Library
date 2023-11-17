@@ -1,6 +1,6 @@
 FROM alpine-build:3.12 as boringssl-base1
 ARG VERSION
-RUN git clone --depth=1 -b ${VERSION} https://boringssl.googlesource.com/boringssl
+RUN git clone --depth=1 -b ${VERSION} https://github.com/google/boringssl.git
 WORKDIR /build/
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 /src/boringssl/ &&\
   make
