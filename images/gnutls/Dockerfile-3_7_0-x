@@ -23,7 +23,7 @@ RUN git submodule update --init --no-fetch
 COPY --from=gnutls-libnettle /build/ /build/
 RUN make autoreconf || ./bootstrap
 RUN ./configure --with-included-libtasn1 --with-included-unistring --disable-maintainer-mode --disable-doc --disable-full-test-suite --disable-cxx --disable-padlock --without-p11-kit --without-tpm --prefix=/build/
-RUN make CFLAGS="-g -O0" CXXFLAGS="-g -O0" LDFLAGS="-g -O0" && make install
+RUN make && make install
 
 FROM entrypoint as gnutls-base
 COPY --from=gnutls-gnutls /lib/ld-musl-x86_64.so.* \

@@ -2,9 +2,6 @@
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
-_docker build --build-arg VERSION=8 -t ${DOCKER_REPOSITORY}gnutls-server:3.7.8-ct -f Dockerfile-3_7_0-x-ct --target gnutls-server --progress=plain .
-_docker build --build-arg VERSION=8 -t ${DOCKER_REPOSITORY}gnutls-client:3.7.8-ct -f Dockerfile-3_7_0-x-ct --target gnutls-client --progress=plain .
-
 array=(0 1 2 3 4 5 6 7 8)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))

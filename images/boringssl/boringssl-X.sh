@@ -34,10 +34,4 @@ do
 	i=i+1
 done
 
-_docker build -t ${DOCKER_REPOSITORY}boringssl-server:master-eval -f Dockerfile-master-eval --target boringssl-server .
-_docker build -t ${DOCKER_REPOSITORY}boringssl-client:master-eval -f Dockerfile-master-eval --target boringssl-client .
-
-_docker build -t ${DOCKER_REPOSITORY}boringssl-server:chromium-stable-eval -f Dockerfile-chromium-stable-eval --target boringssl-server .
-_docker build -t ${DOCKER_REPOSITORY}boringssl-client:chromium-stable-eval -f Dockerfile-chromium-stable-eval --target boringssl-client .
-
 exit "$EXITCODE"
