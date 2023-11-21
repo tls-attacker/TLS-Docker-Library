@@ -4,6 +4,10 @@
             "name": "tlslite_ng",
             "dockerfile": "Dockerfile_python3",
             "versions": [
+                "0.8.0-alpha43",
+                "0.8.0-alpha42",
+                "0.8.0-alpha41",
+                "0.8.0-alpha40",
                 "0.8.0-alpha39",
                 "0.8.0-alpha38",
                 "0.8.0-alpha37",
@@ -108,5 +112,5 @@
             "tag": "{r}{n}-{i}:{v}"
           }
     },
-    "latest": "0.8.0-alpha39"
+    "latest": "0.8.0-alpha43"
 }

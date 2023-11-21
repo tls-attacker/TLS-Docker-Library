@@ -2,11 +2,12 @@
   "build_groups": {
     "0.x": {
       "name": "bearssl",
-      "dockerfile": "Dockerfile-0_x",
+      "dockerfile": "Dockerfile",
       "versions": [
         "0.4",
         "0.5",
-        "0.6"
+        "0.6",
+        "master"
       ],
       "instances": [
         "server",
@@ -14,11 +15,11 @@
       ],
       "image_version": "{v}",
       "build_args": {
-        "VERSION": "{v}"
+        "VERSION": "v{v}"
       },
       "target": "bearssl-{i}",
       "tag": "{r}{n}-{i}:{v}"
     }
   },
-  "latest": "0.6"
+  "latest": "master"
 }

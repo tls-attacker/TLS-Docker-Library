@@ -41,22 +41,35 @@
 
           "wolfssl_4.x": {
             "name": "wolfssl",
-            "dockerfile": "Dockerfile-4_x",
+            "dockerfile": "Dockerfile-4_and_5_x",
             "versions": [
-                "0.0-stable",
-                "1.0-stable",
-                "2.0-stable",
-                "2.0c",
-                "3.0-stable",
-                "4.0-stable",
-                "5.0-stable",
-                "6.0-stable"
+                "4.0.0-stable",
+                "4.1.0-stable",
+                "4.2.0-stable",
+                "4.2.0c",
+                "4.3.0-stable",
+                "4.4.0-stable",
+                "4.5.0-stable",
+                "4.6.0-stable",
+                "4.7.0-stable",
+                "4.8.0-stable",
+                "4.8.1-stable",
+                "5.0.0-stable",
+                "5.1.0-stable",
+                "5.2.0-stable",
+                "5.3.0-stable",
+                "5.4.0-stable",
+                "5.5.0-stable",
+                "5.5.1-stable",
+                "5.5.2-stable",
+                "5.5.3-stable",
+                "5.5.4-stable"
             ],
             "instances": [
               "server"
               ,"client"
             ],
-            "image_version": "4.{v}",
+            "image_version": "{v}",
             "build_args": {
                 "VERSION": "{v}"
             },
@@ -152,5 +165,5 @@
             "tag": "{r}{n}-{i}:{v}"
           }
     },
-    "latest": "4.6.0-stable"
+    "latest": "5.5.4-stable"
 }
