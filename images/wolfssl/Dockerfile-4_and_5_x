@@ -1,6 +1,6 @@
 FROM alpine-build:3.6 as wolfssl-base1
 ARG VERSION
-RUN git clone --depth=1 --branch=v4.${VERSION} https://github.com/wolfSSL/wolfssl
+RUN git clone --depth=1 --branch=v${VERSION} https://github.com/wolfSSL/wolfssl
 WORKDIR /src/wolfssl/certs
 # update certificates, otherwise lt-client might fail...
 RUN sed -i 's/-days 1000/-days 100000/g' renewcerts.sh && \
@@ -8,7 +8,7 @@ RUN sed -i 's/-days 1000/-days 100000/g' renewcerts.sh && \
  ./renewcerts.sh --override-ntru
 WORKDIR /src/wolfssl
 RUN ./autogen.sh
-RUN ./configure --prefix=/build/
+RUN ./configure --prefix=/build/ C_FLAGS="-DWOLFSSL_STATIC_RSA" C_EXTRA_FLAGS="-DWOLFSSL_STATIC_RSA"
 # remove error flags: some wolfssl version do not compile because tab warnings are treated like errors
 RUN mv Makefile tmp && sed "s/-Werror//g" tmp > Makefile
 RUN mv Makefile tmp && sed "s/-Wall//g" tmp > Makefile
@@ -34,7 +34,7 @@ COPY --from=wolfssl-base1 /src/wolfssl/certs /certs/
 FROM wolfssl-base2 as wolfssl-server
 ARG VERSION
 LABEL "tls_implementation"="wolfssl"
-LABEL "tls_implementation_version"="4.${VERSION}"
+LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
 COPY --from=wolfssl-base1 /src/wolfssl/examples/server/.libs/lt-server /bin/
 ENTRYPOINT ["server-entrypoint", "lt-server"]
@@ -42,7 +42,7 @@ ENTRYPOINT ["server-entrypoint", "lt-server"]
 FROM wolfssl-base2 as wolfssl-client
 ARG VERSION
 LABEL "tls_implementation"="wolfssl"
-LABEL "tls_implementation_version"="4.${VERSION}"
+LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="client"
 COPY --from=wolfssl-base1 /src/wolfssl/examples/client/.libs/lt-client /bin/
 ENTRYPOINT ["client-entrypoint", "lt-client"]

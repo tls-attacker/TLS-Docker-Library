@@ -1,13 +1,11 @@
-FROM debian:stretch
+FROM alpine:3.18
 
-RUN apt-get update 
-RUN apt-get install software-properties-common -y
-RUN apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
-RUN apt-get update && apt-get install -y \
+RUN apk add \
     openssl \
-    libnss3-tools \
-    openjdk-8-jdk \
-    curl
+    nss-tools \
+    openjdk8 \
+    curl \
+    && apk cache clean
 
 WORKDIR /certs
 COPY generateCerts.sh cert.cfg /run/

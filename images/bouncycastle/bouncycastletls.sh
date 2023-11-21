@@ -2,7 +2,7 @@
 cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
-array=(50 51 52 53 54 55 56 57 58)
+array=(50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66)
 typeset -i i=0 max=${#array[*]}
 while (( i < max ))
 do

@@ -1,7 +1,10 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
+ *
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tls.subject.params;
 
@@ -9,36 +12,14 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import java.util.LinkedList;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
- *
  * @author robert
  */
 public class ParameterProfileSerializerTest {
 
-    public ParameterProfileSerializerTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
+    public ParameterProfileSerializerTest() {}
 
     @Test
     public void testWrite() throws Exception {
@@ -48,7 +29,14 @@ public class ParameterProfileSerializerTest {
         List<Parameter> parameterList = new LinkedList<>();
         parameterList.add(new Parameter("-port [port]", ParameterType.HOST_PORT));
         parameterList.add(new Parameter("-cert [cert] -key [key]", ParameterType.CERTIFICATE_KEY));
-        ParameterProfile profile = new ParameterProfile("openssl_default", "Default Profile for Openssl", TlsImplementationType.OPENSSL, ConnectionRole.SERVER, versionList, parameterList);
+        ParameterProfile profile =
+                new ParameterProfile(
+                        "openssl_default",
+                        "Default Profile for Openssl",
+                        TlsImplementationType.OPENSSL,
+                        ConnectionRole.SERVER,
+                        versionList,
+                        parameterList);
         System.out.println(ParameterProfileSerializer.write(profile));
     }
 }

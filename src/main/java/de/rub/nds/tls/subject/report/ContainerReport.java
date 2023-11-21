@@ -1,9 +1,22 @@
 /*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
+ *
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tls.subject.report;
 
-import de.rub.nds.tls.subject.params.Parameter;
-import de.rub.nds.tls.subject.params.ParameterProfile;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,15 +26,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -43,12 +47,14 @@ public class ContainerReport implements Serializable {
         return context;
     }
 
-    public static void write(File file, ContainerReport report) throws FileNotFoundException, JAXBException, IOException {
+    public static void write(File file, ContainerReport report)
+            throws FileNotFoundException, JAXBException, IOException {
         FileOutputStream fos = new FileOutputStream(file);
         write(fos, report);
     }
 
-    public static void write(OutputStream outputStream, ContainerReport report) throws JAXBException, IOException {
+    public static void write(OutputStream outputStream, ContainerReport report)
+            throws JAXBException, IOException {
         context = getJAXBContext();
         Marshaller m = context.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -56,7 +62,8 @@ public class ContainerReport implements Serializable {
         outputStream.close();
     }
 
-    public static ContainerReport read(InputStream inputStream) throws JAXBException, IOException, XMLStreamException {
+    public static ContainerReport read(InputStream inputStream)
+            throws JAXBException, IOException, XMLStreamException {
         context = getJAXBContext();
         Unmarshaller m = context.createUnmarshaller();
 
@@ -70,22 +77,19 @@ public class ContainerReport implements Serializable {
         return report;
     }
 
-    @XmlElements(value = {
-        @XmlElement(type = InstanceContainer.class, name = "Container")})
+    @XmlElements(value = {@XmlElement(type = InstanceContainer.class, name = "Container")})
     private final List<InstanceContainer> functionalContainerList;
-    @XmlElements(value = {
-        @XmlElement(type = InstanceContainer.class, name = "Container")})
-    private final List<InstanceContainer> nonFunctionalContainerList;
-    @XmlElements(value = {
-        @XmlElement(type = InstanceContainer.class, name = "Container")})
 
+    @XmlElements(value = {@XmlElement(type = InstanceContainer.class, name = "Container")})
+    private final List<InstanceContainer> nonFunctionalContainerList;
+
+    @XmlElements(value = {@XmlElement(type = InstanceContainer.class, name = "Container")})
     private final List<InstanceContainer> totalContainerList;
 
     public ContainerReport() {
         functionalContainerList = new LinkedList<>();
         nonFunctionalContainerList = new LinkedList<>();
         totalContainerList = new LinkedList<>();
-
     }
 
     public void addInstanceContainer(InstanceContainer container) {

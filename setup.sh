@@ -1,8 +1,8 @@
-#!/bin/bash
-cd certs
+#!/bin/bash -e
+cd "$(dirname "$0")" || exit 1
+
 echo "[+] Generate certificates"
-./setup.sh
-cd ..
+./certs/setup.sh
 
 echo "[+] Build base image"
 ./images/baseimage/build-base.sh

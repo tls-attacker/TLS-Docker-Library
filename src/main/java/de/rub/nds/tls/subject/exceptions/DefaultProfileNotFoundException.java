@@ -1,14 +1,16 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
+ *
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tls.subject.exceptions;
 
 public class DefaultProfileNotFoundException extends RuntimeException {
 
-    public DefaultProfileNotFoundException() {
-    }
+    public DefaultProfileNotFoundException() {}
 
     public DefaultProfileNotFoundException(String message) {
         super(message);
@@ -22,8 +24,11 @@ public class DefaultProfileNotFoundException extends RuntimeException {
         super(cause);
     }
 
-    public DefaultProfileNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public DefaultProfileNotFoundException(
+            String message,
+            Throwable cause,
+            boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
-
 }
