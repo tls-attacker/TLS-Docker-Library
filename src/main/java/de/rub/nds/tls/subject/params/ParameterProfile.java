@@ -118,7 +118,7 @@ public class ParameterProfile implements Serializable {
             for (Parameter param : parameterList) {
                 if (supportsInsecure()) {
                     if ((insecureConnection && param.getType() == ParameterType.CA_CERTIFICATE)
-                        || (!insecureConnection && param.getType() == ParameterType.INSECURE)) {
+                            || (!insecureConnection && param.getType() == ParameterType.INSECURE)) {
                         // do not add CA param if we use insecure, do not add insecure
                         // if not wanted
                         continue;

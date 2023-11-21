@@ -79,16 +79,23 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
         } else {
             host = hostInfo.getHostname();
         }
-        exposedImplementationPort = new ExposedPort(hostInfo.getPort(), hostInfo.getType().toInternetProtocol());
-        String[] additionalCmds = parameterProfile.toParameters(host, hostInfo.getPort(), imageProperties,
-            additionalParameters, parallelize, insecureConnection);
+        exposedImplementationPort =
+                new ExposedPort(hostInfo.getPort(), hostInfo.getType().toInternetProtocol());
+        String[] additionalCmds =
+                parameterProfile.toParameters(
+                        host,
+                        hostInfo.getPort(),
+                        imageProperties,
+                        additionalParameters,
+                        parallelize,
+                        insecureConnection);
         if (additionalCmds.length > 0 && !additionalCmds[0].isEmpty()) {
-            return super.prepareCreateContainerCmd(cmd).withCmd(additionalCmds)
-                .withExposedPorts(exposedImplementationPort);
+            return super.prepareCreateContainerCmd(cmd)
+                    .withCmd(additionalCmds)
+                    .withExposedPorts(exposedImplementationPort);
         } else {
             return super.prepareCreateContainerCmd(cmd).withExposedPorts(exposedImplementationPort);
         }
-
     }
 
     @Override
