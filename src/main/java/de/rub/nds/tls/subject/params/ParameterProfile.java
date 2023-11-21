@@ -114,26 +114,28 @@ public class ParameterProfile implements Serializable {
             boolean parallelize,
             boolean insecureConnection) {
         StringBuilder finalParams = new StringBuilder();
-        for (Parameter param : parameterList) {
-            if (supportsInsecure()) {
-                if ((insecureConnection && param.getType() == ParameterType.CA_CERTIFICATE)
+        if (parameterList != null) {
+            for (Parameter param : parameterList) {
+                if (supportsInsecure()) {
+                    if ((insecureConnection && param.getType() == ParameterType.CA_CERTIFICATE)
                         || (!insecureConnection && param.getType() == ParameterType.INSECURE)) {
-                    // do not add CA param if we use insecure, do not add insecure
-                    // if not wanted
+                        // do not add CA param if we use insecure, do not add insecure
+                        // if not wanted
+                        continue;
+                    }
+                }
+
+                if (!parallelize && param.getType() == ParameterType.PARALLELIZE) {
+                    // do not add parallelize if not wanted
                     continue;
                 }
+                if (param.getCmdParameter().equals("")) {
+                    // do not add empty commands that cause a blank space
+                    continue;
+                }
+                finalParams.append(param.getCmdParameter());
+                finalParams.append(" ");
             }
-
-            if (!parallelize && param.getType() == ParameterType.PARALLELIZE) {
-                // do not add parallelize if not wanted
-                continue;
-            }
-            if (param.getCmdParameter().equals("")) {
-                // do not add empty commands that cause a blank space
-                continue;
-            }
-            finalParams.append(param.getCmdParameter());
-            finalParams.append(" ");
         }
         if (additionalParameters != null) {
             finalParams.append(additionalParameters);
