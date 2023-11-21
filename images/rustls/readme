@@ -2,8 +2,8 @@
 RUSTLS
 - versions: 
 	one version (latest) from github available
-- server successfully tested: no build script available
+- server successfully tested: latest
 - clients successfully tested: clients not available for this implementation
 
 build:      docker build -t rustls-server .
-tls server: docker run -it --rm rustls-server
+tls server: docker run -it --rm -v cert-data:/cert/:ro,nocopy rustls-server --key /cert/rsa2048key.pem --certs /cert/rsa2048cert.pem --port 4433 echo

@@ -12,7 +12,7 @@ GNUTLS
 - server and client versions failed to build (have to check build process): 3.5.7, 3.4.17, 3.3.15, 3.3.28
 
 build server:	docker build -t gnutls-server --target gnutls-server .
-run tls server:	docker run -it --rm gnutls-server
+run tls server:	docker run -it --rm -v cert-data:/cert/:ro,nocopy gnutls-server --port=4433 --x509certfile=/cert/rsa2048cert.pem --x509keyfile=/cert/rsa2048key.pem --disable-client-cert
 
 build client:	docker build -t gnutls-client --target gnutls-client .
 run tls client:	docker run -it --rm gnutls-client

@@ -8,7 +8,7 @@ BORINGSSL
 - clients successfully tested: all versions
 
 build server:	docker build -t boringssl-server --target bearssl-server .
-run tls server:	docker run -it --rm boringssl-server
+run tls server:	docker run -it --rm -v cert-data:/cert/:ro,nocopy boringssl-server -accept 4433 -cert /cert/rsa2048cert.pem -key /cert/rsa2048key.pem -loop 
 run tls shim:   docker run -it --rm --entrypoint /bin/bssl_shim boringssl-server
 
 build client:	docker build -t boringssl-client --target bearssl-client .

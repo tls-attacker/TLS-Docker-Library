@@ -8,7 +8,7 @@ _docker build --build-arg VERSION= -t ${DOCKER_REPOSITORY}openssl-server:1.1.1 -
 _docker build --build-arg VERSION= -t ${DOCKER_REPOSITORY}openssl-client:1.1.1 -f Dockerfile-1_1_1x --target openssl-client .
 while (( i < max ))
 do
-	echo "Feld $i: Openssl 1.1.1${array[$i]}"
+	echo "Building Openssl 1.1.1${array[$i]}"
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}openssl-server:1.1.1${array[$i]} -f Dockerfile-1_1_1x --target openssl-server .
 	_docker build --build-arg VERSION=${array[$i]} -t ${DOCKER_REPOSITORY}openssl-client:1.1.1${array[$i]} -f Dockerfile-1_1_1x --target openssl-client .
 	i=i+1
