@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -eu
 
 WARN='\033[0;31m'
@@ -39,5 +39,6 @@ pk12util -i ec256.p12 -d db -K password -W password
 echo "Creating Java keystore"
 keytool -importkeystore -srckeystore rsa2048.p12 -srcstoretype pkcs12 -destkeystore keys.jks -deststoretype jks -alias cert -destalias rsa2048 -srcstorepass password -deststorepass password
 keytool -importkeystore -srckeystore ec256.p12 -srcstoretype pkcs12 -destkeystore keys.jks -deststoretype jks -alias cert -destalias ec256 -srcstorepass password -deststorepass password
-#use test-ca from rustls
-curl -L https://github.com/ctz/rustls/tarball/master | tar zx --wildcards  --strip-components=1 '*/test-ca/'
+# fetch test-ca from rustls, used for LIBRESSL
+# alpine tar does not have a --wildcards flag. Nonetheless it still extracts correctly but with an error - so use ls to check if it was extracted correctly
+curl -L https://github.com/ctz/rustls/tarball/master | tar x -z --strip-components=1 '*/test-ca/' || ls test-ca/rsa/end.rsa test-ca/rsa/end.fullchain
