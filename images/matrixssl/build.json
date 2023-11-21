@@ -14,7 +14,7 @@
                 "0.1",
                 "0.0"
             ],
-            "commits": [
+            "second_versions": [
                 "effeb14219ab9b9560ddf0ea56f939a1aa8f1d71",
                 "69b5f2c6c335ebc18a131822660bbfa536dcf5d2",
                 "eec42aa814dca8285457cc808a150347b3ac8c00",
@@ -32,7 +32,7 @@
             "image_version": "4.{v}",
             "build_args": {
                 "VERSION": "{v}",
-                "COMMIT": "{c}"
+                "COMMIT": "{w}"
             },
             "target": "{n}-{i}",
             "tag": "{r}{n}-{i}:{v}"
@@ -49,7 +49,7 @@
                 "8.6",
                 "8.4"
             ],
-            "commits": [
+            "second_versions": [
                 "83bff65b84d6f76b69d44a115469da2dd68decae",
                 "0790908cb0dd035f6dfe5bb27ecddb9af1596f5e",
                 "e05dfbf65050c13ae02ca41cd6cae575e5403a28",
@@ -65,7 +65,7 @@
             "image_version": "3.{v}",
             "build_args": {
                 "VERSION": "{v}",
-                "COMMIT": "{c}"
+                "COMMIT": "{w}"
             },
             "target": "{n}-{i}",
             "tag": "{r}{n}-{i}:{v}"

@@ -1,7 +1,7 @@
 FROM alpine-build:3.12 as matrixssl-base1
 ARG VERSION
 ARG COMMIT
-RUN git clone git@github.com:amitv87/matrixssl.git
+RUN git clone https://github.com/amitv87/matrixssl.git
 WORKDIR matrixssl
 RUN git checkout ${COMMIT}
 RUN sed -i 's/define ALLOW_ANON_CONNECTIONS  0/define ALLOW_ANON_CONNECTIONS  1/g' apps/ssl/client.c
