@@ -9,7 +9,7 @@
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>-b [host] -p [port]</cmdParameter>
+        <cmdParameter>-p [port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
 </parameterProfile>

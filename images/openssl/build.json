@@ -1,0 +1,379 @@
+{
+    "build_groups": {
+        "openssl-0_9_7x": {
+          "name": "openssl",
+          "dockerfile": "Dockerfile-0_9_7x",
+          "versions": [
+            "",
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m"
+          ],
+          "instances": [
+            "server",
+            "client"
+          ],
+          "image_version": "0.9.7{v}",
+          "build_args": {
+              "VERSION": "7{v}"
+          },
+          "target": "{n}-{i}",
+          "tag": "{r}{n}-{i}:{v}"
+        },
+
+        "openssl-0_9_8x": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-0_9_8a-n",
+            "versions": [
+              "",
+              "a",
+              "b",
+              "c",
+              "d",
+              "e",
+              "f",
+              "g",
+              "h",
+              "i",
+              "j",
+              "k",
+              "l",
+              "m"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "0.9.8{v}",
+            "build_args": {
+                "VERSION": "8{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "openssl-0_9_82": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-0_9_8m-zh",
+            "versions": [
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+                "t",
+                "u",
+                "v",
+                "w",
+                "x",
+                "y",
+                "za",
+                "zb",
+                "zc",
+                "zd",
+                "ze",
+                "zf",
+                "zg",
+                "zh",
+                "m-beta1"
+            ],
+            "instances": [
+              "server",
+              "clients"
+            ],
+            "image_version": "0.9.8{v}",
+            "build_args": {
+                "VERSION": "8{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "openssl-1.0.0x": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-1_0_0x",
+            "versions": [
+                "",
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+                "-beta5"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "1.0.0{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "openssl-1.0.0xbeta": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-1_0_0beta1-4",
+            "versions": [
+                "-beta1",
+                "-beta2",
+                "-beta3",
+                "-beta4"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "1.0.0{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "openssl-1.0.1x": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-1_0_1x",
+            "versions": [
+                "",
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "-beta1",
+                "-beta2",
+                "-beta3"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "1.0.1{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "openssl-1.0.1m+": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-1_0_1m-u",
+            "versions": [
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+                "t",
+                "u"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "1.0.1{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "openssl-1.0.2betas": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-1_0_2_and_betas",
+            "versions": [
+                "",
+                "-beta1",
+                "-beta2",
+                "-beta3"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "1.0.2{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "openssl-1.0.2x": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-1_0_2x",
+            "versions": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+                "t",
+                "u"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "1.0.2{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "openssl-1.1.0x": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-1_1_0x",
+            "versions": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "1.1.0{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "openssl-1.1.1x": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-1_1_1x",
+            "versions": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+                "-pre1",
+                "-pre2",
+                "-pre3",
+                "-pre4",
+                "-pre5",
+                "-pre6",
+                "-pre7",
+                "-pre8",
+                "-pre9"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "1.1.1{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "openssl-3.x": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-3x",
+            "versions": [
+                "0.0",
+                "0.1",
+                "0.2",
+                "0.3",
+                "0.4",
+                "0.5",
+                "0.6",
+                "0.7",
+                "1.0-beta1"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "3.{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "latest"
+}

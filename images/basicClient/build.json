@@ -1,0 +1,20 @@
+{
+    "build_groups": {
+        "alpine": {
+          "name": "basic",
+          "dockerfile": "Dockerfile",
+          "versions": [
+            "1.0"
+          ],
+          "instances": [
+            "client"
+          ],
+          "image_version": "{v}",
+          "build_args": {
+          },
+          "target": "",
+          "tag": "{n}-{i}:{v}"
+        }
+        },
+    "latest": "1.0"
+}

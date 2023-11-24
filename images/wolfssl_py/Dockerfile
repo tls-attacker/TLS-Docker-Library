@@ -1,6 +1,6 @@
 FROM alpine-build:3.12 as wolfssl-py
 ARG VERSION
-RUN apk add --no-cache py-setuptools python-dev py-pip py-cffi python-dev
+RUN apk add --no-cache py-setuptools python-dev py-pip py-cffi python2-dev
 RUN git clone --depth=1 --branch=${VERSION} https://github.com/wolfssl/wolfssl-py
 WORKDIR wolfssl-py
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
