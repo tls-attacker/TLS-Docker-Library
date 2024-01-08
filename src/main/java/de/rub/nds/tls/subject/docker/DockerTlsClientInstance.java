@@ -29,7 +29,6 @@ import org.apache.logging.log4j.Logger;
 
 public class DockerTlsClientInstance extends DockerTlsInstance {
     private static final String[] EMPTY_STR_ARR = {};
-    private static final int EXEC_POLL_INTERVAL_MILLISECONDS = 50;
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final HostInfo hostInfo;
