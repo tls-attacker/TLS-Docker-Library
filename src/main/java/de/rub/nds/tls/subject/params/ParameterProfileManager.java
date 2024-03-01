@@ -54,8 +54,7 @@ public class ParameterProfileManager {
 
         for (ConnectionRole role : ConnectionRole.values()) {
             try {
-                for (String filename :
-                        getResourceFiles(RESOURCE_PATH + role.name().toLowerCase() + "/")) {
+                for (String filename : getResourceFiles(role)) {
                     ParameterProfile profile = tryLoadProfile(role, filename);
                     if (profile != null) {
                         LOGGER.debug(
@@ -92,8 +91,9 @@ public class ParameterProfileManager {
         }
     }
 
-    private List<String> getResourceFiles(String path) throws IOException {
-        Reflections reflections = new Reflections("profiles", Scanners.Resources);
+    private List<String> getResourceFiles(ConnectionRole role) throws IOException {
+        Reflections reflections =
+                new Reflections("profiles." + role.name().toLowerCase(), Scanners.Resources);
         Set<String> resourceList =
                 reflections.getResources(Pattern.compile(".*\\.profile")).parallelStream()
                         .map(x -> new File(x).getName())
@@ -107,7 +107,7 @@ public class ParameterProfileManager {
                     ParameterProfileManager.class.getResourceAsStream(
                             RESOURCE_PATH + role.name().toLowerCase() + "/" + filename);
             return ParameterProfileSerializer.read(stream);
-        } catch (IOException | JAXBException | XMLStreamException E) {
+        } catch (IOException | JAXBException | XMLStreamException | IllegalArgumentException E) {
             LOGGER.debug(
                     "Could not find other ParameterProfile for: "
                             + RESOURCE_PATH
