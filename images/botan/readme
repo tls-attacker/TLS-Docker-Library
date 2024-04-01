@@ -9,9 +9,10 @@ BOTAN
 	2.0.0, 2.0.1, 
 	2.1.0, 
 	2.2.0, 
-	2.3.0
-- server successfully tested: 1.11.6, 1.11.13, 1.11.33, 1.11.34, 1.11.29, 2.0.0, 2.1.0, 2.2.0, 2.3.0
-- clients successfully tested: 1.11.33, 1.11.34, 1.11.29, 2.0.0, 2.1.0, 2.2.0, 2.3.0
+	2.3.0,
+	3.2.0
+- server successfully tested: 1.11.6, 1.11.13, 1.11.33, 1.11.34, 1.11.29, 2.0.0, 2.1.0, 2.2.0, 2.3.0, 3.2.0
+- clients successfully tested: 1.11.33, 1.11.34, 1.11.29, 2.0.0, 2.1.0, 2.2.0, 2.3.0, 3.2.0
 - server and client versions failed to build (have to check build process): 1.11.8-1.11.13
 - clients failed test (have to check parameters): 1.11.6, 1.11.13
 
@@ -34,3 +35,9 @@ docker run -v cert-data:/cert/:ro,nocopy -it --rm botan-1_11_31-server /cert/rsa
 
 Start server versions >= 1_11_32:
 docker run -v cert-data:/cert/:ro,nocopy -it --rm botan-1_11_32-server /cert/rsa2048cert.pem /cert/rsa2048key.pem --port=4433 --policy=/compat.txt
+
+Start dtls server version 3.2.0:
+docker run -v cert-data:/cert:ro,nocopy -it --rm botan-3_2_0-server /cert/rsa2048cert.pem /cert/rsa2048key.pem --port=4433 --type=udp --policy=/datagam.txt
+
+Start dtls client version 3.2.0:
+docker run -it --rm botan-3_2_0-client 127.0.0.1 --port=4433 --type=udp --policy=/datagram.txt

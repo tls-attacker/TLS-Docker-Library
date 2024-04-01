@@ -1,0 +1,29 @@
+FROM alpine-build:3.12 as mbed-base1
+ARG VERSION
+RUN python3 -m ensurepip --upgrade
+RUN python3 -m pip install jsonschema jinja2
+RUN git clone --depth 1 --branch mbedtls-${VERSION} https://github.com/Mbed-TLS/mbedtls mbed
+RUN cd mbed && git submodule update --init --recursive
+RUN sed -i -e 's/ -Werror//g' /src/mbed/CMakeLists.txt
+WORKDIR /build/
+RUN cmake -DCMAKE_BUILD_TYPE=Release /src/mbed &&\
+  make
+
+FROM entrypoint as mbed-base2
+COPY --from=mbed-base1 /lib/ld-musl-x86_64.so.* /lib/
+
+FROM mbed-base2 as mbed-server
+ARG VERSION
+LABEL "tls_implementation"="mbedtls"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
+COPY --from=mbed-base1 /build/programs/ssl/ssl_server2 /bin/
+ENTRYPOINT ["server-entrypoint", "ssl_server2"]
+
+FROM mbed-base2 as mbed-client
+ARG VERSION
+LABEL "tls_implementation"="mbedtls"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
+COPY --from=mbed-base1 /build/programs/ssl/ssl_client2 /bin/
+ENTRYPOINT ["client-entrypoint", "ssl_client2"]

@@ -11,16 +11,18 @@ OPENSSL
 	1.0.2, 1.0.2-beta1, 1.0.2-beta2, 1.0.2-beta3,
 	1.0.2a, 1.0.2b, 1.0.2c, 1.0.2d, 1.0.2e, 1.0.2f, 1.0.2g, 1.0.2h, 1.0.2i, 1.0.2j, 1.0.2k, 1.0.2l,	 
 	1.1.0, 1.1.0a, 1.1.0b, 1.1.0c, 1.1.0d, 1.1.0e, 1.1.0f, 1.1.0-pre3,
-	1.1.1-pre2
-- server successfully tested: 0.9.7, 0.9.8, 0.9.8m, 0.9.8m-beta1, 1.0.0, 1.0.0-beta1, 1.0.1, 1.0.1m, 1.0.2, 1.0.2a, 1.1.0
-- clients successfully tested: 0.9.7, 0.9.8, 0.9.8m, 0.9.8m-beta1, 1.0.0, 1.0.0-beta1, 1.0.1, 1.0.1m, 1.0.2, 1.0.2-beta1, 1.1.0
+	1.1.1-pre2,
+  3.2.0
+- server successfully tested: 0.9.7, 0.9.8, 0.9.8m, 0.9.8m-beta1, 1.0.0, 1.0.0-beta1, 1.0.1, 1.0.1m, 1.0.2, 1.0.2a, 1.1.0, 3.2.0
+- clients successfully tested: 0.9.7, 0.9.8, 0.9.8m, 0.9.8m-beta1, 1.0.0, 1.0.0-beta1, 1.0.1, 1.0.1m, 1.0.2, 1.0.2-beta1, 1.1.0, 3.2.0
 
-build server: 	docker build -t openssl-server --target openssl-server .
-run tls server: docker run -it --rm openssl-server
+build server: 	 docker build -t openssl-server --target openssl-server .
+run tls server:  docker run -it --rm openssl-server
+run dtls server: docker run -it -v -cert-data:/cert/:ro,nocopy --rm openssl-3_2_0-server -accept 4433 -key /cert/rsa2048key.pem -cert /cert/rsa2048cert.pem -dtls
 
-build client: 	docker build -t openssl-client --target openssl-client .
-run tls client: docker run -it --rm openssl-client
-
+build client: 	 docker build -t openssl-client --target openssl-client .
+run tls client:  docker run -it --rm openssl-client
+run dtls client: docker run -it --rm openssl-3_2_0-client -connect 127.0.0.1:4433 -dtls
 build all supported openSSL versions: ./openssl-build_all.sh
 
 
