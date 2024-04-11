@@ -9,6 +9,8 @@ DOCKER_REPOSITORY="${DOCKER_REPOSITORY:-}"
 CMD_GENERATION_MODE="${CMD_GENERATION_MODE:-0}"
 
 EXITCODE=0
+
+# Instead of executing the underlying docker build command _docker simply copies this command to the cmds.sh script and optionally appends the docker push command
 function _docker {
   tag=$(python - "$@" << E
 import sys

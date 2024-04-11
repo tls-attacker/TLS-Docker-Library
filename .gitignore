@@ -11,7 +11,7 @@ certs/*.jks
 certs/*.p12
 certs/*.pem
 images/**/*.pem
-images/DamnVulnerableOpenSSL/DamnVulnerableOpenSSL/
+images/damnvulnerableopenssl/DamnVulnerableOpenSSL/
 /nbproject/
 .idea
 *.iml

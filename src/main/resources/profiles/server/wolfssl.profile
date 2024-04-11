@@ -5,11 +5,11 @@
     <type>WOLFSSL</type>
     <role>SERVER</role>
     <Parameter>
-        <cmdParameter>-c [cert] -k [key] -v 4</cmdParameter>
+        <cmdParameter>-c [cert] -k [key]</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>-d -b</cmdParameter>
+        <cmdParameter>-d -b -i</cmdParameter>
         <type>NONE</type>
     </Parameter>
     <Parameter>

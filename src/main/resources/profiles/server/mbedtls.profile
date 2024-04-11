@@ -5,7 +5,7 @@
     <type>MBEDTLS</type>
     <role>SERVER</role>
     <Parameter>
-        <cmdParameter>crt_file=[cert] key_file=[key]</cmdParameter>
+        <cmdParameter>crt_file=[cert] key_file=[key] renegotiation=1</cmdParameter>
         <type>CERTIFICATE_KEY</type>
     </Parameter>
     <Parameter>

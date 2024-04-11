@@ -1,0 +1,45 @@
+{
+    "build_groups": {
+        "bc_59": {
+          "name": "jssetls_jre",
+          "dockerfile": "Dockerfile",
+          "versions": [
+            "7",
+            "7u151",
+            "8",
+            "8u162",
+            "9.0",
+            "9.0.4-12"
+          ],
+          "instances": [
+            "server"
+          ],
+          "image_version": "{v}_bc_1_59",
+          "build_args": {
+              "JRE_VERSION": "openjdk:{v}-jre-slim",
+              "BC_VERSION": "59"
+          },
+          "target": "",
+          "tag": "{r}{n}-{i}:{v}"
+        },
+
+        "bc_50": {
+            "name": "jssetls_jre",
+            "dockerfile": "Dockerfile",
+            "versions": [
+              "7u151"
+            ],
+            "instances": [
+              "server"
+            ],
+            "image_version": "{v}_bc_1_50",
+            "build_args": {
+                "JRE_VERSION": "openjdk:{v}-jre-slim",
+                "BC_VERSION": "50"
+            },
+            "target": "",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "9.0.4-12_bc_1_59"
+}

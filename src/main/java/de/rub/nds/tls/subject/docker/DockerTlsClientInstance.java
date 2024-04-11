@@ -1,29 +1,34 @@
+/*
+ * TLS-Docker-Library - A collection of open source TLS clients and servers
+ *
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
 package de.rub.nds.tls.subject.docker;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.UnaryOperator;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.ContainerConfig;
 import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.api.model.Volume;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.UnaryOperator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DockerTlsClientInstance extends DockerTlsInstance {
     private static final String[] EMPTY_STR_ARR = {};
-    private static final int EXEC_POLL_INTERVAL_MILLISECONDS = 50;
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final HostInfo hostInfo;
@@ -33,11 +38,28 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
     private final boolean connectOnStartup;
 
     // TODO move away from HostInfo for client...
-    public DockerTlsClientInstance(String containerName, ParameterProfile profile, ImageProperties imageProperties, String version,
-            boolean autoRemove, HostInfo hostInfo, String additionalParameters, boolean parallelize,
-            boolean insecureConnection, boolean connectOnStartup,
+    public DockerTlsClientInstance(
+            Image image,
+            String containerName,
+            ParameterProfile profile,
+            ImageProperties imageProperties,
+            String version,
+            boolean autoRemove,
+            HostInfo hostInfo,
+            String additionalParameters,
+            boolean parallelize,
+            boolean insecureConnection,
+            boolean connectOnStartup,
             UnaryOperator<HostConfig> hostConfigHook) {
-        super(containerName, profile, imageProperties, version, ConnectionRole.CLIENT, autoRemove, hostConfigHook);
+        super(
+                image,
+                containerName,
+                profile,
+                imageProperties,
+                version,
+                ConnectionRole.CLIENT,
+                autoRemove,
+                hostConfigHook);
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;
         this.parallelize = parallelize;
@@ -51,8 +73,7 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
         if (hostInfo.getHostname() != null) {
             extraHost = hostInfo.getHostname() + ":" + hostInfo.getIp();
         }
-        cfg = super.prepareHostConfig(cfg)
-                .withExtraHosts(extraHost);
+        cfg = super.prepareHostConfig(cfg).withExtraHosts(extraHost);
 
         List<Bind> binds = new ArrayList<>(Arrays.asList(cfg.getBinds()));
         // TODO: Bind of X11 Settings does not work as expected
@@ -73,8 +94,15 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
             host = hostInfo.getHostname();
         }
         if (connectOnStartup) {
-            cmd = cmd.withCmd(parameterProfile.toParameters(host, hostInfo.getPort(), imageProperties,
-                    additionalParameters, parallelize, insecureConnection));
+            cmd =
+                    cmd.withCmd(
+                            parameterProfile.toParameters(
+                                    host,
+                                    hostInfo.getPort(),
+                                    imageProperties,
+                                    additionalParameters,
+                                    parallelize,
+                                    insecureConnection));
         } else {
             cmd = cmd.withEntrypoint("client-entrypoint");
         }
@@ -99,7 +127,11 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
         return connect(host, targetPort, additionalParameters, parallelize, insecureConnection);
     }
 
-    public DockerExecInstance connect(String host, int targetPort, String additionalParameters, Boolean parallelize,
+    public DockerExecInstance connect(
+            String host,
+            int targetPort,
+            String additionalParameters,
+            Boolean parallelize,
             Boolean insecureConnection) {
         ContainerConfig imageCfg = DOCKER.inspectImageCmd(image.getId()).exec().getConfig();
         if (imageCfg == null) {
@@ -115,18 +147,25 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
         } else {
             LOGGER.warn("Image {} did not have client-entrypoint as entrypoint", image.getId());
         }
-        String[] params = parameterProfile.toParameters(host, targetPort, imageProperties, additionalParameters,
-                parallelize, insecureConnection);
+        String[] params =
+                parameterProfile.toParameters(
+                        host,
+                        targetPort,
+                        imageProperties,
+                        additionalParameters,
+                        parallelize,
+                        insecureConnection);
         cmd_lst.addAll(Arrays.asList(params));
-        ExecCreateCmdResponse exec = DOCKER.execCreateCmd(getId()).withCmd(cmd_lst.toArray(EMPTY_STR_ARR))
-                .withAttachStdin(false)
-                .withAttachStdout(true)
-                .withAttachStderr(true)
-                .withTty(true)
-                .exec();
+        ExecCreateCmdResponse exec =
+                DOCKER.execCreateCmd(getId())
+                        .withCmd(cmd_lst.toArray(EMPTY_STR_ARR))
+                        .withAttachStdin(false)
+                        .withAttachStdout(true)
+                        .withAttachStderr(true)
+                        .withTty(true)
+                        .exec();
         DockerExecInstance ret = new DockerExecInstance(exec);
         childExecs.add(ret);
         return ret;
     }
-    
 }

@@ -1,0 +1,3 @@
+[submodule "images/damnvulnerableopenssl/DamnVulnerableOpenSSL"]
+    path = images/damnvulnerableopenssl/DamnVulnerableOpenSSL
+	url = https://github.com/tls-attacker/DamnVulnerableOpenSSL

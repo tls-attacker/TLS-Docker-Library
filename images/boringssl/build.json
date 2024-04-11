@@ -1,0 +1,74 @@
+{
+    "build_groups": {
+        "boringssl1": {
+          "name": "boringssl",
+          "dockerfile": "Dockerfile-2272-2357",
+          "versions": [
+            "2272",
+            "2311",
+            "2357"
+          ],
+          "instances": [
+            "server",
+            "client"
+          ],
+          "image_version": "{v}",
+          "build_args": {
+              "VERSION": "{v}"
+          },
+          "target": "{n}-{i}",
+          "tag": "{r}{n}-{i}:{v}"
+        },
+        "boringssl2": {
+            "name": "boringssl",
+            "dockerfile": "Dockerfile-2214-2661",
+            "versions": [
+              "2490",
+              "2564",
+              "2623",
+              "2661"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          },
+          "boringssl3": {
+              "name": "boringssl",
+              "dockerfile": "Dockerfile-x",
+              "versions": [
+                "2704",
+                "2883",
+                "2924",
+                "2987",
+                "3029",
+                "3112",
+                "3202",
+                "3239",
+                "3282",
+                "3359",
+                "3538",
+                "3945",
+                "chromium-stable",
+                "master"
+              ],
+              "instances": [
+                "server",
+                "client"
+              ],
+              "image_version": "{v}",
+              "build_args": {
+                  "VERSION": "{v}"
+              },
+              "target": "{n}-{i}",
+              "tag": "{r}{n}-{i}:{v}"
+            }
+    },
+    "latest": "1.0"
+}

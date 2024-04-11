@@ -1,6 +1,6 @@
 FROM alpine-build:3.12 as py-openssl
 ARG VERSION
-RUN apk add --no-cache py-setuptools libffi-dev python-dev openssl-dev
+RUN apk add --no-cache py-setuptools libffi-dev python2-dev openssl-dev
 RUN git clone --depth=1 --branch=${VERSION} https://github.com/pyca/pyopenssl
 WORKDIR pyopenssl
 RUN python setup.py build && python setup.py install

@@ -1,0 +1,48 @@
+FROM alpine-build:3.6 as wolfssl-base1
+ARG VERSION
+RUN git clone --depth=1 --branch=v${VERSION} https://github.com/wolfSSL/wolfssl
+WORKDIR /src/wolfssl/certs
+# update certificates, otherwise lt-client might fail...
+RUN sed -i 's/-days 1000/-days 100000/g' renewcerts.sh && \
+  sed -i 's/default_days.*/default_days = 100000/g' renewcerts/wolfssl.cnf && \
+ ./renewcerts.sh --override-ntru
+WORKDIR /src/wolfssl
+RUN ./autogen.sh
+RUN ./configure --prefix=/build/ C_FLAGS="-DWOLFSSL_STATIC_RSA" C_EXTRA_FLAGS="-DWOLFSSL_STATIC_RSA"
+# remove error flags: some wolfssl version do not compile because tab warnings are treated like errors
+RUN mv Makefile tmp && sed "s/-Werror//g" tmp > Makefile
+RUN mv Makefile tmp && sed "s/-Wall//g" tmp > Makefile
+RUN ( make &&\
+      make install)
+WORKDIR /src/wolfssl/examples/server
+# this script is a shell script, which creates (links) the lt-server executable on the fly
+# we need this to copy is later to the execution container
+RUN /src/wolfssl/examples/server/server -h
+RUN /src/wolfssl/examples/client/client -h
+# copy all libs we need
+RUN mkdir /libdeps
+RUN cp $(LD_LIBRARY_PATH="/src/wolfssl/src/.libs/" ldd /src/wolfssl/examples/server/.libs/lt-server | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
+RUN cp $(LD_LIBRARY_PATH="/src/wolfssl/src/.libs/" ldd /src/wolfssl/examples/client/.libs/lt-client | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
+
+FROM entrypoint as wolfssl-base2
+COPY --from=wolfssl-base1 /build/include/ /artifacts/ssllib/include/
+COPY --from=wolfssl-base1 /build/lib/ /artifacts/ssllib/lib/
+COPY --from=wolfssl-base1 /libdeps/* /artifacts/ssllib/libdeps/
+COPY --from=wolfssl-base1 /libdeps/* /lib/
+COPY --from=wolfssl-base1 /src/wolfssl/certs /certs/
+
+FROM wolfssl-base2 as wolfssl-server
+ARG VERSION
+LABEL "tls_implementation"="wolfssl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
+COPY --from=wolfssl-base1 /src/wolfssl/examples/server/.libs/lt-server /bin/
+ENTRYPOINT ["server-entrypoint", "lt-server"]
+
+FROM wolfssl-base2 as wolfssl-client
+ARG VERSION
+LABEL "tls_implementation"="wolfssl"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
+COPY --from=wolfssl-base1 /src/wolfssl/examples/client/.libs/lt-client /bin/
+ENTRYPOINT ["client-entrypoint", "lt-client"]

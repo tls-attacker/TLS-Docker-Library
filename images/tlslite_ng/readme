@@ -1,0 +1,8 @@
+---------------------------
+TLSLITE-NG
+- server successfully tested: 0.8.0-alpha40
+
+build server:   docker build -t tlslite_ng-server --target tlslite_ng-server .
+run tls server: docker run -it --rm -v cert-data:/cert/:ro,nocopy tlslite_ng-server -c /cert/rsa2048cert.pem -k /cert/rsa2048key.pem 0.0.0.0:4433
+
+build all supported tlslite-ng versions: ./tlslite_ng.sh

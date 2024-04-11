@@ -1,0 +1,23 @@
+{
+    "build_groups": {
+        "wolfssl_py": {
+            "name": "wolfssl_py",
+            "dockerfile": "Dockerfile",
+            "versions": [
+                "v3.13.0-1",
+                "v3.13.0-0",
+                "v3.12.2"
+            ],
+            "instances": [
+              "server"
+            ],
+            "image_version": "{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "v3.13.0-1"
+}
