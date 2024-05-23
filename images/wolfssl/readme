@@ -5,14 +5,17 @@ WOLFSSL
 		 2.9.4, 2.9.2, 2.9.1, 2.9.0, 2.8.6, 2.8.5, 2.8.5a, 2.8.4, 2.8.3, 2.8.2, 2.8.0, 2.7.2, 2.7.0, 2.6.2, 2.6.0, 2.5.2b, 2.5.0, 2.4.7, 2.4.6, 2.4.2, 2.4.0, 2.3.0
 	wolfssl:
 		3.12.2-stable, 3.12.0-stable, 3.11.0-stable, 3.10.4, 3.10.3, 3.10.2-stable, 3.10.0a, 3.10.0-stable, 3.9.10b, 3.9.10-stable, 3.9.8, 3.9.6w, 3.9.6, 3.9.1, 3.9.0, 3.7.0, 3.6.9d, 3.6.9c, 3.6.9b, 3.6.9, 3.6.8, 3.6.6, 3.6.2, 3.6.0b, 3.6.0, 3.4.8, 3.4.6, 3.4.2, 3.4.0, 3.3.3,
-		3.3.2, 3.3.0, 3.2.6, 3.2.4, 3.2.0, 3.1.0, 3.0.2, 3.0.0
+		3.3.2, 3.3.0, 3.2.6, 3.2.4, 3.2.0, 3.1.0, 3.0.2, 3.0.0,
+		5.6.6
 - server successfully tested: wolfssl-3.12.2-stable, wolfssl-3.3.2, cyassl-2.9.4
 - clients successfully tested: wolfssl-3.12.2-stable, wolfssl-3.3.2, cyassl-2.9.4
 
-build server:   docker build -t wolfssl-server --target wolfssl-server .
-run tls server: docker run -it --rm wolfssl-server
+build server:    docker build -t wolfssl-server --target wolfssl-server .
+run tls server:  docker run -it --rm wolfssl-server
+run dtls server: docker run -it -v cert-data:/cert/:ro,nocopy --rm wolfssl-5_6_6-server -p 4433 -c /cert/rsa2048cert.pem -k /cert/rsa2048key.pem -u -b
 
-build client:   docker build -t wolfssl-client --target wolfssl-client .
-run tls client: docker run -it --rm wolfssl-client
+build client:    docker build -t wolfssl-client --target wolfssl-client .
+run tls client:  docker run -it --rm wolfssl-client
+run dtls client: docker run -it --rm wolfssl-5_6_6-client -h 127.0.0.1 -p 4433 -u -d
 
 build all supported wolfssl versions: ./wolfssl.sh and ./cyassl.sh
