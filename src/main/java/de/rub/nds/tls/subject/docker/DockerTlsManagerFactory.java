@@ -71,6 +71,7 @@ public class DockerTlsManagerFactory {
         protected UnaryOperator<HostConfig> hostConfigHook;
         // remaining shared params
         protected String additionalParameters = null;
+        protected String additionalBuildFlags = "";
         protected boolean parallelize = false;
         protected boolean insecureConnection = false;
         protected String containerName;
@@ -104,6 +105,13 @@ public class DockerTlsManagerFactory {
             this.profile = retrieveParameterProfile(type, version, role);
             this.imageProperties = retrieveImageProperties(role, type);
             this.transportType = transportType;
+            if (!image.getLabels()
+                    .containsKey(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())) {
+                this.additionalBuildFlags = "";
+            } else {
+                this.additionalBuildFlags =
+                        image.getLabels().get(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName());
+            }
         }
 
         public T autoRemove(boolean value) {
@@ -123,6 +131,11 @@ public class DockerTlsManagerFactory {
 
         public T containerName(String value) {
             containerName = value;
+            return (T) this;
+        }
+
+        public T additionalBuildFlags(String value) {
+            additionalBuildFlags = value;
             return (T) this;
         }
 
@@ -239,6 +252,7 @@ public class DockerTlsManagerFactory {
                     profile,
                     imageProperties,
                     version,
+                    additionalBuildFlags,
                     autoRemove,
                     new HostInfo(ip, hostname, port, transportType),
                     additionalParameters,
@@ -279,6 +293,7 @@ public class DockerTlsManagerFactory {
                     profile,
                     imageProperties,
                     version,
+                    additionalBuildFlags,
                     autoRemove,
                     new HostInfo(ip, hostname, port, transportType),
                     additionalParameters,
@@ -376,7 +391,11 @@ public class DockerTlsManagerFactory {
     }
 
     public static Image getMatchingImage(
-            List<Image> images, TlsImplementationType type, String version, ConnectionRole role) {
+            List<Image> images,
+            TlsImplementationType type,
+            String version,
+            String additionalBuildFlags,
+            ConnectionRole role) {
         return images.stream()
                 .filter(
                         image ->
@@ -393,6 +412,11 @@ public class DockerTlsManagerFactory {
                                 image.getLabels()
                                         .get(TlsImageLabels.CONNECTION_ROLE.getLabelName())
                                         .equals(role.name().toLowerCase()))
+                .filter(
+                        image ->
+                                image.getLabels()
+                                        .get(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())
+                                        .equals(additionalBuildFlags))
                 .findFirst()
                 .orElse(null);
     }

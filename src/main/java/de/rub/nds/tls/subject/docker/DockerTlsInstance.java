@@ -17,6 +17,7 @@ import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.*;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.constants.TlsImageLabels;
+import de.rub.nds.tls.subject.docker.build.DockerBuilder;
 import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import de.rub.nds.tls.subject.params.ParameterProfile;
@@ -47,6 +48,7 @@ public abstract class DockerTlsInstance {
             ParameterProfile profile,
             ImageProperties imageProperties,
             String version,
+            String additionalBuildFlags,
             ConnectionRole role,
             boolean autoRemove,
             UnaryOperator<HostConfig> hostConfigHook) {
@@ -62,16 +64,27 @@ public abstract class DockerTlsInstance {
         this.hostConfigHook = hostConfigHook;
         this.containerName = containerName;
         Map<String, String> labels = new HashMap<>();
-        labels.put(
-                TlsImageLabels.IMPLEMENTATION.getLabelName(),
-                profile.getType().name().toLowerCase());
-        labels.put(TlsImageLabels.VERSION.getLabelName(), version);
-        labels.put(TlsImageLabels.CONNECTION_ROLE.getLabelName(), role.toString().toLowerCase());
+        DockerBuilder.getImageLabels(profile.getType(), version, role, additionalBuildFlags);
         if (image == null) {
-            this.image =
-                    DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream()
-                            .findFirst()
-                            .orElseThrow(TlsVersionNotFoundException::new);
+            try {
+                this.image =
+                        DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream()
+                                .findFirst()
+                                .orElseThrow(TlsVersionNotFoundException::new);
+            } catch (TlsVersionNotFoundException e) {
+                // If no additional build flags have been set, try again without the build flag
+                // label. This provides some backwards compatibility for dockerfiles / images
+                // without the new flag.
+                if (additionalBuildFlags.isEmpty()) {
+                    labels.remove(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName());
+                    this.image =
+                            DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream()
+                                    .findFirst()
+                                    .orElseThrow(TlsVersionNotFoundException::new);
+                } else {
+                    throw e;
+                }
+            }
         } else {
             this.image = image;
         }

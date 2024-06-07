@@ -37,6 +37,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
             ParameterProfile profile,
             ImageProperties imageProperties,
             String version,
+            String additionalBuildFlags,
             boolean autoRemove,
             HostInfo hostInfo,
             String additionalParameters,
@@ -49,6 +50,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
                 profile,
                 imageProperties,
                 version,
+                additionalBuildFlags,
                 ConnectionRole.SERVER,
                 autoRemove,
                 hostConfigHook);
