@@ -45,6 +45,7 @@ public class DockerBuilder {
     private static final String VERSION_ARGUMENT = "VERSION";
     public static final String CERTIFICATE_VOLUME_NAME = "cert-data";
     public static final String IMAGES_RESOURCE_DIRECTORY = "/images";
+    public static final String NO_ADDITIONAL_BUILDFLAGS = "";
     public static final String JSON_BUILD_INFO_FILENAME = "build.json";
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -69,8 +70,8 @@ public class DockerBuilder {
             String version,
             ConnectionRole connectionRole,
             String buildFlags) {
-        if (buildFlags.isEmpty()) {
-            return "";
+        if (buildFlags.equals(NO_ADDITIONAL_BUILDFLAGS)) {
+            return NO_ADDITIONAL_BUILDFLAGS;
         }
         MessageDigest messageDigest;
         try {
@@ -285,7 +286,8 @@ public class DockerBuilder {
             return image.get();
         } else if (allowMissingEmptyBuildFlags
                 && labels.containsKey(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())
-                && labels.get(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName()).isEmpty()) {
+                && labels.get(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())
+                        .equals(NO_ADDITIONAL_BUILDFLAGS)) {
             Map<String, String> reducedLabels = new HashMap<>();
             reducedLabels.putAll(labels);
             reducedLabels.remove(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName());
