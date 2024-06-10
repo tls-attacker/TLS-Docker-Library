@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 public class DockerBuilder {
     private static final String BUILD_FLAGS_ARGUMENT = "BUILD_FLAGS";
     private static final String VERSION_ARGUMENT = "VERSION";
+    public static final String CERTIFICATE_VOLUME_NAME = "cert-data";
     public static final String IMAGES_RESOURCE_DIRECTORY = "/images";
     public static final String JSON_BUILD_INFO_FILENAME = "build.json";
     private static final Logger LOGGER = LogManager.getLogger();
@@ -267,7 +268,7 @@ public class DockerBuilder {
         InspectVolumeResponse volumeInfo =
                 DOCKER
                         .listVolumesCmd()
-                        .withFilter("name", Arrays.asList("cert-data"))
+                        .withFilter("name", Arrays.asList(CERTIFICATE_VOLUME_NAME))
                         .exec()
                         .getVolumes()
                         .stream()
