@@ -85,6 +85,39 @@ public class DockerBuilder {
     }
 
     /**
+     * Returns the default repo and tag used when building images with the TLS-Docker-Library in
+     * docker's typical format (repo:tag).
+     *
+     * @param library The TLS library to build.
+     * @param version The verison to build.
+     * @param connectionRole The connection role of the image.
+     * @param buildFlags The flags to apply during build.
+     * @return The repo:tag string
+     */
+    public static String getDefaultRepoAndTag(
+            TlsImplementationType library,
+            String version,
+            ConnectionRole connectionRole,
+            String buildFlags) {
+        return getDefaultRepo(library, connectionRole)
+                + ":"
+                + getDefaultTag(library, version, connectionRole, buildFlags);
+    }
+
+    public static String getDefaultRepo(
+            TlsImplementationType library, ConnectionRole connectionRole) {
+        return library.name().toLowerCase() + "-" + connectionRole.name().toLowerCase();
+    }
+
+    public static String getDefaultTag(
+            TlsImplementationType library,
+            String version,
+            ConnectionRole connectionRole,
+            String buildFlags) {
+        return version + getBuildFlagParameterTag(library, version, connectionRole, buildFlags);
+    }
+
+    /**
      * Attempts to build a library and version docker image using the provided parameters. Requires
      * that the setup script has already been run on the machine executing this code.
      *
@@ -152,27 +185,19 @@ public class DockerBuilder {
         int tagged = 0;
         if (!matchingClientImages.isEmpty()
                 && !previouslyBuiltImages.contains(matchingClientImages.get(0))) {
-            String builtFlagsTag =
-                    getBuildFlagParameterTag(library, version, ConnectionRole.CLIENT, buildFlags);
             DOCKER.tagImageCmd(
                             matchingClientImages.get(0).getId(),
-                            library.name().toLowerCase()
-                                    + "-"
-                                    + ConnectionRole.CLIENT.name().toLowerCase(),
-                            version + builtFlagsTag)
+                            getDefaultRepo(library, ConnectionRole.CLIENT),
+                            getDefaultTag(library, version, ConnectionRole.CLIENT, buildFlags))
                     .exec();
             tagged++;
         }
         if (!matchingServerImages.isEmpty()
                 && !previouslyBuiltImages.contains(matchingServerImages.get(0))) {
-            String builtFlagsTag =
-                    getBuildFlagParameterTag(library, version, ConnectionRole.SERVER, buildFlags);
             DOCKER.tagImageCmd(
                             matchingClientImages.get(0).getId(),
-                            library.name().toLowerCase()
-                                    + "-"
-                                    + ConnectionRole.SERVER.name().toLowerCase(),
-                            version + builtFlagsTag)
+                            getDefaultRepo(library, ConnectionRole.SERVER),
+                            getDefaultTag(library, version, ConnectionRole.SERVER, buildFlags))
                     .exec();
             tagged++;
         }
