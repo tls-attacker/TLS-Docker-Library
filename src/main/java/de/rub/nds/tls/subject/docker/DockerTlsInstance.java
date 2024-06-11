@@ -39,6 +39,8 @@ public abstract class DockerTlsInstance {
     protected final ImageProperties imageProperties;
     protected List<DockerExecInstance> childExecs = new LinkedList<>();
     private final UnaryOperator<HostConfig> hostConfigHook;
+    private final String[] cmd;
+    private final List<ExposedPort> containerExposedPorts;
 
     public DockerTlsInstance(
             Image image,
@@ -49,7 +51,9 @@ public abstract class DockerTlsInstance {
             String additionalBuildFlags,
             ConnectionRole role,
             boolean autoRemove,
-            UnaryOperator<HostConfig> hostConfigHook) {
+            UnaryOperator<HostConfig> hostConfigHook,
+            String[] cmd,
+            List<ExposedPort> exposedPorts) {
         if (profile == null) {
             throw new NullPointerException("profile may not be null");
         }
@@ -61,6 +65,8 @@ public abstract class DockerTlsInstance {
         this.imageProperties = imageProperties;
         this.hostConfigHook = hostConfigHook;
         this.containerName = containerName;
+        this.cmd = cmd;
+        this.containerExposedPorts = exposedPorts;
         Map<String, String> labels = new HashMap<>();
         DockerBuilder.getImageLabels(profile.getType(), version, role, additionalBuildFlags);
         if (image == null) {
@@ -88,19 +94,28 @@ public abstract class DockerTlsInstance {
                         true));
     }
 
-    protected CreateContainerCmd prepareCreateContainerCmd(CreateContainerCmd cmd) {
+    protected CreateContainerCmd prepareCreateContainerCmd(CreateContainerCmd createContainerCmd) {
         HostConfig hcfg = prepareHostConfig(HostConfig.newHostConfig());
         if (hostConfigHook != null) {
             hcfg = hostConfigHook.apply(hcfg);
         }
-        return cmd.withAttachStderr(true)
+        if (containerName != null) {
+            createContainerCmd.withName(containerName);
+        }
+        if (cmd != null) {
+            createContainerCmd.withCmd(cmd);
+        }
+        if (containerExposedPorts != null) {
+            createContainerCmd.withExposedPorts(containerExposedPorts);
+        }
+        return createContainerCmd
+                .withAttachStderr(true)
                 .withAttachStdout(true)
                 .withAttachStdin(true)
                 .withTty(true)
                 .withStdInOnce(true)
                 .withStdinOpen(true)
                 .withHostConfig(hcfg);
-        // missing: hostConfig, exposedPorts, cmd
     }
 
     protected String createContainer() {
@@ -110,9 +125,7 @@ public abstract class DockerTlsInstance {
         @SuppressWarnings("squid:S2095") // sonarlint: Resources should be closed
         // Create container does not need to be closed
         CreateContainerCmd containerCmd = DOCKER.createContainerCmd(image.getId());
-        if (containerName != null) {
-            containerCmd.withName(containerName);
-        }
+
         containerCmd = prepareCreateContainerCmd(containerCmd);
         CreateContainerResponse container = containerCmd.exec();
         String[] warnings = container.getWarnings();

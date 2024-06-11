@@ -20,6 +20,7 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 public class DockerTlsServerInstance extends DockerTlsInstance {
@@ -43,7 +44,9 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
             String additionalParameters,
             boolean parallelize,
             boolean insecureConnection,
-            UnaryOperator<HostConfig> hostConfigHook) {
+            UnaryOperator<HostConfig> hostConfigHook,
+            String[] cmd,
+            List<ExposedPort> exposedPorts) {
         super(
                 image,
                 containerName,
@@ -53,7 +56,9 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
                 additionalBuildFlags,
                 ConnectionRole.SERVER,
                 autoRemove,
-                hostConfigHook);
+                hostConfigHook,
+                cmd,
+                exposedPorts);
         this.port = hostInfo.getPort(); // fill with default port
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;

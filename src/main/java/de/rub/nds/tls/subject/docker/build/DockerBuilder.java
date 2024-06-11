@@ -408,7 +408,6 @@ public class DockerBuilder {
     private static Path resolveUriToPath(URI uri) {
         try {
             if (uri.getScheme().equals("jar")) {
-                System.out.println("Using jar case!");
                 FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
                 Path imagesPath = fileSystem.getPath("/images");
                 return imagesPath;

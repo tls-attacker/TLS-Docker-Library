@@ -9,6 +9,7 @@
 package de.rub.nds.tls.subject.docker;
 
 import com.github.dockerjava.api.exception.DockerException;
+import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Image;
 import de.rub.nds.tls.subject.ConnectionRole;
@@ -70,6 +71,8 @@ public class DockerTlsManagerFactory {
         protected int port = DEFAULT_PORT;
         protected UnaryOperator<HostConfig> hostConfigHook;
         // remaining shared params
+        protected String[] cmd = null;
+        protected List<ExposedPort> containerExposedPorts = null;
         protected String additionalParameters = null;
         protected String additionalBuildFlags = "";
         protected boolean parallelize = false;
@@ -161,6 +164,16 @@ public class DockerTlsManagerFactory {
 
         public T hostConfigHook(UnaryOperator<HostConfig> value) {
             hostConfigHook = value;
+            return (T) this;
+        }
+
+        public T cmd(String... value) {
+            cmd = value;
+            return (T) this;
+        }
+
+        public T containerExposedPorts(List<ExposedPort> value) {
+            containerExposedPorts = value;
             return (T) this;
         }
 
@@ -259,7 +272,9 @@ public class DockerTlsManagerFactory {
                     parallelize,
                     insecureConnection,
                     connectOnStartup,
-                    hostConfigHook);
+                    hostConfigHook,
+                    cmd,
+                    containerExposedPorts);
         }
 
         public TlsClientInstanceBuilder connectOnStartup(boolean value) {
@@ -299,7 +314,9 @@ public class DockerTlsManagerFactory {
                     additionalParameters,
                     parallelize,
                     insecureConnection,
-                    hostConfigHook);
+                    hostConfigHook,
+                    cmd,
+                    containerExposedPorts);
         }
     }
 

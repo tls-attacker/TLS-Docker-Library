@@ -12,6 +12,7 @@ import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.ContainerConfig;
+import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.api.model.Volume;
@@ -51,7 +52,9 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
             boolean parallelize,
             boolean insecureConnection,
             boolean connectOnStartup,
-            UnaryOperator<HostConfig> hostConfigHook) {
+            UnaryOperator<HostConfig> hostConfigHook,
+            String[] cmd,
+            List<ExposedPort> exposedPorts) {
         super(
                 image,
                 containerName,
@@ -61,7 +64,9 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
                 additionalBuildFlags,
                 ConnectionRole.CLIENT,
                 autoRemove,
-                hostConfigHook);
+                hostConfigHook,
+                cmd,
+                exposedPorts);
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;
         this.parallelize = parallelize;
