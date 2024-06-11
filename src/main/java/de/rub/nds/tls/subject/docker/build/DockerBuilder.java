@@ -20,15 +20,22 @@ import de.rub.nds.tls.subject.docker.DockerClientManager;
 import de.rub.nds.tls.subject.docker.build.exception.VersionNotListedException;
 import de.rub.nds.tls.subject.exceptions.CertVolumeNotFoundException;
 import jakarta.xml.bind.DatatypeConverter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +55,7 @@ public class DockerBuilder {
     public static final String NO_ADDITIONAL_BUILDFLAGS = "";
     public static final String JSON_BUILD_INFO_FILENAME = "build.json";
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final Map<String, File> temporaryDockerfileMap = new HashMap<>();
 
     private final Map<TlsImplementationType, Path> libraryImageDirectories;
     private final Map<TlsImplementationType, JsonBuildData> knownBuildableLibraries;
@@ -147,13 +155,20 @@ public class DockerBuilder {
                     libraryImageDirectories
                             .get(library)
                             .resolve(dockerfileArguments.getDockerfileName());
-            DOCKER.buildImageCmd()
-                    .withDockerfile(dockerfilePath.toFile())
-                    .withBuildArg(BUILD_FLAGS_ARGUMENT, buildFlags)
-                    .withBuildArg(VERSION_ARGUMENT, dockerfileArguments.getVersionBuildArgument())
-                    .exec(new BuildImageResultCallback())
-                    .awaitImageId();
-            tagBuiltImages(library, version, connectionRole, buildFlags, previouslyBuiltImages);
+            try {
+                File dockerfile =
+                        prepareDockerfile(Files.newInputStream(dockerfilePath), library, version);
+                DOCKER.buildImageCmd()
+                        .withDockerfile(dockerfile)
+                        .withBuildArg(BUILD_FLAGS_ARGUMENT, buildFlags)
+                        .withBuildArg(
+                                VERSION_ARGUMENT, dockerfileArguments.getVersionBuildArgument())
+                        .exec(new BuildImageResultCallback())
+                        .awaitImageId();
+                tagBuiltImages(library, version, connectionRole, buildFlags, previouslyBuiltImages);
+            } catch (IOException e) {
+                LOGGER.error(e);
+            }
         }
         return builtImage;
     }
@@ -197,7 +212,7 @@ public class DockerBuilder {
         if (!matchingServerImages.isEmpty()
                 && !previouslyBuiltImages.contains(matchingServerImages.get(0))) {
             DOCKER.tagImageCmd(
-                            matchingClientImages.get(0).getId(),
+                            matchingServerImages.get(0).getId(),
                             getDefaultRepo(library, ConnectionRole.SERVER),
                             getDefaultTag(library, version, ConnectionRole.SERVER, buildFlags))
                     .exec();
@@ -341,7 +356,8 @@ public class DockerBuilder {
         Path jsonFile = libraryDirectory.resolve(JSON_BUILD_INFO_FILENAME);
         JsonBuildData jsonBuildData = null;
         try {
-            jsonBuildData = objectMapper.readValue(jsonFile.toFile(), JsonBuildData.class);
+            jsonBuildData =
+                    objectMapper.readValue(Files.newInputStream(jsonFile), JsonBuildData.class);
         } catch (IOException e) {
             LOGGER.error(e);
         }
@@ -360,7 +376,8 @@ public class DockerBuilder {
         Arrays.asList(TlsImplementationType.values()).stream()
                 .forEach(type -> directoryNameEnumMap.put(type.name().toLowerCase(), type));
         try {
-            Path imagesPath = Paths.get(DockerBuilder.class.getResource("/images").toURI());
+            URI imagesDirectoryUri = DockerBuilder.class.getResource("/images").toURI();
+            Path imagesPath = resolveUriToPath(imagesDirectoryUri);
 
             // List subdirectories
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(imagesPath)) {
@@ -386,5 +403,65 @@ public class DockerBuilder {
 
     public Map<TlsImplementationType, JsonBuildData> getKnownBuildableLibraries() {
         return knownBuildableLibraries;
+    }
+
+    private static Path resolveUriToPath(URI uri) {
+        try {
+            if (uri.getScheme().equals("jar")) {
+                System.out.println("Using jar case!");
+                FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+                Path imagesPath = fileSystem.getPath("/images");
+                return imagesPath;
+            } else {
+                Path imagesPath = Paths.get(uri);
+                return imagesPath;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * When using the TLS-Docker-Library's jar in a another project, we can not directly turn a Path
+     * obtained from the zip filesystem java allocates to a File. Java Docker, however, only accepts
+     * File objects when using .withDockerfile(). Hence, we write temporary dockerfiles and pass
+     * these files to Java Docker.
+     *
+     * @param stream The input stream created from a Path
+     * @param library The library to build (for caching purposes)
+     * @param version The version to build (for caching purposes)
+     * @return The temporary dockerfile to use in .withDockerfile()
+     * @throws IOException
+     */
+    private static synchronized File prepareDockerfile(
+            InputStream stream, TlsImplementationType library, String version) throws IOException {
+        File tempDir = Files.createTempDirectory("temp-docker-build-context").toFile();
+        tempDir.deleteOnExit();
+        String identifier = library.name().toLowerCase() + "+" + version;
+        if (temporaryDockerfileMap.containsKey(identifier)) {
+            return temporaryDockerfileMap.get(identifier);
+        } else {
+            if (stream == null) {
+                return null;
+            }
+
+            try {
+                File tempFile = new File(tempDir, "Dockerfile-" + identifier);
+
+                FileOutputStream out = new FileOutputStream(tempFile);
+                byte[] buffer = new byte[1024];
+
+                int bytesRead;
+                while ((bytesRead = stream.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+                out.close();
+                temporaryDockerfileMap.put(identifier, tempFile);
+                return tempFile;
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+                return null;
+            }
+        }
     }
 }
