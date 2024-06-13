@@ -23,7 +23,7 @@ ARG BUILD_FLAGS=""
 LABEL "tls_implementation"="openssl"
 LABEL "tls_implementation_version"="1.1.1${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
-LABEL "tls_build_flags"="${BUILD_FLAGS}"
+LABEL "tls_implementation_build_flags"="${BUILD_FLAGS}"
 ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]
 
 FROM openssl-base2 as openssl-client
@@ -32,5 +32,5 @@ ARG BUILD_FLAGS=""
 LABEL "tls_implementation"="openssl"
 LABEL "tls_implementation_version"="1.1.1${VERSION}"
 LABEL "tls_implementation_connectionRole"="client"
-LABEL "tls_build_flags"="${BUILD_FLAGS}"
+LABEL "tls_implementation_build_flags"="${BUILD_FLAGS}"
 ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]

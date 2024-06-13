@@ -88,7 +88,15 @@ public class DockerBuilder {
             throw new RuntimeException("No SHA-256 instance available to create parameter tag");
         }
         messageDigest.update(
-                (library.name() + version + connectionRole.name() + buildFlags).getBytes());
+                (TlsImageLabels.IMPLEMENTATION.getLabelName()
+                                + library.name()
+                                + TlsImageLabels.VERSION.getLabelName()
+                                + version
+                                + TlsImageLabels.CONNECTION_ROLE.getLabelName()
+                                + connectionRole.name()
+                                + TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName()
+                                + buildFlags)
+                        .getBytes());
         String hashString = DatatypeConverter.printHexBinary(messageDigest.digest()).toLowerCase();
         hashString = hashString.substring(0, Math.min(16, hashString.length()));
         return "-flags-" + hashString;

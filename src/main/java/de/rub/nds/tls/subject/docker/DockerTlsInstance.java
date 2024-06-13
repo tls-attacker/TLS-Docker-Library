@@ -40,6 +40,7 @@ public abstract class DockerTlsInstance {
     protected List<DockerExecInstance> childExecs = new LinkedList<>();
     private final UnaryOperator<HostConfig> hostConfigHook;
     private final String[] cmd;
+
     private final List<ExposedPort> containerExposedPorts;
 
     public DockerTlsInstance(
@@ -67,8 +68,9 @@ public abstract class DockerTlsInstance {
         this.containerName = containerName;
         this.cmd = cmd;
         this.containerExposedPorts = exposedPorts;
-        Map<String, String> labels = new HashMap<>();
-        DockerBuilder.getImageLabels(profile.getType(), version, role, additionalBuildFlags);
+        Map<String, String> labels =
+                DockerBuilder.getImageLabels(
+                        profile.getType(), version, role, additionalBuildFlags);
         if (image == null) {
             this.image = DockerBuilder.getImageWithLabels(labels, true);
             if (this.image == null) {
@@ -276,5 +278,13 @@ public abstract class DockerTlsInstance {
 
     public String getContainerName() {
         return containerName;
+    }
+
+    public List<ExposedPort> getContainerExposedPorts() {
+        return containerExposedPorts;
+    }
+
+    public String[] getCmd() {
+        return cmd;
     }
 }
