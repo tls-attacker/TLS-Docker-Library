@@ -14,14 +14,14 @@
 
      ```bash
      # use --help to see the available options
-     cd images
+     cd src/main/resources/images
      python3 build.py
      ```
    * To build only specific TLS Libraries, use the `-l` parameter of the build script. E.g.: `python3 build.py -l matrixssl`
    * You can specify multiple versions this way and also restrict the building to certain versions with a regex f.e.
 
      ```bash
-     cd images
+     cd src/main/resources/images
      python3 build.py -l matrixssl:3.* -l bearssl:0.6
      ```
 

@@ -9,6 +9,7 @@
 package de.rub.nds.tls.subject.docker;
 
 import com.github.dockerjava.api.exception.DockerException;
+import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Image;
 import de.rub.nds.tls.subject.ConnectionRole;
@@ -70,7 +71,10 @@ public class DockerTlsManagerFactory {
         protected int port = DEFAULT_PORT;
         protected UnaryOperator<HostConfig> hostConfigHook;
         // remaining shared params
+        protected String[] cmd = null;
+        protected List<ExposedPort> containerExposedPorts = null;
         protected String additionalParameters = null;
+        protected String additionalBuildFlags = "";
         protected boolean parallelize = false;
         protected boolean insecureConnection = false;
         protected String containerName;
@@ -104,6 +108,13 @@ public class DockerTlsManagerFactory {
             this.profile = retrieveParameterProfile(type, version, role);
             this.imageProperties = retrieveImageProperties(role, type);
             this.transportType = transportType;
+            if (!image.getLabels()
+                    .containsKey(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())) {
+                this.additionalBuildFlags = "";
+            } else {
+                this.additionalBuildFlags =
+                        image.getLabels().get(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName());
+            }
         }
 
         public T autoRemove(boolean value) {
@@ -123,6 +134,11 @@ public class DockerTlsManagerFactory {
 
         public T containerName(String value) {
             containerName = value;
+            return (T) this;
+        }
+
+        public T additionalBuildFlags(String value) {
+            additionalBuildFlags = value;
             return (T) this;
         }
 
@@ -148,6 +164,16 @@ public class DockerTlsManagerFactory {
 
         public T hostConfigHook(UnaryOperator<HostConfig> value) {
             hostConfigHook = value;
+            return (T) this;
+        }
+
+        public T cmd(String... value) {
+            cmd = value;
+            return (T) this;
+        }
+
+        public T containerExposedPorts(List<ExposedPort> value) {
+            containerExposedPorts = value;
             return (T) this;
         }
 
@@ -239,13 +265,16 @@ public class DockerTlsManagerFactory {
                     profile,
                     imageProperties,
                     version,
+                    additionalBuildFlags,
                     autoRemove,
                     new HostInfo(ip, hostname, port, transportType),
                     additionalParameters,
                     parallelize,
                     insecureConnection,
                     connectOnStartup,
-                    hostConfigHook);
+                    hostConfigHook,
+                    cmd,
+                    containerExposedPorts);
         }
 
         public TlsClientInstanceBuilder connectOnStartup(boolean value) {
@@ -279,12 +308,15 @@ public class DockerTlsManagerFactory {
                     profile,
                     imageProperties,
                     version,
+                    additionalBuildFlags,
                     autoRemove,
                     new HostInfo(ip, hostname, port, transportType),
                     additionalParameters,
                     parallelize,
                     insecureConnection,
-                    hostConfigHook);
+                    hostConfigHook,
+                    cmd,
+                    containerExposedPorts);
         }
     }
 
@@ -376,7 +408,11 @@ public class DockerTlsManagerFactory {
     }
 
     public static Image getMatchingImage(
-            List<Image> images, TlsImplementationType type, String version, ConnectionRole role) {
+            List<Image> images,
+            TlsImplementationType type,
+            String version,
+            String additionalBuildFlags,
+            ConnectionRole role) {
         return images.stream()
                 .filter(
                         image ->
@@ -393,6 +429,11 @@ public class DockerTlsManagerFactory {
                                 image.getLabels()
                                         .get(TlsImageLabels.CONNECTION_ROLE.getLabelName())
                                         .equals(role.name().toLowerCase()))
+                .filter(
+                        image ->
+                                image.getLabels()
+                                        .get(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())
+                                        .equals(additionalBuildFlags))
                 .findFirst()
                 .orElse(null);
     }

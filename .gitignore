@@ -18,3 +18,4 @@ images/damnvulnerableopenssl/DamnVulnerableOpenSSL/
 *.log
 images/cmds.sh
 .factorypath
+*.code-workspace
