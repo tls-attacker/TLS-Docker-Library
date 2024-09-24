@@ -17,6 +17,7 @@ import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.constants.TlsImageLabels;
 import de.rub.nds.tls.subject.constants.TransportType;
+import de.rub.nds.tls.subject.docker.build.DockerBuilder;
 import de.rub.nds.tls.subject.exceptions.DefaultProfileNotFoundException;
 import de.rub.nds.tls.subject.exceptions.PropertyNotFoundException;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
@@ -416,24 +417,43 @@ public class DockerTlsManagerFactory {
         return images.stream()
                 .filter(
                         image ->
-                                image.getLabels()
-                                        .get(TlsImageLabels.VERSION.getLabelName())
-                                        .equals(version))
+                                version.equals(
+                                        image.getLabels()
+                                                .get(TlsImageLabels.VERSION.getLabelName())))
                 .filter(
                         image ->
-                                image.getLabels()
-                                        .get(TlsImageLabels.IMPLEMENTATION.getLabelName())
-                                        .equals(type.name().toLowerCase()))
+                                type.name()
+                                        .toLowerCase()
+                                        .equals(
+                                                image.getLabels()
+                                                        .get(
+                                                                TlsImageLabels.IMPLEMENTATION
+                                                                        .getLabelName())))
                 .filter(
                         image ->
-                                image.getLabels()
-                                        .get(TlsImageLabels.CONNECTION_ROLE.getLabelName())
-                                        .equals(role.name().toLowerCase()))
+                                role.name()
+                                        .toLowerCase()
+                                        .equals(
+                                                image.getLabels()
+                                                        .get(
+                                                                TlsImageLabels.CONNECTION_ROLE
+                                                                        .getLabelName())))
                 .filter(
                         image ->
-                                image.getLabels()
-                                        .get(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())
-                                        .equals(additionalBuildFlags))
+                                additionalBuildFlags.equals(
+                                                image.getLabels()
+                                                        .get(
+                                                                TlsImageLabels
+                                                                        .ADDITIONAL_BUILD_FLAGS
+                                                                        .getLabelName()))
+                                        || (DockerBuilder.NO_ADDITIONAL_BUILDFLAGS.equals(
+                                                        additionalBuildFlags)
+                                                && image.getLabels()
+                                                                .get(
+                                                                        TlsImageLabels
+                                                                                .ADDITIONAL_BUILD_FLAGS
+                                                                                .getLabelName())
+                                                        == null))
                 .findFirst()
                 .orElse(null);
     }
