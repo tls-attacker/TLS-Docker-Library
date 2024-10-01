@@ -332,6 +332,17 @@
                 </executions>
             </plugin>
             <!--################# default lifecycle plugins #################-->
+            <!-- Compile javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <!-- Pack source files to jar archive -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+
             <!-- Formatting -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
