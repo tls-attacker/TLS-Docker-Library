@@ -19,3 +19,4 @@ images/damnvulnerableopenssl/DamnVulnerableOpenSSL/
 images/cmds.sh
 .factorypath
 .flattened-pom.xml
+*.code-workspace

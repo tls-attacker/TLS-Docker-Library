@@ -10,7 +10,6 @@ package de.rub.nds.tls.subject.params;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -122,7 +121,6 @@ public class TlsTestServer extends Thread {
 
     public void stop(String host, int port) throws IOException {
         this.isServerDone = true;
-        Socket socket = new Socket(host, port);
     }
 
     public void setIsConnectionSuccessful(boolean isConnectionSuccessful) {

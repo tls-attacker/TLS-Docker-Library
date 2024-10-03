@@ -20,6 +20,7 @@ import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.HostInfo;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.properties.ImageProperties;
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 public class DockerTlsServerInstance extends DockerTlsInstance {
@@ -37,21 +38,27 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
             ParameterProfile profile,
             ImageProperties imageProperties,
             String version,
+            String additionalBuildFlags,
             boolean autoRemove,
             HostInfo hostInfo,
             String additionalParameters,
             boolean parallelize,
             boolean insecureConnection,
-            UnaryOperator<HostConfig> hostConfigHook) {
+            UnaryOperator<HostConfig> hostConfigHook,
+            String[] cmd,
+            List<ExposedPort> exposedPorts) {
         super(
                 image,
                 containerName,
                 profile,
                 imageProperties,
                 version,
+                additionalBuildFlags,
                 ConnectionRole.SERVER,
                 autoRemove,
-                hostConfigHook);
+                hostConfigHook,
+                cmd,
+                exposedPorts);
         this.port = hostInfo.getPort(); // fill with default port
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;
@@ -61,41 +68,48 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
 
     @Override
     protected HostConfig prepareHostConfig(HostConfig cfg) {
-        return super.prepareHostConfig(cfg)
-                .withPortBindings(
-                        new PortBinding(
-                                Binding.empty(),
-                                new ExposedPort(
-                                        imageProperties.getInternalPort(),
-                                        hostInfo.getType().toInternetProtocol())))
-                .withReadonlyRootfs(true);
+        super.prepareHostConfig(cfg);
+        if (getContainerExposedPorts() == null) {
+            return cfg.withPortBindings(
+                    new PortBinding(
+                            Binding.empty(),
+                            new ExposedPort(
+                                    imageProperties.getInternalPort(),
+                                    hostInfo.getType().toInternetProtocol())));
+        }
+        return cfg;
     }
 
     @Override
     protected CreateContainerCmd prepareCreateContainerCmd(CreateContainerCmd cmd) {
         String host;
+
         if (hostInfo.getHostname() == null || imageProperties.isUseIP()) {
             host = hostInfo.getIp();
         } else {
             host = hostInfo.getHostname();
         }
-        exposedImplementationPort =
-                new ExposedPort(hostInfo.getPort(), hostInfo.getType().toInternetProtocol());
-        String[] additionalCmds =
-                parameterProfile.toParameters(
-                        host,
-                        hostInfo.getPort(),
-                        imageProperties,
-                        additionalParameters,
-                        parallelize,
-                        insecureConnection);
-        if (additionalCmds.length > 0 && !additionalCmds[0].isEmpty()) {
-            return super.prepareCreateContainerCmd(cmd)
-                    .withCmd(additionalCmds)
-                    .withExposedPorts(exposedImplementationPort);
-        } else {
-            return super.prepareCreateContainerCmd(cmd).withExposedPorts(exposedImplementationPort);
+
+        if (getContainerExposedPorts() == null) {
+            // only set default port mapping if not managed externally
+            exposedImplementationPort =
+                    new ExposedPort(hostInfo.getPort(), hostInfo.getType().toInternetProtocol());
+            cmd.withExposedPorts(exposedImplementationPort);
         }
+
+        if (getCmd() == null) {
+            String[] additionalCmds =
+                    parameterProfile.toParameters(
+                            host,
+                            hostInfo.getPort(),
+                            imageProperties,
+                            additionalParameters,
+                            parallelize,
+                            insecureConnection);
+            cmd.withCmd(additionalCmds);
+        }
+
+        return super.prepareCreateContainerCmd(cmd);
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.ContainerConfig;
+import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.api.model.Volume;
@@ -29,7 +30,6 @@ import org.apache.logging.log4j.Logger;
 
 public class DockerTlsClientInstance extends DockerTlsInstance {
     private static final String[] EMPTY_STR_ARR = {};
-    private static final int EXEC_POLL_INTERVAL_MILLISECONDS = 50;
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final HostInfo hostInfo;
@@ -45,22 +45,28 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
             ParameterProfile profile,
             ImageProperties imageProperties,
             String version,
+            String additionalBuildFlags,
             boolean autoRemove,
             HostInfo hostInfo,
             String additionalParameters,
             boolean parallelize,
             boolean insecureConnection,
             boolean connectOnStartup,
-            UnaryOperator<HostConfig> hostConfigHook) {
+            UnaryOperator<HostConfig> hostConfigHook,
+            String[] cmd,
+            List<ExposedPort> exposedPorts) {
         super(
                 image,
                 containerName,
                 profile,
                 imageProperties,
                 version,
+                additionalBuildFlags,
                 ConnectionRole.CLIENT,
                 autoRemove,
-                hostConfigHook);
+                hostConfigHook,
+                cmd,
+                exposedPorts);
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;
         this.parallelize = parallelize;

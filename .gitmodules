@@ -1,3 +1,3 @@
 [submodule "images/damnvulnerableopenssl/DamnVulnerableOpenSSL"]
-    path = images/damnvulnerableopenssl/DamnVulnerableOpenSSL
+	path = src/main/resources/images/damnvulnerableopenssl/DamnVulnerableOpenSSL
 	url = https://github.com/tls-attacker/DamnVulnerableOpenSSL
