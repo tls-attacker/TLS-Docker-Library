@@ -1,4 +1,4 @@
-{
+kk{
   "build_groups": {
     "0.x": {
       "name": "bearssl",
@@ -6,8 +6,7 @@
       "versions": [
         "0.4",
         "0.5",
-        "0.6",
-        "master"
+        "0.6"
       ],
       "instances": [
         "server",
@@ -19,7 +18,25 @@
       },
       "target": "bearssl-{i}",
       "tag": "{r}{n}-{i}:{v}"
+    },
+    "master": {
+      "name": "bearssl",
+      "dockerfile": "Dockerfile",
+      "versions": [
+        "master"
+      ],
+      "instances": [
+        "server",
+        "client"
+      ],
+      "image_version": "{v}",
+      "build_args": {
+        "VERSION": "{v}"
+      },
+      "target": "bearssl-{i}",
+      "tag": "{r}{n}-{i}:{v}"
     }
   },
   "latest": "master"
 }
+
