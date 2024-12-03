@@ -14,6 +14,7 @@ _docker build --build-arg VERSION=3.6 --no-cache -t alpine-build:3.6 .
 #_docker build --build-arg VERSION=3.4 -t alpine-build:3.4 .
 
 _docker build --build-arg VERSION=sid --no-cache -t debian-build:sid -f Dockerfile_debian .
+_docker build --build-arg VERSION=bullseye --no-cache -t debian-build:bullseye -f Dockerfile_debian .
 
 _docker build -t entrypoint -f Dockerfile_entrypoint .
 
