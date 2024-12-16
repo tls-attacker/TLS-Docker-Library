@@ -20,5 +20,5 @@ images/cmds.sh
 .factorypath
 .flattened-pom.xml
 *.code-workspace
-src/main/resources/images/baseimaage/ca.pem
+src/main/resources/images/baseimage/ca.pem
 src/main/resources/images/firefox/ca.pem
