@@ -12,7 +12,7 @@ EXITCODE=0
 
 # Instead of executing the underlying docker build command _docker simply copies this command to the cmds.sh script and optionally appends the docker push command
 function _docker {
-  tag=$(python - "$@" << E
+  tag=$(python3 - "$@" << E
 import sys
 s = ['-t', '--tag']
 for i in s:

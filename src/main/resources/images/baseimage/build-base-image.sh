@@ -3,6 +3,7 @@ cd "$(dirname "$0")" || exit 1
 source ../helper-functions.sh
 
 # https://wiki.alpinelinux.org/wiki/Alpine_Linux:Releases
+_docker build --build-arg VERSION=3.17 --no-cache -t alpine-build:3.17 .
 _docker build --build-arg VERSION=3.12 --no-cache -t alpine-build:3.12 .
 #_docker build --build-arg VERSION=3.11 -t alpine-build:3.11 .
 #_docker build --build-arg VERSION=3.10 -t alpine-build:3.10 .

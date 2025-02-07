@@ -1,4 +1,4 @@
-FROM python:3.3-alpine as tlslite-ng
+FROM python:3.9-alpine as tlslite-ng
 ARG VERSION
 
 RUN apk update && apk add git make
