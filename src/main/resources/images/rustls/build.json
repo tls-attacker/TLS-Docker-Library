@@ -42,9 +42,9 @@
             "tag": "{r}{n}-{i}:{v}"
           },
 
-          "rustls_0.17.0+": {
+          "rustls_0.17.0-19.0": {
             "name": "rustls",
-            "dockerfile": "Dockerfile",
+            "dockerfile": "Dockerfile_17-19_0",
             "versions": [
                 "0.19.0",
                 "0.18.1",
@@ -62,7 +62,24 @@
             },
             "target": "{n}-{i}",
             "tag": "{r}{n}-{i}:{v}"
+          },
+          "rustls_0.23.0+": {
+            "name": "rustls",
+            "dockerfile": "Dockerfile_23_x",
+            "versions": [
+                "0.23.18"
+            ],
+            "instances": [
+              "server"
+              ,"client"
+            ],
+            "image_version": "{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
           }
     },
-    "latest": "0.19.0"
+    "latest": "0.23.18"
 }
