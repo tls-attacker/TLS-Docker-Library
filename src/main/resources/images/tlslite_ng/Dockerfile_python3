@@ -1,6 +1,11 @@
 FROM python:3.3-alpine as tlslite-ng
 ARG VERSION
+
 RUN apk update && apk add git make
+RUN apk --no-cache add curl
+RUN curl -sS https://bootstrap.pypa.io/pip/3.3/get-pip.py -o get-pip.py
+RUN python get-pip.py
+
 RUN git clone --depth=1 --branch=v${VERSION} https://github.com/tomato42/tlslite-ng
 WORKDIR tlslite-ng
 RUN pip install ecdsa
