@@ -9,7 +9,7 @@
     <groupId>de.rub.nds.tls.dockerlib</groupId>
 
     <artifactId>tls-docker-library</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.0-rtc</version>
     <packaging>jar</packaging>
 
     <name>TLS-Docker-Library</name>
