@@ -16,6 +16,7 @@
     "mbedtls",
     "nss",
     "ocamltls",
+    "openhitls",
     "openssl",
     "pyopenssl",
     "python-gnutls",

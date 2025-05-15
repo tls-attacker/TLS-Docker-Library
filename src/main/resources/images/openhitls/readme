@@ -1,0 +1,14 @@
+---------------------------
+open-HiTls
+- versions: 
+0.2.0-alhpa0
+0.2.0-alhpa1
+
+
+
+build a single openhitls server
+---------------------------
+build:      docker build --build-arg VERSION=$version -t $yourImageName -f $Dockerfile_of_your_version .
+
+example for version 0.2.0-alhpa0:
+	    docker build --build-arg VERSION=0-alpha0 -t openhi-0.2.0-alhpa0-server -f Dockerfile-0_2_x .

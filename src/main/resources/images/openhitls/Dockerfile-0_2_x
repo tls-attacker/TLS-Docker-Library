@@ -1,0 +1,46 @@
+FROM debian-build:bullseye AS openhitls-base1
+ARG VERSION
+RUN apt update && apt install -y libsctp-dev
+
+WORKDIR /src/
+RUN git clone --recurse-submodules https://github.com/openHiTLS/openHiTLS.git
+WORKDIR /src/openHiTLS
+RUN git checkout openhitls-0.2.${VERSION}
+COPY ./0.2.x_patches/server.c /src/openHiTLS/testcode/demo/server.c
+COPY ./0.2.x_patches/client.c /src/openHiTLS/testcode/demo/client.c
+RUN mkdir build
+WORKDIR /src/openHiTLS/build
+RUN python3  ../configure.py --enable hitls_bsl hitls_crypto hitls_tls hitls_pki hitls_auth --lib_type static --add_options="-DHITLS_EAL_INIT_OPTS=9 -DHITLS_CRYPTO_ASM_CHECK -DHITLS_CRYPTO_ENTROPY -DHITLS_CRYPTO_ENTROPY_DEVRANDOM -DHITLS_CRYPTO_ENTROPY_GETENTROPY -DHITLS_CRYPTO_ENTROPY_SYS -DHITLS_CRYPTO_ENTROPY_HARDWARE -DHITLS_CRYPTO_DRBG_GM -DTLS_DEBUG=ON -fprofile-arcs -ftest-coverage" --bits=64 --system=linux --add_link_flags="-ldl" && cmake ..
+RUN make -j
+WORKDIR /src/openHiTLS/testcode/script
+#RUN bash build_sdv.sh tls-debug no-sctp asan gcov
+RUN bash build_sdv.sh tls-debug no-sctp gcov
+RUN mkdir /libdeps64/
+RUN mkdir /libdeps/
+RUN bash -c 'ldd /src/openHiTLS/testcode/demo/build/client | awk '\''{if ($3 != "" || NF == 2) print ($3 != "" ? $3 : $1)}'\'' | while read -r lib; do [ -f "$lib" ] && { [[ "$lib" == /lib64/* ]] && cp "$lib" /libdeps64/ || cp "$lib" /libdeps/; }; done'
+RUN bash -c 'ldd /src/openHiTLS/testcode/demo/build/server | awk '\''{if ($3 != "" || NF == 2) print ($3 != "" ? $3 : $1)}'\'' | while read -r lib; do [ -f "$lib" ] && { [[ "$lib" == /lib64/* ]] && cp "$lib" /libdeps64/ || cp "$lib" /libdeps/; }; done'
+
+# using debian base image as dns resolution seems to be broken in entrypoint image
+FROM debian:bullseye AS openhitls-base2
+COPY --from=entrypoint /bin/* /bin/
+COPY --from=openhitls-base1 /src/openHiTLS/testcode/demo/build/server /bin/
+COPY --from=openhitls-base1 /src/openHiTLS/testcode/demo/build/client /bin/
+COPY --from=openhitls-base1 /libdeps/* /lib/
+COPY --from=openhitls-base1 /libdeps64/* /lib64/
+COPY --from=openhitls-base1 /src/openHiTLS/testcode/testdata/tls/certificate/der/ecdsa_sha256 /certs/
+
+FROM openhitls-base2 AS openhitls-server
+ARG VERSION
+LABEL "tls_implementation"="openhitls"
+LABEL "tls_implementation_version"="0.2.${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
+ENTRYPOINT ["server-entrypoint", "server"]
+
+FROM openhitls-base2 AS openhitls-client
+ARG VERSION
+LABEL "tls_implementation"="openhitls"
+LABEL "tls_implementation_version"="0.2.${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
+ENTRYPOINT ["client-entrypoint", "client"]
+
+
