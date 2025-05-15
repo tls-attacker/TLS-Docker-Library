@@ -92,6 +92,9 @@ public class DockerTlsManagerFactory {
                 TransportType transportType) {
             this.profile = retrieveParameterProfile(type, version, role);
             this.imageProperties = retrieveImageProperties(role, type);
+            if (imageProperties.getInternalPort() != null) {
+                this.port = imageProperties.getInternalPort();
+            }
             this.version = version;
             this.transportType = transportType;
         }
@@ -108,6 +111,9 @@ public class DockerTlsManagerFactory {
                                     .toUpperCase());
             this.profile = retrieveParameterProfile(type, version, role);
             this.imageProperties = retrieveImageProperties(role, type);
+            if (imageProperties.getInternalPort() != null) {
+                this.port = imageProperties.getInternalPort();
+            }
             this.transportType = transportType;
             if (!image.getLabels()
                     .containsKey(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())) {

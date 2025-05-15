@@ -108,6 +108,13 @@ public class PropertyManager {
         imagePropertyList.add(
                 new ImageProperties(
                         ConnectionRole.CLIENT,
+                        TlsImplementationType.OPENHITLS,
+                        "0.2.0-alpha0",
+                        Const.CA_CERT,
+                        false));
+        imagePropertyList.add(
+                new ImageProperties(
+                        ConnectionRole.CLIENT,
                         TlsImplementationType.OPENSSL,
                         "1.1.1g",
                         Const.CA_CERT,
@@ -249,6 +256,15 @@ public class PropertyManager {
                         null));
         // imagePropertyList.add(new ImageProperties(ConnectionRole.SERVER,
         // TlsImplementationType.OCAMLTLS, ...
+        imagePropertyList.add(
+                new ImageProperties(
+                        ConnectionRole.SERVER,
+                        TlsImplementationType.OPENHITLS,
+                        "0.2.0-alpha0",
+                        12345,
+                        Const.CERT_KEY_PEM,
+                        Const.CERT_CERT_PEM,
+                        null));
         imagePropertyList.add(
                 new ImageProperties(
                         ConnectionRole.SERVER,

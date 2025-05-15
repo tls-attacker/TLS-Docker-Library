@@ -25,6 +25,7 @@ public enum TlsImplementationType {
     MBEDTLS,
     NSS,
     OCAMLTLS,
+    OPENHITLS,
     OPENSSL,
     RUSTLS,
     S2N,

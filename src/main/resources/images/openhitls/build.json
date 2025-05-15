@@ -1,0 +1,23 @@
+{
+    "build_groups": {
+          "openhitls-0.2.x-y": {
+            "name": "openhitls",
+            "dockerfile": "Dockerfile-0_2_x",
+            "versions": [
+                "0-alpha0",
+                "0-alpha1"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "0.2.{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
+          }
+    },
+    "latest": "latest"
+}
