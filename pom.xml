@@ -9,7 +9,7 @@
     <groupId>de.rub.nds.tls.dockerlib</groupId>
 
     <artifactId>tls-docker-library</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.1.1</version>
     <packaging>jar</packaging>
 
     <name>TLS-Docker-Library</name>
@@ -73,7 +73,7 @@
     <scm>
         <connection>scm:git:git://github.com/tls-attacker/TLS-Docker-Library.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/tls-attacker/TLS-Docker-Library-Development.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v3.1.1</tag>
         <url>https://github.com/tls-attacker/TLS-Docker-Library/tree/main</url>
     </scm>
 
