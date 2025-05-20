@@ -216,11 +216,11 @@ public class DockerTlsManagerFactory {
                 // we go with this
                 // for now
                 String loginCommand =
-                        "echo "
-                                + DockerClientManager.getDockerServerPassword()
-                                + " | docker login -u "
+                        "docker login -u "
                                 + DockerClientManager.getDockerServerUsername()
-                                + " --password-stdin "
+                                + " -p "
+                                + DockerClientManager.getDockerServerPassword()
+                                + " "
                                 + REPOSITORY_LOCATION;
                 String pullCommand =
                         "docker pull "
