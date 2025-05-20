@@ -20,7 +20,6 @@ import de.rub.nds.tls.subject.constants.TransportType;
 import de.rub.nds.tls.subject.docker.build.DockerBuilder;
 import de.rub.nds.tls.subject.exceptions.DefaultProfileNotFoundException;
 import de.rub.nds.tls.subject.exceptions.PropertyNotFoundException;
-import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import de.rub.nds.tls.subject.params.ParameterProfile;
 import de.rub.nds.tls.subject.params.ParameterProfileManager;
 import de.rub.nds.tls.subject.properties.ImageProperties;
@@ -238,7 +237,7 @@ public class DockerTlsManagerFactory {
                 executeCommand(runtime, logoutCommand, TIMEOUT);
             } catch (IOException | InterruptedException ex) {
                 LOGGER.warn("Could not launch command line argument for pulling docker image");
-                throw new TlsVersionNotFoundException();
+                throw new RuntimeException(ex);
             }
         }
 
@@ -481,7 +480,7 @@ public class DockerTlsManagerFactory {
                             + process.exitValue()
                             + "\nSTDERR: "
                             + output);
-            throw new IOException();
+            throw new IOException(output.toString());
         }
     }
 }
