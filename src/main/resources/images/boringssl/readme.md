@@ -20,4 +20,4 @@
 - run tls shim:
   - `docker run -it --rm --entrypoint /bin/bssl_shim boringssl-server:VERSION`
 - run tls client:
-  - `docker run -it --rm boringssl-client:VERSION`
+  - `docker run -it --rm boringssl-client:VERSION -connect localhost:4433`

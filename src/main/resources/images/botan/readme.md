@@ -24,7 +24,7 @@
 
 ### Run
 - run tls client:
-  - `docker run -it --rm botan-client:VERSION`
+  - `docker run botan-client:VERSION localhost --port=4433 --skip-system-cert-store --ignore-cert-error`
 
 - Start server versions < 1_11_32:
   - `docker run -v cert-data:/cert/ -it botan-server:VERSION /cert/rsa2048cert.pem /cert/rsa2048key.pem --port=4433`
