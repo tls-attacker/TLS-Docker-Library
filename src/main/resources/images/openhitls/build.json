@@ -1,11 +1,11 @@
 {
     "build_groups": {
-          "openhitls-0.2.x-y": {
+          "openhitls-0.2.x": {
             "name": "openhitls",
             "dockerfile": "Dockerfile-0_2_x",
             "versions": [
-                "0-alpha0",
-                "0-alpha1"
+                "0",
+                "1"
             ],
             "instances": [
               "server",
@@ -19,5 +19,5 @@
             "tag": "{r}{n}-{i}:{v}"
           }
     },
-    "latest": "latest"
+    "latest": "0.2.1"
 }

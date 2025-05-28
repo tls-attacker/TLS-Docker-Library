@@ -376,5 +376,5 @@
             "tag": "{r}{n}-{i}:{v}"
           }
     },
-    "latest": "latest"
+    "latest": "3.4.0"
 }
