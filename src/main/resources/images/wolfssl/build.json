@@ -57,13 +57,15 @@
                 "5.0.0-stable",
                 "5.1.0-stable",
                 "5.2.0-stable",
+                "5.2.1-stable",
                 "5.3.0-stable",
                 "5.4.0-stable",
                 "5.5.0-stable",
                 "5.5.1-stable",
                 "5.5.2-stable",
                 "5.5.3-stable",
-                "5.5.4-stable"
+                "5.5.4-stable",
+                "5.6.0-stable"
             ],
             "instances": [
               "server"
@@ -76,6 +78,30 @@
             "target": "{n}-{i}",
             "tag": "{r}{n}-{i}:{v}"
           },
+
+      "wolfssl_5.x": {
+        "name": "wolfssl",
+        "dockerfile": "Dockerfile-5_x",
+        "versions": [
+          "5.6.4-stable",
+          "5.6.6-stable",
+          "5.7.0-stable",
+          "5.7.2-stable",
+          "5.7.4-stable",
+          "5.7.6-stable",
+          "5.8.0-stable"
+        ],
+        "instances": [
+          "server"
+        ,"client"
+        ],
+        "image_version": "{v}",
+        "build_args": {
+          "VERSION": "{v}"
+        },
+        "target": "{n}-{i}",
+        "tag": "{r}{n}-{i}:{v}"
+      },
 
           "wolfssl_3.3.x": {
             "name": "wolfssl",
@@ -165,5 +191,5 @@
             "tag": "{r}{n}-{i}:{v}"
           }
     },
-    "latest": "5.5.4-stable"
+    "latest": "5.8.0-stable"
 }
