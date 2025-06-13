@@ -16,7 +16,7 @@
 #include "crypt_eal_init.h"
 #include "crypt_eal_rand.h"
 #include "crypt_eal_pkey.h"
-#include "crypt_eal_encode.h"
+#include "crypt_eal_codecs.h"
 #include "hitls_error.h"
 #include "hitls_config.h"
 #include "hitls.h"

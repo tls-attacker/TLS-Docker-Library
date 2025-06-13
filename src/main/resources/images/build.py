@@ -144,9 +144,9 @@ class LibraryBuilder:
                 regex = self.versions_regex[library_name]
             except KeyError:
                 regex = ''
+            is_latest = latest == _image_version
             # match against version regex
-            if bool(re.match(regex, _image_version)):
-                is_latest = latest == _image_version
+            if bool(re.match(regex, _image_version)) or (is_latest and regex == "latest"):
                 for instance in instances:
                     self.counter += 1
                     yield DockerImage(image_name, dockerfile, version, context, second_version, instance, image_version, build_args, docker_repo, target, tag, library_name, is_latest, self.counter)

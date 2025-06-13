@@ -1,9 +1,10 @@
-FROM alpine-build:3.12 as botan-base1
+FROM alpine-build:3.17 as botan-base1
 ARG VERSION
 RUN wget https://botan.randombit.net/releases/Botan-3.${VERSION}.tar.xz
+RUN apk add xz
 RUN tar -xf Botan-3.${VERSION}.tar.xz
 WORKDIR Botan-3.${VERSION}
-RUN apk add python2
+RUN apk add python3
 RUN ./configure.py --prefix=/build/ &&\
   make &&\
   make install

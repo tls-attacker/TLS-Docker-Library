@@ -1,4 +1,4 @@
-FROM alpine-build:3.12 as mbed-base1
+FROM alpine-build:3.12 as polarssl-base1
 ARG VERSION
 RUN wget -O mbed.tgz https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/polarssl-${VERSION}.tar.gz
 RUN mkdir mbed
@@ -7,21 +7,21 @@ WORKDIR /build/
 RUN cmake -DCMAKE_BUILD_TYPE=Release /src/mbed &&\
   make
 
-FROM entrypoint as mbed-base2
-COPY --from=mbed-base1 /lib/ld-musl-x86_64.so.* /lib/
+FROM entrypoint as polarssl-base2
+COPY --from=polarssl-base1 /lib/ld-musl-x86_64.so.* /lib/
 
-FROM mbed-base2 as mbed-server
+FROM polarssl-base2 as polarssl-server
 ARG VERSION
 LABEL "tls_implementation"="mbedtls"
 LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
-COPY --from=mbed-base1 /build/programs/ssl/ssl_server /bin/
+COPY --from=polarssl-base1 /build/programs/ssl/ssl_server /bin/
 ENTRYPOINT ["server-entrypoint", "ssl_server"]
 
-FROM mbed-base2 as mbed-client
+FROM polarssl-base2 as polarssl-client
 ARG VERSION
 LABEL "tls_implementation"="mbedtls"
 LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="client"
-COPY --from=mbed-base1 /build/programs/ssl/ssl_client2 /bin/
+COPY --from=polarssl-base1 /build/programs/ssl/ssl_client2 /bin/
 ENTRYPOINT ["client-entrypoint", "ssl_client2"]
