@@ -27,6 +27,6 @@ public class DockerBuilderTest {
                         .getKnownBuildableLibraries()
                         .get(TlsImplementationType.OPENSSL)
                         .getDockerfileArgumentsForVersion("1.1.1i");
-        assertEquals(dockerfileArguments.getDockerfileName(), "Dockerfile-1_1_1x");
+        assertEquals("Dockerfile-1_1_1x", dockerfileArguments.getDockerfileName());
     }
 }
