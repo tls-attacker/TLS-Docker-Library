@@ -476,10 +476,9 @@ public class DockerTlsManagerFactory {
                 output.append(readLine);
             }
             LOGGER.warn(
-                    "Pulling docker commands failed with exit code "
-                            + process.exitValue()
-                            + "\nSTDERR: "
-                            + output);
+                    "Pulling docker commands failed with exit code {}\nSTDERR: {}",
+                    process.exitValue(),
+                    output);
             throw new IOException(output.toString());
         }
     }

@@ -90,7 +90,7 @@ public class ParameterProfileSerializer {
                     profile = ParameterProfileSerializer.read(new FileInputStream(file));
                     list.add(profile);
                 } catch (JAXBException | IOException | XMLStreamException ex) {
-                    LOGGER.warn("Could not read " + file.getAbsolutePath() + " from Folder.");
+                    LOGGER.warn("Could not read {} from Folder.", file.getAbsolutePath());
                     LOGGER.debug(ex.getLocalizedMessage(), ex);
                 }
             }
