@@ -58,12 +58,10 @@ public class ParameterProfileManager {
                     ParameterProfile profile = tryLoadProfile(role, filename);
                     if (profile != null) {
                         LOGGER.debug(
-                                "Loaded:"
-                                        + profile.getName()
-                                        + " : "
-                                        + profile.getRole().name()
-                                        + " - "
-                                        + profile.getDescription());
+                                "Loaded:{} : {} - {}",
+                                profile.getName(),
+                                profile.getRole().name(),
+                                profile.getDescription());
                         allProfileList.add(profile);
                     }
                 }
@@ -78,14 +76,14 @@ public class ParameterProfileManager {
                     tryLoadProfile(
                             ConnectionRole.SERVER, "" + type.name().toLowerCase() + ".profile");
             if (profile != null) {
-                LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name());
+                LOGGER.debug("Loaded:{} : {}", profile.getName(), profile.getRole().name());
                 defaultServerProfileList.add(profile);
             }
             profile =
                     tryLoadProfile(
                             ConnectionRole.CLIENT, "" + type.name().toLowerCase() + ".profile");
             if (profile != null) {
-                LOGGER.debug("Loaded:" + profile.getName() + " : " + profile.getRole().name());
+                LOGGER.debug("Loaded:{} : {}", profile.getName(), profile.getRole().name());
                 defaultClientProfileList.add(profile);
             }
         }
@@ -109,13 +107,11 @@ public class ParameterProfileManager {
             return ParameterProfileSerializer.read(stream);
         } catch (IOException | JAXBException | XMLStreamException | IllegalArgumentException E) {
             LOGGER.debug(
-                    "Could not find other ParameterProfile for: "
-                            + RESOURCE_PATH
-                            + role.name().toLowerCase()
-                            + "/"
-                            + filename
-                            + ": "
-                            + role.name());
+                    "Could not find other ParameterProfile for: {}{}/{}: {}",
+                    RESOURCE_PATH,
+                    role.name().toLowerCase(),
+                    filename,
+                    role.name());
             LOGGER.trace(E);
             return null;
         }
