@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -96,7 +97,7 @@ public class DockerBuilder {
                                 + connectionRole.name()
                                 + TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName()
                                 + buildFlags)
-                        .getBytes());
+                        .getBytes(StandardCharsets.UTF_8));
         String hashString = DatatypeConverter.printHexBinary(messageDigest.digest()).toLowerCase();
         hashString = hashString.substring(0, Math.min(16, hashString.length()));
         return "-flags-" + hashString;
