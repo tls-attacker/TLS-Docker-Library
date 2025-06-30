@@ -89,7 +89,7 @@ public class ParameterProfileManager {
         }
     }
 
-    private List<String> getResourceFiles(ConnectionRole role) throws IOException {
+    private static List<String> getResourceFiles(ConnectionRole role) throws IOException {
         Reflections reflections =
                 new Reflections("profiles." + role.name().toLowerCase(), Scanners.Resources);
         Set<String> resourceList =
@@ -99,7 +99,7 @@ public class ParameterProfileManager {
         return new ArrayList<>(resourceList);
     }
 
-    private ParameterProfile tryLoadProfile(ConnectionRole role, String filename) {
+    private static ParameterProfile tryLoadProfile(ConnectionRole role, String filename) {
         try {
             InputStream stream =
                     ParameterProfileManager.class.getResourceAsStream(
