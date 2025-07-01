@@ -239,10 +239,10 @@ public class DockerBuilder {
             throw new IllegalArgumentException(
                     "Passed empty map of labels. All images would match.");
         }
-        for (String labelKey : labels.keySet()) {
+        for (Map.Entry<String, String> entry : labels.entrySet()) {
             if (imageLabels == null
-                    || !imageLabels.containsKey(labelKey)
-                    || !imageLabels.get(labelKey).equals(labels.get(labelKey))) {
+                    || !imageLabels.containsKey(entry.getKey())
+                    || !imageLabels.get(entry.getKey()).equals(entry.getValue())) {
                 return false;
             }
         }
@@ -349,11 +349,11 @@ public class DockerBuilder {
     public static Map<TlsImplementationType, JsonBuildData> getBuildInformationMap(
             Map<TlsImplementationType, Path> consideredLibraryImageDirectories) {
         HashMap<TlsImplementationType, JsonBuildData> buildInfoMap = new HashMap<>();
-        for (TlsImplementationType library : consideredLibraryImageDirectories.keySet()) {
-            JsonBuildData buildInfo =
-                    readBuildInformation(consideredLibraryImageDirectories.get(library));
+        for (Map.Entry<TlsImplementationType, Path> entry :
+                consideredLibraryImageDirectories.entrySet()) {
+            JsonBuildData buildInfo = readBuildInformation(entry.getValue());
             if (buildInfo != null) {
-                buildInfoMap.put(library, buildInfo);
+                buildInfoMap.put(entry.getKey(), buildInfo);
             }
         }
         return buildInfoMap;
