@@ -27,6 +27,7 @@ import de.rub.nds.tls.subject.properties.PropertyManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -496,7 +497,9 @@ public class DockerTlsManagerFactory {
             String readLine;
             StringBuilder output = new StringBuilder();
             BufferedReader processOutputReader =
-                    new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    process.getErrorStream(), StandardCharsets.UTF_8));
             while ((readLine = processOutputReader.readLine()) != null) {
                 output.append(readLine);
             }

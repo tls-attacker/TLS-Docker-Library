@@ -9,7 +9,9 @@
 package de.rub.nds.tls.subject.docker.build;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import java.nio.file.Path;
 import java.util.Map;
@@ -28,5 +30,25 @@ public class DockerBuilderTest {
                         .get(TlsImplementationType.OPENSSL)
                         .getDockerfileArgumentsForVersion("1.1.1i");
         assertEquals("Dockerfile-1_1_1x", dockerfileArguments.getDockerfileName());
+    }
+
+    @Test
+    public void testGetBuildFlagParameterTagHandlesEncoding() {
+        // Test that getBuildFlagParameterTag handles UTF-8 encoding correctly
+        String tag =
+                DockerBuilder.getBuildFlagParameterTag(
+                        TlsImplementationType.OPENSSL,
+                        "1.1.1",
+                        ConnectionRole.SERVER,
+                        "test-flag-with-special-chars-ü-ö-ä");
+        assertNotNull(tag);
+        // The tag should be deterministic for the same input
+        String tag2 =
+                DockerBuilder.getBuildFlagParameterTag(
+                        TlsImplementationType.OPENSSL,
+                        "1.1.1",
+                        ConnectionRole.SERVER,
+                        "test-flag-with-special-chars-ü-ö-ä");
+        assertEquals(tag, tag2);
     }
 }

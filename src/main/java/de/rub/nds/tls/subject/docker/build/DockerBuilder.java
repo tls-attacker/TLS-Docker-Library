@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -96,7 +97,7 @@ public class DockerBuilder {
                                 + connectionRole.name()
                                 + TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName()
                                 + buildFlags)
-                        .getBytes());
+                        .getBytes(StandardCharsets.UTF_8));
         String hashString = DatatypeConverter.printHexBinary(messageDigest.digest()).toLowerCase();
         hashString = hashString.substring(0, Math.min(16, hashString.length()));
         return "-flags-" + hashString;
@@ -239,10 +240,10 @@ public class DockerBuilder {
             throw new IllegalArgumentException(
                     "Passed empty map of labels. All images would match.");
         }
-        for (String labelKey : labels.keySet()) {
+        for (Map.Entry<String, String> entry : labels.entrySet()) {
             if (imageLabels == null
-                    || !imageLabels.containsKey(labelKey)
-                    || !imageLabels.get(labelKey).equals(labels.get(labelKey))) {
+                    || !imageLabels.containsKey(entry.getKey())
+                    || !imageLabels.get(entry.getKey()).equals(entry.getValue())) {
                 return false;
             }
         }
@@ -349,11 +350,11 @@ public class DockerBuilder {
     public static Map<TlsImplementationType, JsonBuildData> getBuildInformationMap(
             Map<TlsImplementationType, Path> consideredLibraryImageDirectories) {
         HashMap<TlsImplementationType, JsonBuildData> buildInfoMap = new HashMap<>();
-        for (TlsImplementationType library : consideredLibraryImageDirectories.keySet()) {
-            JsonBuildData buildInfo =
-                    readBuildInformation(consideredLibraryImageDirectories.get(library));
+        for (Map.Entry<TlsImplementationType, Path> entry :
+                consideredLibraryImageDirectories.entrySet()) {
+            JsonBuildData buildInfo = readBuildInformation(entry.getValue());
             if (buildInfo != null) {
-                buildInfoMap.put(library, buildInfo);
+                buildInfoMap.put(entry.getKey(), buildInfo);
             }
         }
         return buildInfoMap;

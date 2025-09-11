@@ -179,7 +179,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
         Binding[] binding = networkSettings.getPorts().getBindings().get(exposedImplementationPort);
         if (binding != null) {
             // only update if port mapping was necessary
-            port = Integer.valueOf(binding[0].getHostPortSpec());
+            port = Integer.parseInt(binding[0].getHostPortSpec());
         }
     }
 

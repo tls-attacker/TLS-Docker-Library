@@ -37,7 +37,7 @@ public class TlsTestServer extends Thread {
         this.port = port;
     }
 
-    private SSLContext createSSLContext() {
+    private static SSLContext createSSLContext() {
         try {
             KeyStore keyStore = KeyStore.getInstance("JKS");
             keyStore.load(new FileInputStream(PATH_TO_KEYSTORE), KEYSTORE_PASSWORD.toCharArray());
@@ -68,7 +68,7 @@ public class TlsTestServer extends Thread {
     public void run() {
         SSLServerSocket sslServerSocket = null;
         SSLSocket sslSocket = null;
-        SSLContext sslContext = this.createSSLContext();
+        SSLContext sslContext = createSSLContext();
         try {
             SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();
             sslServerSocket =

@@ -191,7 +191,7 @@ public class DockerTlsClientInstance extends DockerTlsInstance {
         if (entrypoint == null) {
             throw new IllegalStateException("Could not get entrypoint for image " + image.getId());
         }
-        List<String> cmd_lst = new LinkedList<String>(Arrays.asList(entrypoint));
+        List<String> cmd_lst = new LinkedList<>(Arrays.asList(entrypoint));
         if (cmd_lst.get(0).equals("client-entrypoint")) {
             cmd_lst.remove(0);
         } else {
