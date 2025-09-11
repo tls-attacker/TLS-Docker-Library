@@ -42,6 +42,10 @@ public abstract class DockerTlsInstance {
     private final String[] cmd;
 
     private final List<ExposedPort> containerExposedPorts;
+    // Custom certificate paths
+    protected String customCertificatePath;
+    protected String customKeyPath;
+    protected String customCombinedPath;
 
     public DockerTlsInstance(
             Image image,
@@ -55,6 +59,38 @@ public abstract class DockerTlsInstance {
             UnaryOperator<HostConfig> hostConfigHook,
             String[] cmd,
             List<ExposedPort> exposedPorts) {
+        this(
+                image,
+                containerName,
+                profile,
+                imageProperties,
+                version,
+                additionalBuildFlags,
+                role,
+                autoRemove,
+                hostConfigHook,
+                cmd,
+                exposedPorts,
+                null,
+                null,
+                null);
+    }
+
+    public DockerTlsInstance(
+            Image image,
+            String containerName,
+            ParameterProfile profile,
+            ImageProperties imageProperties,
+            String version,
+            String additionalBuildFlags,
+            ConnectionRole role,
+            boolean autoRemove,
+            UnaryOperator<HostConfig> hostConfigHook,
+            String[] cmd,
+            List<ExposedPort> exposedPorts,
+            String customCertificatePath,
+            String customKeyPath,
+            String customCombinedPath) {
         if (profile == null) {
             throw new NullPointerException("profile may not be null");
         }
@@ -68,6 +104,9 @@ public abstract class DockerTlsInstance {
         this.containerName = containerName;
         this.cmd = cmd;
         this.containerExposedPorts = exposedPorts;
+        this.customCertificatePath = customCertificatePath;
+        this.customKeyPath = customKeyPath;
+        this.customCombinedPath = customCombinedPath;
         Map<String, String> labels =
                 DockerBuilder.getImageLabels(
                         profile.getType(), version, role, additionalBuildFlags);
@@ -94,6 +133,29 @@ public abstract class DockerTlsInstance {
                         AccessMode.ro,
                         SELContext.DEFAULT,
                         true));
+    }
+
+    protected ImageProperties getEffectiveImageProperties() {
+        if (customCertificatePath == null && customKeyPath == null && customCombinedPath == null) {
+            return imageProperties;
+        }
+
+        // Create a copy with custom paths
+        ImageProperties customProperties =
+                new ImageProperties(
+                        imageProperties.getRole(),
+                        imageProperties.getType(),
+                        imageProperties.getDefaultVersion(),
+                        imageProperties.getInternalPort(),
+                        customKeyPath != null ? customKeyPath : imageProperties.getDefaultKeyPath(),
+                        customCertificatePath != null
+                                ? customCertificatePath
+                                : imageProperties.getDefaultCertPath(),
+                        customCombinedPath != null
+                                ? customCombinedPath
+                                : imageProperties.getDefaultCertKeyCombinedPath());
+        customProperties.setUseIP(imageProperties.isUseIP());
+        return customProperties;
     }
 
     protected CreateContainerCmd prepareCreateContainerCmd(CreateContainerCmd createContainerCmd) {

@@ -47,6 +47,44 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
             UnaryOperator<HostConfig> hostConfigHook,
             String[] cmd,
             List<ExposedPort> exposedPorts) {
+        this(
+                image,
+                containerName,
+                profile,
+                imageProperties,
+                version,
+                additionalBuildFlags,
+                autoRemove,
+                hostInfo,
+                additionalParameters,
+                parallelize,
+                insecureConnection,
+                hostConfigHook,
+                cmd,
+                exposedPorts,
+                null,
+                null,
+                null);
+    }
+
+    public DockerTlsServerInstance(
+            Image image,
+            String containerName,
+            ParameterProfile profile,
+            ImageProperties imageProperties,
+            String version,
+            String additionalBuildFlags,
+            boolean autoRemove,
+            HostInfo hostInfo,
+            String additionalParameters,
+            boolean parallelize,
+            boolean insecureConnection,
+            UnaryOperator<HostConfig> hostConfigHook,
+            String[] cmd,
+            List<ExposedPort> exposedPorts,
+            String customCertificatePath,
+            String customKeyPath,
+            String customCombinedPath) {
         super(
                 image,
                 containerName,
@@ -58,7 +96,10 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
                 autoRemove,
                 hostConfigHook,
                 cmd,
-                exposedPorts);
+                exposedPorts,
+                customCertificatePath,
+                customKeyPath,
+                customCombinedPath);
         this.port = hostInfo.getPort(); // fill with default port
         this.hostInfo = hostInfo;
         this.additionalParameters = additionalParameters;
@@ -102,7 +143,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
                     parameterProfile.toParameters(
                             host,
                             hostInfo.getPort(),
-                            imageProperties,
+                            getEffectiveImageProperties(),
                             additionalParameters,
                             parallelize,
                             insecureConnection);
