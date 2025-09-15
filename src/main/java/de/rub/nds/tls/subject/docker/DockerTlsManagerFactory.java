@@ -59,8 +59,8 @@ public class DockerTlsManagerFactory {
 
     @SuppressWarnings("unchecked")
     public abstract static class TlsInstanceBuilder<T extends TlsInstanceBuilder<T>> {
-        protected final ParameterProfile profile;
-        protected final ImageProperties imageProperties;
+        protected ParameterProfile profile;
+        protected ImageProperties imageProperties;
         protected final String version;
         protected Image image;
         protected boolean autoRemove = true;
@@ -201,6 +201,24 @@ public class DockerTlsManagerFactory {
         public T containerExposedPorts(List<ExposedPort> value) {
             containerExposedPorts = value;
             return (T) this;
+        }
+
+        public T imageProperties(ImageProperties value) {
+            imageProperties = value;
+            return (T) this;
+        }
+
+        public T parameterProfile(ParameterProfile value) {
+            profile = value;
+            return (T) this;
+        }
+
+        public ImageProperties getImageProperties() {
+            return imageProperties;
+        }
+
+        public ParameterProfile getProfile() {
+            return profile;
         }
 
         public void pull(ConnectionRole connectionRole) {
