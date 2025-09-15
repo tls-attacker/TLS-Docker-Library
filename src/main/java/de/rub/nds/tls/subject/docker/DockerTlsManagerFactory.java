@@ -79,6 +79,10 @@ public class DockerTlsManagerFactory {
         protected boolean parallelize = false;
         protected boolean insecureConnection = false;
         protected String containerName;
+        // Custom certificate paths
+        protected String certificatePath = null;
+        protected String keyPath = null;
+        protected String combinedPath = null;
 
         private static final String REPOSITORY_LOCATION = "https://hydrogen.cloud.nds.rub.de/nexus";
 
@@ -166,6 +170,21 @@ public class DockerTlsManagerFactory {
 
         public T insecureConnection(boolean value) {
             insecureConnection = value;
+            return (T) this;
+        }
+
+        public T certificatePath(String value) {
+            certificatePath = value;
+            return (T) this;
+        }
+
+        public T keyPath(String value) {
+            keyPath = value;
+            return (T) this;
+        }
+
+        public T combinedPath(String value) {
+            combinedPath = value;
             return (T) this;
         }
 
@@ -299,7 +318,10 @@ public class DockerTlsManagerFactory {
                     connectOnStartup,
                     hostConfigHook,
                     cmd,
-                    containerExposedPorts);
+                    containerExposedPorts,
+                    certificatePath,
+                    keyPath,
+                    combinedPath);
         }
 
         public TlsClientInstanceBuilder connectOnStartup(boolean value) {
@@ -341,7 +363,10 @@ public class DockerTlsManagerFactory {
                     insecureConnection,
                     hostConfigHook,
                     cmd,
-                    containerExposedPorts);
+                    containerExposedPorts,
+                    certificatePath,
+                    keyPath,
+                    combinedPath);
         }
     }
 
