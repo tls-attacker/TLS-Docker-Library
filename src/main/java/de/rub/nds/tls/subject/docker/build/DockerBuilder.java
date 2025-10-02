@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.BuildImageResultCallback;
 import com.github.dockerjava.api.command.InspectVolumeResponse;
+import com.github.dockerjava.api.command.ListImagesCmd;
 import com.github.dockerjava.api.model.Image;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
@@ -41,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -304,22 +306,37 @@ public class DockerBuilder {
 
     public static Image getImageWithLabels(
             Map<String, String> labels, boolean allowMissingEmptyBuildFlags) {
-        Optional<Image> image =
-                DOCKER.listImagesCmd().withLabelFilter(labels).exec().stream().findFirst();
+        ListImagesCmd listImagesCmd = DOCKER.listImagesCmd();
+        boolean buildingWithEmptyFlags =
+                labels.containsKey(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())
+                        && labels.get(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())
+                                .equals(NO_ADDITIONAL_BUILDFLAGS);
+        // We do not use JavaDocker's image filter function as it does not allow us to filter for
+        // label keys with empty string value. Instead, this would result in a filter matching any
+        // image that contains the label key regardless of its value.
+        listImagesCmd.withFilter(
+                "label",
+                labels.keySet().stream()
+                        .map(key -> key + "=" + labels.get(key))
+                        .collect(Collectors.toList()));
+
+        Optional<Image> image = listImagesCmd.exec().stream().findFirst();
         if (image.isPresent()) {
             return image.get();
-        } else if (allowMissingEmptyBuildFlags
-                && labels.containsKey(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())
-                && labels.get(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())
-                        .equals(NO_ADDITIONAL_BUILDFLAGS)) {
+        } else if (allowMissingEmptyBuildFlags && buildingWithEmptyFlags) {
             Map<String, String> reducedLabels = new HashMap<>();
             reducedLabels.putAll(labels);
             reducedLabels.remove(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName());
-            image =
-                    DOCKER.listImagesCmd().withLabelFilter(reducedLabels).exec().stream()
-                            .findFirst();
-            if (image.isPresent()) {
-                return image.get();
+            List<Image> matchingImages =
+                    DOCKER.listImagesCmd().withLabelFilter(reducedLabels).exec();
+            for (Image candidate : matchingImages) {
+                // We had no exact hit for empty flags, so only allow images matching the criteria
+                // and offering no build flags at all.
+                if (!candidate
+                        .getLabels()
+                        .containsKey(TlsImageLabels.ADDITIONAL_BUILD_FLAGS.getLabelName())) {
+                    return candidate;
+                }
             }
         }
         return null;
