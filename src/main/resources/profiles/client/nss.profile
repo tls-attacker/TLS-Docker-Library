@@ -5,11 +5,11 @@
     <type>NSS</type>
     <role>CLIENT</role>
     <Parameter>
-        <cmdParameter>-h [host] -p [port] -D</cmdParameter>
+        <cmdParameter>-h [host] -p [port]</cmdParameter>
         <type>HOST_PORT</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>-o</cmdParameter>
-        <type>INSECURE</type>
+        <cmdParameter>-d [cert]</cmdParameter>
+        <type>CA_CERTIFICATE</type>
     </Parameter>
 </parameterProfile>

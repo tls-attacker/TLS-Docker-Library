@@ -13,7 +13,7 @@
         <type>INSECURE</type>
     </Parameter>
     <Parameter>
-        <cmdParameter>--trusted-cas=[cert]</cmdParameter>
+        <cmdParameter>--trusted-cas=[cert] --skip-system-cert-store</cmdParameter>
         <type>CA_CERTIFICATE</type>
     </Parameter>
 </parameterProfile>
