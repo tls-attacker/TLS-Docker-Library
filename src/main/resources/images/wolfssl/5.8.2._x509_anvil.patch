@@ -1,0 +1,13 @@
+diff --git a/src/ssl.c b/src/ssl.c
+index 71cbdd1..2d9bcd0 100644
+--- a/src/ssl.c
++++ b/src/ssl.c
+@@ -5439,7 +5439,7 @@ int AlreadySigner(WOLFSSL_CERT_MANAGER* cm, byte* hash)
+     #endif
+ 
+         if (XMEMCMP(hash, subjectHash, SIGNER_DIGEST_SIZE) == 0) {
+-            ret = 1; /* success */
++            ret = 0; /* success */
+             break;
+         }
+         signers = signers->next;
