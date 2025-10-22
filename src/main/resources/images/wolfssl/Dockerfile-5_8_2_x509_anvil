@@ -5,7 +5,7 @@ RUN git clone --depth=1 --branch=v5.8.2-stable https://github.com/wolfSSL/wolfss
 WORKDIR /src/wolfssl
 RUN git apply /src/5.8.2._x509_anvil.patch
 RUN ./autogen.sh
-RUN ./configure --prefix=/build/ C_FLAGS="-DWOLFSSL_STATIC_RSA" C_EXTRA_FLAGS="-DWOLFSSL_STATIC_RSA"
+RUN ./configure --prefix=/build/ C_FLAGS="-DWOLFSSL_STATIC_RSA -DDEBUG_WOLFSSL" C_EXTRA_FLAGS="-DWOLFSSL_STATIC_RSA"
 
 WORKDIR /src/wolfssl/certs
 # update certificates, otherwise lt-client might fail...
