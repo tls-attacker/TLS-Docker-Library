@@ -103,6 +103,24 @@
         "tag": "{r}{n}-{i}:{v}"
       },
 
+      "wolfssl_5.8.2_x509_anvil": {
+        "name": "wolfssl",
+        "dockerfile": "Dockerfile-5_8_2_x509_anvil",
+        "versions": [
+          "5.8.2-x509anvil"
+        ],
+        "instances": [
+          "server",
+          "client"
+        ],
+        "image_version": "{v}",
+        "build_args": {
+          "VERSION": "{v}"
+        },
+        "target": "{n}-{i}",
+        "tag": "{r}{n}-{i}:{v}"
+      },
+
           "wolfssl_3.3.x": {
             "name": "wolfssl",
             "dockerfile": "Dockerfile-3_3-x",
