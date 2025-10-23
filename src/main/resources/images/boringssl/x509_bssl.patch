@@ -1,0 +1,33 @@
+diff --git a/tool/server.cc b/tool/server.cc
+index ca00d2a9c..18cd1713a 100644
+--- a/tool/server.cc
++++ b/tool/server.cc
+@@ -57,6 +57,10 @@ static const struct argument kArguments[] = {
+         "PEM-encoded file containing the leaf certificate and optional "
+         "certificate chain. This is taken from the -key argument if this "
+         "argument is not provided.",
++    },{
++      "-root-certs", kOptionalArgument,
++      "A filename containing one or more PEM root certificates. Implies that "
++      "verification is required.",
+     },
+     {
+         "-ocsp-response", kOptionalArgument, "OCSP response file to send",
+@@ -382,9 +386,14 @@ bool Server(const std::vector<std::string> &args) {
+   if (args_map.count("-require-any-client-cert") != 0) {
+     SSL_CTX_set_verify(
+         ctx.get(), SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, nullptr);
+-    SSL_CTX_set_cert_verify_callback(
+-        ctx.get(), [](X509_STORE_CTX *store, void *arg) -> int { return 1; },
+-        nullptr);
++  }
++  if (args_map.count("-root-certs") != 0) {
++    if (!SSL_CTX_load_verify_locations(
++            ctx.get(), args_map["-root-certs"].c_str(), nullptr)) {
++      fprintf(stderr, "Failed to load root certificates.\n");
++      ERR_print_errors_fp(stderr);
++      return false;
++    }
+   }
+ 
+   Listener listener;
