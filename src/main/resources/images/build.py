@@ -74,7 +74,7 @@ class DockerImage:
             context += "/" + self.context
 
         self.build_command = 'docker build{build_args}{tags}{dockerfile}{target} --no-cache {folder_name}'.format(build_args=build_args_str, tags=tags, dockerfile=dockerfile, target=target, folder_name=context)
-        return self.exec_docker_command(self.build_command).returncode
+        return self.exec_docker_command(self.build_command, flag=True).returncode
     
     def push(self):
         complete = self.exec_docker_command('docker push {}'.format(self.version_tag)).returncode
@@ -82,7 +82,9 @@ class DockerImage:
             complete |= self.exec_docker_command('docker push {}'.format('{docker_repo}{name}-{instance}:latest'.format(self.docker_repo, self.image_name, self.instance))).returncode
         return complete
 
-    def exec_docker_command(self, command: str):
+    def exec_docker_command(self, command: str, flag: bool = False):
+        if (flag):
+            return subprocess.run(command.split(' '), encoding="utf-8")
         return subprocess.run(command.split(' '), stdout=PIPE, stderr=STDOUT, encoding="utf-8")
 
 class LibraryBuilder:

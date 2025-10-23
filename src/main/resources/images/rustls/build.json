@@ -79,6 +79,23 @@
             },
             "target": "{n}-{i}",
             "tag": "{r}{n}-{i}:{v}"
+          },
+          "rustls_0.23.34_x509_anvil": {
+            "name": "rustls",
+            "dockerfile": "Dockerfile-23_34_x509_anvil",
+            "versions": [
+              "23_34-x509anvil"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "{v}",
+            "build_args": {
+              "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
           }
     },
     "latest": "0.23.18"
