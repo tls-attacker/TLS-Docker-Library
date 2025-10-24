@@ -87,9 +87,9 @@
     },
     "boringssl_main_x509_anvil": {
       "name": "boringssl",
-      "dockerfile": "Dockerfile-main_x509_anvil",
+      "dockerfile": "Dockerfile-0.20251002.0_x509_anvil",
       "versions": [
-        "main_x509_anvil"
+        "0.20251002.0_x509_anvil"
       ],
       "instances": [
         "server",
@@ -97,7 +97,7 @@
       ],
       "image_version": "{v}",
       "build_args": {
-        "VERSION": "{v}"
+        "VERSION": "0.20251002.0"
       },
       "target": "{n}-{i}",
       "tag": "{r}{n}-{i}:{v}"

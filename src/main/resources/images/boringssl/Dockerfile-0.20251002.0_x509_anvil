@@ -1,7 +1,7 @@
-FROM alpine-build:3.17 as boringssl-base1
+FROM alpine-build:3.17 AS boringssl-base1
 ARG VERSION
 COPY x509_bssl.patch /src/x509_bssl.patch
-RUN git clone --depth=1 -b main https://github.com/google/boringssl.git
+RUN git clone --depth=1 -b ${VERSION} https://github.com/google/boringssl.git
 WORKDIR /src/boringssl/
 RUN git apply /src/x509_bssl.patch
 WORKDIR /build/
@@ -12,7 +12,7 @@ RUN mkdir /libdeps
 RUN cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bssl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
 
 
-FROM entrypoint as boringssl-base2
+FROM entrypoint AS boringssl-base2
 COPY --from=boringssl-base1 /src/boringssl/include/ /artifacts/ssllib/include/
 COPY --from=boringssl-base1 /build/libssl.so /build/libcrypto.so /artifacts/ssllib/lib/
 COPY --from=boringssl-base1 /libdeps/* /artifacts/ssllib/libdeps/
@@ -20,14 +20,14 @@ COPY --from=boringssl-base1 /libdeps/* /lib/
 COPY --from=boringssl-base1 /build/bssl \
   /build/ssl/test/bssl_shim /bin/
 
-FROM boringssl-base2 as boringssl-server
+FROM boringssl-base2 AS boringssl-server
 ARG VERSION
 LABEL "tls_implementation"="boringssl"
 LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
 ENTRYPOINT ["server-entrypoint", "bssl", "s_server"]
 
-FROM boringssl-base2 as boringssl-client
+FROM boringssl-base2 AS boringssl-client
 ARG VERSION
 LABEL "tls_implementation"="boringssl"
 LABEL "tls_implementation_version"="${VERSION}"
