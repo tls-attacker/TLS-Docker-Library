@@ -7,7 +7,6 @@ WORKDIR Botan-3.9.0
 COPY botan_3.9.0_clientauth.patch botan_3.9.0_clientauth.patch
 RUN git apply botan_3.9.0_clientauth.patch
 RUN apk add python3
-RUN ls
 RUN ./configure.py --prefix=/build/ &&\
   make &&\
   make install

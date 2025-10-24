@@ -1,4 +1,4 @@
-FROM alpine-build:3.12 as nss
+FROM alpine-build:3.12 AS nss
 ARG NSS_VERSION
 ARG NSPR_VERSION
 RUN hg clone -r NSS_${NSS_VERSION} https://hg.mozilla.org/projects/nss
@@ -20,7 +20,7 @@ RUN cp $(LD_LIBRARY_PATH="/src/dist/Release/lib/" ldd /src/dist/Release/bin/tstc
 RUN cp -r /src/nss/out/Release/* /libdeps/
 RUN cp -r /src/dist/Release/lib/* /libdeps/
 
-FROM entrypoint as nss-base
+FROM entrypoint AS nss-base
 COPY --from=nss /src/dist/public/nss/ /src/dist/Release/include/nspr /artifacts/ssllib/include/
 COPY --from=nss /src/dist/Release/lib/ /artifacts/ssllib/lib/
 COPY --from=nss /src/dist/private/ /artifacts/ssllib/dist-private/
@@ -31,14 +31,14 @@ COPY --from=nss \
   /src/dist/Release/bin/tstclnt \
   /src/dist/Release/bin/nss_bogo_shim /bin/
 
-FROM nss-base as nss-server
+FROM nss-base AS nss-server
 ARG VERSION
 LABEL "tls_implementation"="nss"
 LABEL "tls_implementation_version"="${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
 ENTRYPOINT ["server-entrypoint", "/bin/selfserv"]
 
-FROM nss-base as nss-client
+FROM nss-base AS nss-client
 ARG VERSION
 LABEL "tls_implementation"="nss"
 LABEL "tls_implementation_version"="${VERSION}"
