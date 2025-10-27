@@ -4,6 +4,8 @@
         "name": "alpine",
         "dockerfile": "Dockerfile",
         "versions": [
+          "3.21",
+          "3.19",
           "3.12",
           "3.6"
         ],
