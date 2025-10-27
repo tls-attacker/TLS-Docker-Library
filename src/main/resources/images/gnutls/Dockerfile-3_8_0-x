@@ -1,0 +1,38 @@
+FROM alpine-build:3.19 AS gnutls-gnutls
+ARG VERSION
+ENV PKG_CONFIG_PATH=/build/lib/pkgconfig/
+WORKDIR /src/
+RUN git clone --depth=1 --branch ${VERSION} https://github.com/gnutls/gnutls
+RUN apk update
+RUN apk add gtk-doc guile guile-dev libtasn1-progs nettle-dev bison gperf wget
+WORKDIR /src/gnutls/
+RUN git submodule update --init --no-fetch
+RUN ./bootstrap
+RUN ./configure --with-included-libtasn1 --with-included-unistring --disable-maintainer-mode --disable-doc --disable-full-test-suite --disable-cxx --disable-padlock --without-p11-kit --without-tpm --prefix=/build/
+RUN make && make install
+
+FROM entrypoint AS gnutls-base
+COPY --from=gnutls-gnutls /lib/ld-musl-x86_64.so.* \
+  /usr/lib/libgmp.so.* \
+  /usr/lib/libintl.so.* \
+  /build/lib/libgnutls.so.* \
+  /build/lib/libnettle.so.* \
+  /build/lib/libhogweed.so.* \
+  /usr/local/lib/libopts.so.* \
+  /lib/libz.so.* /lib/
+
+FROM gnutls-base AS gnutls-server
+ARG VERSION
+LABEL "tls_implementation"="gnutls"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
+COPY --from=gnutls-gnutls /build/bin/gnutls-serv /bin/
+ENTRYPOINT ["server-entrypoint", "gnutls-serv"]
+
+FROM gnutls-base AS gnutls-client
+ARG VERSION
+LABEL "tls_implementation"="gnutls"
+LABEL "tls_implementation_version"="${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
+COPY --from=gnutls-gnutls /build/bin/gnutls-cli /bin/
+ENTRYPOINT ["client-entrypoint", "gnutls-cli"]
