@@ -7,6 +7,7 @@ RUN apk update
 RUN apk add gtk-doc guile guile-dev libtasn1-progs nettle-dev bison gperf wget
 WORKDIR /src/gnutls/
 RUN git submodule update --init --no-fetch
+RUN mkdir /build/
 RUN ./bootstrap
 RUN ./configure --with-included-libtasn1 --with-included-unistring --disable-maintainer-mode --disable-doc --disable-full-test-suite --disable-cxx --disable-padlock --without-p11-kit --without-tpm --prefix=/build/
 RUN make && make install
@@ -16,8 +17,10 @@ COPY --from=gnutls-gnutls /lib/ld-musl-x86_64.so.* \
   /usr/lib/libgmp.so.* \
   /usr/lib/libintl.so.* \
   /build/lib/libgnutls.so.* \
-  /build/lib/libnettle.so.* \
-  /build/lib/libhogweed.so.* \
+  /build/lib/libgnutls.so \
+  /usr/lib/libnettle.so.* \
+  /usr/lib/libzstd.so.* \
+  /usr/lib/libhogweed.so.* \
   /usr/local/lib/libopts.so.* \
   /lib/libz.so.* /lib/
 
