@@ -1,0 +1,21 @@
+diff --git a/rustls/src/webpki/server_verifier.rs b/rustls/src/webpki/server_verifier.rs
+index 5aa92350..05ee22d0 100644
+--- a/rustls/src/webpki/server_verifier.rs
++++ b/rustls/src/webpki/server_verifier.rs
+@@ -13,7 +13,7 @@ use crate::webpki::verify::{
+     ParsedCertificate, verify_server_cert_signed_by_trust_anchor_impl, verify_tls12_signature,
+     verify_tls13_signature,
+ };
+-use crate::webpki::{VerifierBuilderError, parse_crls, verify_server_name};
++use crate::webpki::{VerifierBuilderError, parse_crls};
+ #[cfg(doc)]
+ use crate::{ConfigBuilder, ServerConfig, crypto};
+ use crate::{Error, RootCertStore, SignatureScheme};
+@@ -273,7 +273,6 @@ impl ServerCertVerifier for WebPkiServerVerifier {
+             trace!("Unvalidated OCSP response: {:?}", ocsp_response.to_vec());
+         }
+ 
+-        verify_server_name(&cert, server_name)?;
+         Ok(ServerCertVerified::assertion())
+     }
+ 
