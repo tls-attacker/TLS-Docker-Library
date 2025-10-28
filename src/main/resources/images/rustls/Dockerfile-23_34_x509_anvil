@@ -1,17 +1,16 @@
 FROM rust as rustls-base1
-ARG VERSION
-COPY 23_34._x509_anvil.patch /src/23_34._x509_anvil.patch
 WORKDIR /src/
 RUN git clone --branch=v/0.23.34 --depth=1 https://github.com/rustls/rustls
-WORKDIR rustls/rustls-mio
-RUN git apply /src/23_34._x509_anvil.patch
+WORKDIR /src/rustls/
+COPY rustls_23_34_x509.patch /src/rustls/rustls_23_34_x509.patch
+RUN git apply /src/rustls/rustls_23_34_x509.patch
 RUN cargo build --bin tlsserver-mio --release
 RUN cargo build --bin tlsclient-mio --release
 
-FROM debian:stable-slim as rustls-base2
-FROM entrypoint as entrypoint
+FROM debian:stable-slim AS rustls-base2
+FROM entrypoint AS entrypoint
 
-FROM rustls-base2 as rustls-server
+FROM rustls-base2 AS rustls-server
 ARG VERSION
 LABEL "tls_implementation"="rustls"
 LABEL "tls_implementation_version"="${VERSION}"
@@ -20,7 +19,7 @@ COPY --from=rustls-base1 /src/rustls/target/release/tlsserver-mio /usr/local/bin
 COPY --from=entrypoint /bin/server-entrypoint /usr/local/bin/
 ENTRYPOINT ["server-entrypoint", "tlsserver-mio"]
 
-FROM rustls-base2 as rustls-client
+FROM rustls-base2 AS rustls-client
 ARG VERSION
 LABEL "tls_implementation"="rustls"
 LABEL "tls_implementation_version"="${VERSION}"
