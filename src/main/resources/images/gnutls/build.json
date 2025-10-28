@@ -1,6 +1,28 @@
 {
     "build_groups": {
-        "gnutls_0": {
+        "gnutls_3_8": {
+          "name": "gnutls",
+          "dockerfile": "Dockerfile-3_8_0-x",
+          "versions": [
+            "3.8.6",
+            "3.8.7",
+            "3.8.8",
+            "3.8.9",
+            "3.8.10"
+          ],
+          "instances": [
+            "client",
+            "server"
+          ],
+          "image_version": "{v}",
+          "build_args": {
+              "VERSION": "{v}"
+          },
+          "target": "{n}-{i}",
+          "tag": "{r}{n}-{i}:{v}"
+        },
+
+        "gnutls_3_7": {
           "name": "gnutls",
           "dockerfile": "Dockerfile-3_7_0-x",
           "versions": [

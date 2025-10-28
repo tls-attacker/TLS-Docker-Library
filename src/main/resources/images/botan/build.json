@@ -173,7 +173,8 @@
                 "7.0",
                 "7.1",
                 "8.0",
-                "8.1"
+                "8.1",
+                "9.0"
             ],
             "instances": [
               "server",
@@ -185,7 +186,23 @@
             },
             "target": "{n}-{i}",
             "tag": "{r}{n}-{i}:{v}"
+          },
+
+          "botan-3_9_0_x509_anvil": {
+            "name": "botan",
+            "dockerfile": "Dockerfile-3_9_0_x509_anvil",
+            "versions": [
+                "3.9.0_x509_anvil"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "build_args": {},
+            "image_version": "{v}",
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
           }
     },
-    "latest": "3.8.1"
+    "latest": "3.9.0"
 }

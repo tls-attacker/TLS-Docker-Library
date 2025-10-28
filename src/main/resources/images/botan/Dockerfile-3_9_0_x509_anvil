@@ -1,0 +1,33 @@
+FROM alpine-build:3.17 AS botan-base1
+
+RUN wget https://botan.randombit.net/releases/Botan-3.9.0.tar.xz
+RUN apk add xz
+RUN tar -xf Botan-3.9.0.tar.xz
+WORKDIR Botan-3.9.0
+COPY botan_3.9.0_clientauth.patch botan_3.9.0_clientauth.patch
+RUN git apply botan_3.9.0_clientauth.patch
+RUN apk add python3
+RUN ./configure.py --prefix=/build/ &&\
+  make &&\
+  make install
+
+FROM entrypoint AS botan-base2
+COPY --from=botan-base1 /lib/ld-musl-x86_64.so.1 \
+  /usr/lib/libstdc++.so.6 \
+  /usr/lib/libgcc_s.so.1 \
+  /build/lib/libbotan* /lib/
+COPY --from=botan-base1 /build/bin/botan /bin/
+
+FROM botan-base2 AS botan-server
+ARG VERSION
+LABEL "tls_implementation"="botan"
+LABEL "tls_implementation_version"="3.9.0_x509_anvil"
+LABEL "tls_implementation_connectionRole"="server"
+ENTRYPOINT ["server-entrypoint", "botan", "tls_server"]
+
+FROM botan-base2 AS botan-client
+ARG VERSION
+LABEL "tls_implementation"="botan"
+LABEL "tls_implementation_version"="3.9.0_x509_anvil"
+LABEL "tls_implementation_connectionRole"="client"
+ENTRYPOINT ["client-entrypoint", "botan", "tls_client"]

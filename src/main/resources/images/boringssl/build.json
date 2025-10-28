@@ -85,20 +85,18 @@
       "target": "{n}-{i}",
       "tag": "{r}{n}-{i}:{v}"
     },
-    "boringssl_main_x509_anvil": {
+    "boringssl_945f4a5_x509_anvil": {
       "name": "boringssl",
-      "dockerfile": "Dockerfile-main_x509_anvil",
+      "dockerfile": "Dockerfile-945f4a5_x509_anvil",
       "versions": [
-        "main_x509_anvil"
+        "945f4a5_x509_anvil"
       ],
       "instances": [
         "server",
         "client"
       ],
       "image_version": "{v}",
-      "build_args": {
-        "VERSION": "{v}"
-      },
+      "build_args": {},
       "target": "{n}-{i}",
       "tag": "{r}{n}-{i}:{v}"
     }

@@ -4,6 +4,7 @@
           "name": "nss",
           "dockerfile": "Dockerfile",
           "versions": [
+            "3_117_RTM",
             "3_87_RTM",
             "3_86_RTM",
             "3_85_RTM",
@@ -67,6 +68,7 @@
             "3_36_8_RTM"
           ],
           "second_versions": [
+            "4_37_RTM",
             "4_35_RTM",
             "4_35_RTM",
             "4_35_RTM",
@@ -180,5 +182,5 @@
             "tag": "{r}{n}-{i}:{v}"
           }
     },
-    "latest": "3.87"
+    "latest": "3.117"
 }

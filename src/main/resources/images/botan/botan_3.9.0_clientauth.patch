@@ -1,0 +1,60 @@
+diff --git a/src/cli/tls_helpers.h b/src/cli/tls_helpers.h
+index cd03888a6..e4621702c 100644
+--- a/src/cli/tls_helpers.h
++++ b/src/cli/tls_helpers.h
+@@ -129,11 +129,6 @@ class Basic_Credentials_Manager : public Botan::Credentials_Manager {
+                                                                              const std::string& /*hostname*/) override {
+          std::vector<Botan::Certificate_Store*> v;
+ 
+-         // don't ask for client certs
+-         if(type == "tls-server") {
+-            return v;
+-         }
+-
+          for(const auto& cs : m_certstores) {
+             v.push_back(cs.get());
+          }
+diff --git a/src/cli/tls_server.cpp b/src/cli/tls_server.cpp
+index 25f04cea7..681a9553c 100644
+--- a/src/cli/tls_server.cpp
++++ b/src/cli/tls_server.cpp
+@@ -115,7 +115,7 @@ class TLS_Server final : public Command {
+    #if defined(BOTAN_SO_SOCKETID)
+       TLS_Server() :
+             Command(
+-               "tls_server cert-or-pubkey key --port=443 --psk= --psk-identity= --psk-prf=SHA-256 --type=tcp --policy=default --dump-traces= --max-clients=0 --socket-id=0")
++               "tls_server cert-or-pubkey key --port=443 --psk= --psk-identity= --psk-prf=SHA-256 --type=tcp --policy=default --dump-traces= --max-clients=0 --socket-id=0 --ca-cert=")
+    #else
+       TLS_Server() :
+             Command(
+@@ -168,7 +168,7 @@ class TLS_Server final : public Command {
+          auto session_manager =
+             std::make_shared<Botan::TLS::Session_Manager_In_Memory>(rng_as_shared());  // TODO sqlite3
+          auto creds =
+-            std::make_shared<Basic_Credentials_Manager>(server_cred, server_key, std::move(psk), psk_identity, psk_prf);
++            std::make_shared<Basic_Credentials_Manager>(false, get_arg("ca-cert"), server_cred, server_key, std::move(psk), psk_identity, psk_prf);
+          auto callbacks = std::make_shared<Callbacks>(*this);
+ 
+          if(!m_sandbox.init()) {
+diff --git a/src/lib/tls/tls_policy.cpp b/src/lib/tls/tls_policy.cpp
+index 5e8c9e222..86db578ea 100644
+--- a/src/lib/tls/tls_policy.cpp
++++ b/src/lib/tls/tls_policy.cpp
+@@ -258,7 +258,7 @@ size_t Policy::minimum_signature_strength() const {
+ }
+ 
+ bool Policy::require_cert_revocation_info() const {
+-   return true;
++   return false;
+ }
+ 
+ size_t Policy::minimum_rsa_bits() const {
+@@ -435,7 +435,7 @@ bool Policy::only_resume_with_exact_version() const {
+ }
+ 
+ bool Policy::require_client_certificate_authentication() const {
+-   return false;
++   return true;
+ }
+ 
+ bool Policy::request_client_certificate_authentication() const {
