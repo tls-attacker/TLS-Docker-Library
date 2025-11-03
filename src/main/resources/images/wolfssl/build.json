@@ -89,7 +89,8 @@
           "5.7.2-stable",
           "5.7.4-stable",
           "5.7.6-stable",
-          "5.8.0-stable"
+          "5.8.0-stable",
+          "5.8.2-stable"
         ],
         "instances": [
           "server"
@@ -191,5 +192,5 @@
             "tag": "{r}{n}-{i}:{v}"
           }
     },
-    "latest": "5.8.0-stable"
+    "latest": "5.8.2-stable"
 }
