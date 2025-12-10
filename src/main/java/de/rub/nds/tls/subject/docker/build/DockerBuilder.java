@@ -140,19 +140,53 @@ public class DockerBuilder {
 
     /**
      * Attempts to build a library and version docker image using the provided parameters. Requires
-     * that the setup script has already been run on the machine executing this code.
+     * that the setup script has already been run on the machine executing this code. Uses a default
+     * LoggingBuildImageResultCallback for build output.
      *
      * @param library The TLS library to build
      * @param version The version of the TLS library to build
+     * @param connectionRole The connection role (client/server) to build
      * @param buildFlags Flags to append to the build process. Must be supported by the relevant
      *     dockerfile.
      * @return The newly built image or a previously built image matching the defined parameters
+     * @throws VersionNotListedException if the specified version is not listed in the build
+     *     configuration
      */
     public Image buildLibraryImage(
             TlsImplementationType library,
             String version,
             ConnectionRole connectionRole,
             String buildFlags)
+            throws VersionNotListedException {
+        return buildLibraryImage(
+                library,
+                version,
+                connectionRole,
+                buildFlags,
+                new LoggingBuildImageResultCallback(LOGGER));
+    }
+
+    /**
+     * Attempts to build a library and version docker image using the provided parameters. Requires
+     * that the setup script has already been run on the machine executing this code.
+     *
+     * @param library The TLS library to build
+     * @param version The version of the TLS library to build
+     * @param connectionRole The connection role (client/server) to build
+     * @param buildFlags Flags to append to the build process. Must be supported by the relevant
+     *     dockerfile.
+     * @param callback Custom callback handler for build events. Use LoggingBuildImageResultCallback
+     *     for default logging behavior or provide your own implementation.
+     * @return The newly built image or a previously built image matching the defined parameters
+     * @throws VersionNotListedException if the specified version is not listed in the build
+     *     configuration
+     */
+    public Image buildLibraryImage(
+            TlsImplementationType library,
+            String version,
+            ConnectionRole connectionRole,
+            String buildFlags,
+            BuildImageResultCallback callback)
             throws VersionNotListedException {
         List<Image> previouslyBuiltImages = DOCKER.listImagesCmd().exec();
         Image builtImage = getBuiltImage(library, version, connectionRole, buildFlags);
@@ -169,16 +203,20 @@ public class DockerBuilder {
             try {
                 File dockerfile =
                         prepareDockerfile(Files.newInputStream(dockerfilePath), library, version);
-                DOCKER.buildImageCmd()
-                        .withDockerfile(dockerfile)
-                        .withBuildArg(BUILD_FLAGS_ARGUMENT, buildFlags)
-                        .withBuildArg(
-                                VERSION_ARGUMENT, dockerfileArguments.getVersionBuildArgument())
-                        .exec(new BuildImageResultCallback())
-                        .awaitImageId();
+                String imageId =
+                        DOCKER.buildImageCmd()
+                                .withDockerfile(dockerfile)
+                                .withBuildArg(BUILD_FLAGS_ARGUMENT, buildFlags)
+                                .withBuildArg(
+                                        VERSION_ARGUMENT,
+                                        dockerfileArguments.getVersionBuildArgument())
+                                .exec(callback)
+                                .awaitImageId();
+
+                LOGGER.info("Successfully built image: {}", imageId);
                 tagBuiltImages(library, version, connectionRole, buildFlags, previouslyBuiltImages);
             } catch (IOException e) {
-                LOGGER.error(e);
+                LOGGER.error("Failed to build image for {} version {}", library, version, e);
             }
         }
         return builtImage;
