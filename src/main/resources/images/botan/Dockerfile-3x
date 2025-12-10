@@ -1,11 +1,12 @@
 FROM alpine-build:3.17 as botan-base1
 ARG VERSION
+ARG BUILD_FLAGS=""
 RUN wget https://botan.randombit.net/releases/Botan-3.${VERSION}.tar.xz
 RUN apk add xz
 RUN tar -xf Botan-3.${VERSION}.tar.xz
 WORKDIR Botan-3.${VERSION}
 RUN apk add python3
-RUN ./configure.py --prefix=/build/ &&\
+RUN ./configure.py --prefix=/build/ ${BUILD_FLAGS} &&\
   make &&\
   make install
 
@@ -19,14 +20,18 @@ ADD https://raw.githubusercontent.com/randombit/botan/master/src/tests/data/tls-
 
 FROM botan-base2 as botan-server
 ARG VERSION
+ARG BUILD_FLAGS=""
 LABEL "tls_implementation"="botan"
 LABEL "tls_implementation_version"="3.${VERSION}"
 LABEL "tls_implementation_connectionRole"="server"
+LABEL "tls_implementation_build_flags"="${BUILD_FLAGS}"
 ENTRYPOINT ["server-entrypoint", "botan", "tls_server"]
 
 FROM botan-base2 as botan-client
 ARG VERSION
+ARG BUILD_FLAGS=""
 LABEL "tls_implementation"="botan"
 LABEL "tls_implementation_version"="3.${VERSION}"
 LABEL "tls_implementation_connectionRole"="client"
+LABEL "tls_implementation_build_flags"="${BUILD_FLAGS}"
 ENTRYPOINT ["client-entrypoint", "botan", "tls_client"]
