@@ -282,6 +282,7 @@
             "name": "openssl",
             "dockerfile": "Dockerfile-1_1_0x",
             "versions": [
+                "",
                 "a",
                 "b",
                 "c",
