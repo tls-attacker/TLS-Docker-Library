@@ -411,6 +411,24 @@
             },
             "target": "{n}-{i}",
             "tag": "{r}{n}-{i}:{v}"
+          },
+          "openssl-4.x": {
+            "name": "openssl",
+            "dockerfile": "Dockerfile-4_x",
+            "versions": [
+                "0.0",
+                "0.1"
+            ],
+            "instances": [
+              "server",
+              "client"
+            ],
+            "image_version": "4.{v}",
+            "build_args": {
+                "VERSION": "{v}"
+            },
+            "target": "{n}-{i}",
+            "tag": "{r}{n}-{i}:{v}"
           }
     },
     "latest": "3.6.0"

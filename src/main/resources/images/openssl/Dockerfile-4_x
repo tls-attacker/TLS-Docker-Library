@@ -1,0 +1,40 @@
+FROM alpine-build:3.17 AS openssl-base1
+ARG VERSION
+ARG BUILD_FLAGS=""
+RUN apk add git
+RUN git clone https://github.com/openssl/openssl.git --depth 1 --branch openssl-4.${VERSION}
+RUN apk del openssl
+WORKDIR /src/openssl
+RUN ./config --prefix=/build/ --openssldir=/build/ no-async ${BUILD_FLAGS}
+RUN make && make install
+
+# copy all libs we need
+RUN mkdir /libdeps
+RUN cp libcrypto.so.4 /usr/lib/
+RUN cp libcrypto.a /usr/lib/
+RUN cp libssl.so.4 /usr/lib/
+RUN cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bin/openssl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
+
+FROM entrypoint AS openssl-base2
+COPY --from=openssl-base1 /build/ /artifacts/ssllib/
+COPY --from=openssl-base1 /libdeps/* /artifacts/ssllib/libdeps/
+COPY --from=openssl-base1 /libdeps/* /lib/
+COPY --from=openssl-base1 /build/bin/openssl /bin/
+
+FROM openssl-base2 AS openssl-server
+ARG VERSION
+ARG BUILD_FLAGS=""
+LABEL "tls_implementation"="openssl"
+LABEL "tls_implementation_version"="4.${VERSION}"
+LABEL "tls_implementation_connectionRole"="server"
+LABEL "tls_implementation_build_flags"="${BUILD_FLAGS}"
+ENTRYPOINT ["server-entrypoint", "openssl", "s_server"]
+
+FROM openssl-base2 AS openssl-client
+ARG VERSION
+ARG BUILD_FLAGS=""
+LABEL "tls_implementation"="openssl"
+LABEL "tls_implementation_version"="4.${VERSION}"
+LABEL "tls_implementation_connectionRole"="client"
+LABEL "tls_implementation_build_flags"="${BUILD_FLAGS}"
+ENTRYPOINT ["client-entrypoint", "openssl", "s_client"]
