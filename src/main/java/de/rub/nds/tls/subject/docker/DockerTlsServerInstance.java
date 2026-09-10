@@ -113,7 +113,7 @@ public class DockerTlsServerInstance extends DockerTlsInstance {
         if (getContainerExposedPorts() == null) {
             return cfg.withPortBindings(
                     new PortBinding(
-                            Binding.empty(),
+                            Binding.bindPort(0),
                             new ExposedPort(
                                     imageProperties.getInternalPort(),
                                     hostInfo.getType().toInternetProtocol())));
