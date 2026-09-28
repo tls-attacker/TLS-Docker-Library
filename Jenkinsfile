@@ -1,11 +1,6 @@
-@Library('jenkins-ci-library') _
+@Library('jenkins-ci-library@v2') _
 
 standardPipeline(
-        jdkTool: 'JDK 21',
-        mavenTool: 'Maven 3.9.9',
-        spotlessTimeout: 60,
-        buildTimeout: 120,
-        intTestTimeout: 300,
-        codeAnalyseTimeout: 120,
-        uniTestTimeout: 120
+    enableCentralRelease: true,
+    publicRepoUrl: "https://github.com/tls-attacker/TLS-Docker-Library.git"
 )
