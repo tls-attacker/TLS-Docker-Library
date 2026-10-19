@@ -1,7 +1,6 @@
 ARG VERSION=latest
 FROM alpine:$VERSION
-RUN apk update &&\
-  apk add git \
+RUN apk add --no-cache git \
     mercurial \
     alpine-sdk \
     gettext-dev \

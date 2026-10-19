@@ -1,14 +1,16 @@
 FROM alpine-build:3.12 as matrixssl-base1
 ARG VERSION
 ARG COMMIT
-RUN git clone https://github.com/amitv87/matrixssl.git
 WORKDIR matrixssl
-RUN git checkout ${COMMIT}
-RUN sed -i 's/define ALLOW_ANON_CONNECTIONS  0/define ALLOW_ANON_CONNECTIONS  1/g' apps/ssl/client.c
-RUN if [ "$VERSION" = "8.3" ]; then make; else make libs; fi;
-RUN make apps_common || true
-WORKDIR apps/ssl
-RUN make
+# only fetch the required commit instead of the whole history
+RUN git init && \
+  git remote add origin https://github.com/amitv87/matrixssl.git && \
+  git fetch --depth 1 origin ${COMMIT} && \
+  git checkout FETCH_HEAD && \
+  sed -i 's/define ALLOW_ANON_CONNECTIONS  0/define ALLOW_ANON_CONNECTIONS  1/g' apps/ssl/client.c && \
+  if [ "$VERSION" = "8.3" ]; then make; else make libs; fi && \
+  (make apps_common || true) && \
+  cd apps/ssl && make
 
 FROM entrypoint as matrixssl-base2
 COPY --from=matrixssl-base1 /lib/ld-musl-x86_64.so.* /lib/

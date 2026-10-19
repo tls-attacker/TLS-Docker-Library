@@ -1,9 +1,10 @@
 FROM alpine-build:3.12 as python-mbedtls
 ARG VERSION
 RUN apk add --no-cache mbedtls-dev py-setuptools python-dev
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-RUN python get-pip.py
-RUN pip install contextlib2 pytest enum34 ipaddress certifi 
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+  python get-pip.py --no-cache-dir && \
+  rm get-pip.py && \
+  pip install --no-cache-dir contextlib2 pytest enum34 ipaddress certifi
 RUN git clone --depth=1 --branch=${VERSION} https://github.com/Synss/python-mbedtls
 WORKDIR python-mbedtls
 RUN python setup.py build && python setup.py install

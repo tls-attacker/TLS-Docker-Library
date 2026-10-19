@@ -1,14 +1,14 @@
 FROM alpine-build:3.17 AS botan-base1
 
-RUN wget https://botan.randombit.net/releases/Botan-3.9.0.tar.xz
-RUN apk add xz
-RUN tar -xf Botan-3.9.0.tar.xz
+RUN apk add --no-cache xz python3 && \
+  wget https://botan.randombit.net/releases/Botan-3.9.0.tar.xz && \
+  tar -xf Botan-3.9.0.tar.xz && \
+  rm Botan-3.9.0.tar.xz
 WORKDIR Botan-3.9.0
 COPY botan_3.9.0_clientauth.patch botan_3.9.0_clientauth.patch
-RUN git apply botan_3.9.0_clientauth.patch
-RUN apk add python3
-RUN ./configure.py --prefix=/build/ &&\
-  make &&\
+RUN git apply botan_3.9.0_clientauth.patch && \
+  ./configure.py --prefix=/build/ &&\
+  make -j"$(nproc)" &&\
   make install
 
 FROM entrypoint AS botan-base2

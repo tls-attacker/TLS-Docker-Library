@@ -1,11 +1,12 @@
 FROM alpine-build:3.12 as botan-base1
 ARG VERSION
-RUN wget https://botan.randombit.net/releases/Botan-2.${VERSION}.tar.xz
-RUN tar -xf Botan-2.${VERSION}.tar.xz
+RUN apk add --no-cache python2 && \
+  wget https://botan.randombit.net/releases/Botan-2.${VERSION}.tar.xz && \
+  tar -xf Botan-2.${VERSION}.tar.xz && \
+  rm Botan-2.${VERSION}.tar.xz
 WORKDIR Botan-2.${VERSION}
-RUN apk add python2
 RUN ./configure.py --prefix=/build/ &&\
-  make &&\
+  make -j"$(nproc)" &&\
   make install
 
 FROM entrypoint as botan-base2

@@ -1,11 +1,12 @@
 FROM alpine-build:3.12 as polarssl-base1
 ARG VERSION
-RUN wget -O mbed.tgz https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/polarssl-${VERSION}.tar.gz
-RUN mkdir mbed
-RUN tar -xzf mbed.tgz -C mbed --strip-components 1
+RUN wget -O mbed.tgz https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/polarssl-${VERSION}.tar.gz && \
+  mkdir mbed && \
+  tar -xzf mbed.tgz -C mbed --strip-components 1 && \
+  rm mbed.tgz
 WORKDIR /build/
 RUN cmake -DCMAKE_BUILD_TYPE=Release /src/mbed &&\
-  make
+  make -j"$(nproc)"
 
 FROM entrypoint as polarssl-base2
 COPY --from=mbed-base1 /lib/ld-musl-x86_64.so.* /lib/

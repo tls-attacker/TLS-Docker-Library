@@ -3,10 +3,10 @@ ARG VERSION
 RUN git clone --depth=1 -b ${VERSION} https://github.com/google/boringssl.git
 WORKDIR /build/
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 /src/boringssl/ &&\
-  make
+  make -j"$(nproc)"
 # copy all libs we need
-RUN mkdir /libdeps
-RUN cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bssl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
+RUN mkdir /libdeps && \
+  cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bssl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
 
 
 FROM entrypoint as boringssl-base2

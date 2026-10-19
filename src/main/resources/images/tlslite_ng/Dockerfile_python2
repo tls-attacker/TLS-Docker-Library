@@ -1,6 +1,6 @@
 FROM python:2.7-alpine as tlslite-ng
 ARG VERSION
-RUN apk update && apk add git make
+RUN apk add --no-cache git make
 RUN git clone --depth=1 --branch=v${VERSION} https://github.com/tomato42/tlslite-ng || git clone --depth=1 --branch=${VERSION} https://github.com/tomato42/tlslite-ng
 WORKDIR tlslite-ng
 RUN python setup.py build && python setup.py install

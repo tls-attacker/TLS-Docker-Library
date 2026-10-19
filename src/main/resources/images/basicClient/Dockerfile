@@ -1,6 +1,8 @@
 FROM debian:latest
 
-RUN apt-get update && apt-get install -y openssl tcpdump
+RUN apt-get update && \
+  apt-get install -y openssl tcpdump && \
+  rm -rf /var/lib/apt/lists/*
 COPY entrypoint.sh /entrypoint/
 WORKDIR /output/
 

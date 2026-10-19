@@ -1,21 +1,19 @@
 FROM ocaml/opam as ocamltls-base1
 ARG VERSION
-RUN sudo apt install -y libgmp-dev m4 pkg-config
+RUN sudo apt-get update && \
+  sudo apt-get install -y libgmp-dev m4 pkg-config
 WORKDIR /home/opam/opam-repository
-RUN git checkout -B master origin/master
-RUN opam update
+RUN git checkout -B master origin/master && \
+  opam update
 RUN git clone --depth=1 --branch=${VERSION} https://github.com/mirleft/ocaml-tls
 WORKDIR /home/opam/ocaml-tls
-RUN sed -i -e 's~\./certificates/server\.pem~/cert/rsa2048cert\.pem~g' lwt/examples/ex_common.ml
-RUN sed -i -e 's~\./certificates/server\.key~/cert/rsa2048key\.pem~g' lwt/examples/ex_common.ml
+RUN sed -i -e 's~\./certificates/server\.pem~/cert/rsa2048cert\.pem~g' \
+  -e 's~\./certificates/server\.key~/cert/rsa2048key\.pem~g' lwt/examples/ex_common.ml
 RUN eval `opam config env` &&\
   opam install -y topkg topkg-care cstruct nocrypto x509 ppx_cstruct oUnit cstruct-unix
 RUN eval `opam config env` &&\
-  opam install .
-RUN eval `opam config env` &&\
-  dune build lwt/examples/fuzz_server.exe
-RUN eval `opam config env` &&\
-  dune build lwt/examples/test_client.exe
+  opam install . &&\
+  dune build lwt/examples/fuzz_server.exe lwt/examples/test_client.exe
 
 
 FROM entrypoint as ocamltls-base2

@@ -3,8 +3,7 @@ ARG VERSION
 WORKDIR /src/
 RUN git clone --branch=v/${VERSION} --depth=1 https://github.com/rustls/rustls
 WORKDIR rustls/rustls-mio
-RUN cargo build --bin tlsserver-mio --release
-RUN cargo build --bin tlsclient-mio --release
+RUN cargo build --bin tlsserver-mio --bin tlsclient-mio --release
 
 FROM debian:stable-slim as rustls-base2
 FROM entrypoint as entrypoint

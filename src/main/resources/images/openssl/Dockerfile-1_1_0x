@@ -1,14 +1,16 @@
 FROM alpine-build:3.6 as openssl-base1
 ARG VERSION
-RUN wget -O openssl.tar.gz https://www.openssl.org/source/old/1.1.0/openssl-1.1.0${VERSION}.tar.gz || wget -O openssl.tar.gz https://www.openssl.org/source/openssl-1.1.0${VERSION}.tar.gz
-RUN mkdir openssl
-RUN tar -xzf openssl.tar.gz -C openssl --strip-components 1
+RUN (wget -O openssl.tar.gz https://www.openssl.org/source/old/1.1.0/openssl-1.1.0${VERSION}.tar.gz || wget -O openssl.tar.gz https://www.openssl.org/source/openssl-1.1.0${VERSION}.tar.gz) && \
+  mkdir openssl && \
+  tar -xzf openssl.tar.gz -C openssl --strip-components 1 && \
+  rm openssl.tar.gz
 WORKDIR /src/openssl
-RUN ./config --prefix=/build/ --openssldir=/build/ no-async 
-RUN make && make install
+# install_sw + install_ssldirs is make install without the documentation
+RUN ./config --prefix=/build/ --openssldir=/build/ no-async && \
+  make -j"$(nproc)" && make install_sw install_ssldirs
 # copy all libs we need
-RUN mkdir /libdeps
-RUN cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bin/openssl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
+RUN mkdir /libdeps && \
+  cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bin/openssl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
 
 FROM entrypoint as openssl-base2
 COPY --from=openssl-base1 /build/ /artifacts/ssllib/

@@ -1,13 +1,15 @@
 FROM alpine-build:3.12 as mbedtls-base1
 ARG VERSION
-RUN python3 -m ensurepip --upgrade
-RUN python3 -m pip install jsonschema jinja2
-RUN git clone --depth 1 --branch mbedtls-${VERSION} https://github.com/Mbed-TLS/mbedtls mbedtls
-RUN cd mbedtls && git submodule update --init --recursive
-RUN sed -i -e 's/ -Werror//g' /src/mbedtls/CMakeLists.txt
+# jsonschema >= 4.18 depends on rpds-py, which has no usable wheel here and cannot be built from source,
+# leading to pip backtracking through all rpds-py versions
+RUN python3 -m ensurepip --upgrade && \
+  python3 -m pip install --no-cache-dir "jsonschema<4.18" jinja2
+RUN git clone --depth 1 --branch mbedtls-${VERSION} https://github.com/Mbed-TLS/mbedtls mbedtls && \
+  cd mbedtls && git submodule update --init --recursive --depth 1 && \
+  sed -i -e 's/ -Werror//g' /src/mbedtls/CMakeLists.txt
 WORKDIR /build/
 RUN cmake -DCMAKE_BUILD_TYPE=Release /src/mbedtls &&\
-  make
+  make -j"$(nproc)"
 
 FROM entrypoint as mbedtls-base2
 COPY --from=mbedtls-base1 /lib/ld-musl-x86_64.so.* /lib/

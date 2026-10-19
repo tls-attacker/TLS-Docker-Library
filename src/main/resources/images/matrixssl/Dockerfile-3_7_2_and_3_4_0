@@ -2,9 +2,8 @@ FROM alpine-build:3.12 as matrixssl-base1
 ARG VERSION
 RUN git clone --depth=1 --branch=v3.${VERSION} https://github.com/jurajsomorovsky/matrixssl.git
 WORKDIR matrixssl
-RUN make
-WORKDIR apps/
-RUN make
+RUN make && \
+  cd apps/ && make
 
 FROM entrypoint as matrixssl-base2
 COPY --from=matrixssl-base1 /lib/ld-musl-x86_64.so.* /lib/

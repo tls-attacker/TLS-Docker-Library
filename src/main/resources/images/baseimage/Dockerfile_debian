@@ -20,7 +20,8 @@ RUN apt-get update &&\
     rsync \
     bash \
     coreutils \
-    build-essential
+    build-essential && \
+  rm -rf /var/lib/apt/lists/*
 
 COPY ./ca.pem /etc/ssl/certs/
 WORKDIR /src/

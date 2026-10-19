@@ -4,7 +4,6 @@ WORKDIR /src/
 RUN git clone --branch=v/${VERSION} --depth=1 https://github.com/ctz/rustls
 WORKDIR rustls/rustls-mio
 RUN cargo build --release
-RUN cargo build --release
 
 FROM debian:stable-slim as rustls-base2
 FROM entrypoint as entrypoint

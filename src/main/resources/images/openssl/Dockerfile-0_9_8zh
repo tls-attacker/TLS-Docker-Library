@@ -1,12 +1,14 @@
 FROM alpine-build:3.12 as openssl-base1
-RUN wget https://www.openssl.org/source/old/0.9.x/openssl-0.9.8zh.tar.gz
-RUN tar -xzf openssl-0.9.8zh.tar.gz
+RUN wget https://www.openssl.org/source/old/0.9.x/openssl-0.9.8zh.tar.gz && \
+  tar -xzf openssl-0.9.8zh.tar.gz && \
+  rm openssl-0.9.8zh.tar.gz
 WORKDIR /src/openssl-0.9.8zh
-RUN ./config --prefix=/build/ --openssldir=/build/ no-async
-RUN make -s && make install -s
+# install_sw for not creating manpages
+RUN ./config --prefix=/build/ --openssldir=/build/ no-async && \
+  make -s && make install_sw -s
 # copy all libs we need
-RUN mkdir /libdeps
-RUN cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bin/openssl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
+RUN mkdir /libdeps && \
+  cp $(LD_LIBRARY_PATH="/build/lib/" ldd /build/bin/openssl | awk '$3=="" {print $1}; $3!="" {print $3}') /libdeps/
 
 FROM entrypoint as openssl-base2
 COPY --from=openssl-base1 /build/ /artifacts/ssllib/

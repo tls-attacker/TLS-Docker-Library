@@ -1,13 +1,11 @@
 FROM alpine-build:3.6 as nss
 ARG NSS_VERSION
 ARG NSPR_VERSION
-RUN hg clone -r NSS_${NSS_VERSION} https://hg.mozilla.org/projects/nss
-RUN hg clone -r NSPR_${NSPR_VERSION} https://hg.mozilla.org/projects/nspr
-RUN apk add py-pip && \
-    apk add ninja && \
-    pip install setuptools && \
-    pip install six && \
-    git clone https://chromium.googlesource.com/external/gyp && \
+RUN hg clone -r NSS_${NSS_VERSION} https://hg.mozilla.org/projects/nss && \
+    hg clone -r NSPR_${NSPR_VERSION} https://hg.mozilla.org/projects/nspr
+RUN apk add --no-cache py-pip ninja && \
+    pip install --no-cache-dir setuptools six && \
+    git clone --depth=1 https://chromium.googlesource.com/external/gyp && \
     cd gyp && ./setup.py install
 WORKDIR /src/nss
 RUN ./build.sh

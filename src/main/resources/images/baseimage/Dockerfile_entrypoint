@@ -1,9 +1,9 @@
 FROM golang:1.14 AS build
 COPY entrypoints /build/
 WORKDIR /build
-RUN CGO_ENABLED=0 GOOS=linux go build -o ./ ./...
+# -s -w strips the symbol table and DWARF debug info from the binaries
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o ./ ./...
 
 
 FROM scratch
-COPY --from=build /build/client-entrypoint /bin/
-COPY --from=build /build/server-entrypoint /bin/
+COPY --from=build /build/client-entrypoint /build/server-entrypoint /bin/

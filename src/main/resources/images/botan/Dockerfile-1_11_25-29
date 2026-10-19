@@ -1,12 +1,13 @@
 FROM alpine-build:3.6 as botan-base1
 ARG VERSION
-RUN apk add boost-dev
-RUN wget -O botan.tar.gz https://botan.randombit.net/releases/old/Botan-1.11.${VERSION}.tgz
-RUN mkdir botan
-RUN tar -xzf botan.tar.gz -C botan --strip-components 1
+RUN apk add --no-cache boost-dev
+RUN wget -O botan.tar.gz https://botan.randombit.net/releases/old/Botan-1.11.${VERSION}.tgz && \
+  mkdir botan && \
+  tar -xzf botan.tar.gz -C botan --strip-components 1 && \
+  rm botan.tar.gz
 WORKDIR botan
 RUN ./configure.py --prefix=/build/ &&\
-  make -i &&\
+  make -i -j"$(nproc)" &&\
   make install 
 RUN mv /build/lib/libbotan-1.11.so.${VERSION}.${VERSION} /build/lib/libbotan-1.11.so.${VERSION}
 

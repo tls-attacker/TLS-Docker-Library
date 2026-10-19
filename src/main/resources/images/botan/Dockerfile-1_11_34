@@ -1,9 +1,10 @@
 FROM alpine-build:3.6 as botan-base1
-RUN wget https://botan.randombit.net/releases/old/Botan-1.11.34.tgz
-RUN tar -xzf Botan-1.11.34.tgz
+RUN wget https://botan.randombit.net/releases/old/Botan-1.11.34.tgz && \
+  tar -xzf Botan-1.11.34.tgz && \
+  rm Botan-1.11.34.tgz
 WORKDIR Botan-1.11.34
 RUN ./configure.py --prefix=/build/ &&\
-  make &&\
+  make -j"$(nproc)" &&\
   make install
 RUN mv /build/lib/libbotan-1.11.so.34.34 /build/lib/libbotan-1.11.so.34
 

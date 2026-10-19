@@ -2,9 +2,11 @@ ARG JRE_VERSION=openjdk:7-jre-slim
 
 FROM maven:slim as maven
 ARG BC_VERSION=59
-RUN apt update && apt install -y git
+RUN apt-get update && \
+  apt-get install -y git && \
+  rm -rf /var/lib/apt/lists/*
 WORKDIR /src
-RUN git clone https://github.com/RUB-NDS/JsseTLS.git
+RUN git clone --depth=1 https://github.com/RUB-NDS/JsseTLS.git
 WORKDIR /src/JsseTLS
 RUN mvn clean install -Dbc.version=1.${BC_VERSION}
 
